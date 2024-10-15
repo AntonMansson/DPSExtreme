@@ -1,7 +1,7 @@
 Keybinds.ToggleTeamDPSBossMeter.DisplayName: 开关队伍成员伤害/对Boss伤害统计
 DPS: 队伍成员伤害
 TogglePercent: 显示 %
-NoDPSWearDPSMeter: 需要[i:每秒伤害计数器]
+NoDPSWearDPSMeter: 需要[i:DPSMeter]
 NoBoss: 当前无Boss存活
 BossLabel: Boss - {0}
 ClickToViewBossDamage: 点击查看对Boss伤害
