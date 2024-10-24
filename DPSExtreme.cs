@@ -91,44 +91,15 @@ namespace DPSExtreme
 		internal ModKeybind ToggleTeamDPSHotKey;
 
 		internal DPSExtremeTool dpsExtremeTool;
+
+		internal DPSExtremePacketHandler packetHandler;
+
 		private int lastSeenScreenWidth;
 		private int lastSeenScreenHeight;
 
 		internal event Action<Dictionary<byte, int>> OnSimpleBossStats;
 
 		// NPCLoader.StrikeNPC doesn't specify which player dealt the damage.
-
-		public bool HijackGetData(ref byte messageType, ref BinaryReader reader, int playerNumber)
-		{
-			try
-			{
-				if (messageType == MessageID.DamageNPC && Main.netMode == NetmodeID.Server)
-				{
-					int npcIndex = reader.ReadInt16();
-					int damage = reader.Read7BitEncodedInt();
-					if (damage < 0)
-						return false;
-					//ErrorLogger.Log("HijackGetData StrikeNPC: " + npcIndex + " " + damage + " " + playerNumber);
-
-					//System.Console.WriteLine("HijackGetData StrikeNPC: " + npcIndex + " " + damage + " " + playerNumber);
-					NPC damagedNPC = Main.npc[npcIndex];
-					if (damagedNPC.realLife >= 0)
-					{
-						damagedNPC = Main.npc[damagedNPC.realLife];
-					}
-
-					DPSExtremeGlobalNPC info = damagedNPC.GetGlobalNPC<DPSExtremeGlobalNPC>();
-					info.damageDone[playerNumber] += damage;
-					// TODO: Reimplement DPS with ring buffer for accurate?  !!! or send 0?
-					// TODO: Verify real life adjustment
-				}
-			}
-			catch (Exception)
-			{
-				//ErrorLogger.Log("HijackGetData StrikeNPC " + e.Message);
-			}
-			return false;
-		}
 
 		internal static int bossIndex = -1;
 		internal static int[] bossDamage; // Server sends stats for a specific Boss NPC
@@ -155,6 +126,8 @@ namespace DPSExtreme
 			if (!Main.dedServ) {
 				dpsExtremeTool = new DPSExtremeTool();
 			}
+			
+			packetHandler = new DPSExtremePacketHandler();
 		}
 
 		public override void Unload()
@@ -167,66 +140,7 @@ namespace DPSExtreme
 
 		public override void HandlePacket(BinaryReader reader, int whoAmI)
 		{
-			DPSExtremeMessageType msgType = (DPSExtremeMessageType)reader.ReadByte();
-			byte count;
-			switch (msgType)
-			{
-				case DPSExtremeMessageType.InformServerCurrentDPS:
-					int dps = reader.ReadInt32();
-					dpss[whoAmI] = dps;
-					break;
-				case DPSExtremeMessageType.InformClientsCurrentDPSs:
-					count = reader.ReadByte();
-					for (int i = 0; i < 256; i++)
-					{
-						dpss[i] = -1;
-					}
-					for (int i = 0; i < count; i++)
-					{
-						byte playerIndex = reader.ReadByte();
-						int playerdps = reader.ReadInt32();
-						dpss[playerIndex] = playerdps;
-					}
-					DPSExtremeUI.instance.updateNeeded = true;
-
-					//OutData();
-					//OutDataNew();
-					break;
-				case DPSExtremeMessageType.InformClientsCurrentBossTotals:
-					bool dead = reader.ReadBoolean();
-					bossIndex = reader.ReadByte();
-					count = reader.ReadByte();
-					for (int i = 0; i < 256; i++)
-					{
-						bossDamage[i] = -1;
-					}
-					for (int i = 0; i < count; i++)
-					{
-						byte playerIndex = reader.ReadByte();
-						int playerdps = reader.ReadInt32();
-						bossDamage[playerIndex] = playerdps;
-					}
-					bossDamageDOT = reader.ReadInt32();
-					bossDamageDOTDPS = -1 * Main.npc[bossIndex].lifeRegen / 2;
-					DPSExtremeUI.instance.updateNeeded = true;
-					DPSExtremeUI.instance.bossUpdateNeeded = true;
-					if (dead)
-					{
-						Dictionary<byte, int> stats = new Dictionary<byte, int>();
-						for (int i = 0; i < 256; i++)
-						{
-							if (bossDamage[i] > -1)
-							{
-								stats[(byte)i] = bossDamage[i];
-							}
-						}
-						OnSimpleBossStats?.Invoke(stats);
-					}
-					break;
-				default:
-					Logger.Warn("DPSExtreme: Unknown Message type: " + msgType);
-					break;
-			}
+			packetHandler.HandlePacket(reader, whoAmI);
 		}
 
 		//private void OutData()
@@ -344,19 +258,11 @@ namespace DPSExtreme
 	}
 
 	public class DPSExtremeSystem : ModSystem {
-		public override bool HijackGetData(ref byte messageType, ref BinaryReader reader, int playerNumber) => ModContent.GetInstance<DPSExtreme>().HijackGetData(ref messageType, ref reader, playerNumber);
+		public override bool HijackGetData(ref byte messageType, ref BinaryReader reader, int playerNumber) => ModContent.GetInstance<DPSExtreme>().packetHandler.HijackGetData(ref messageType, ref reader, playerNumber);
 
 		public override void UpdateUI(GameTime gameTime) => ModContent.GetInstance<DPSExtreme>().UpdateUI(gameTime);
 
 		public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers) => ModContent.GetInstance<DPSExtreme>().ModifyInterfaceLayers(layers);
-	}
-
-	enum DPSExtremeMessageType : byte
-	{
-		InformServerCurrentDPS,
-		InformClientsCurrentDPSs,
-		InformClientsCurrentBossTotals,
-		//InformClientsFinalBossTotals,
 	}
 
 	public static class DPSExtremeInterface

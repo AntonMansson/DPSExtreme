@@ -10,19 +10,19 @@ namespace DPSExtreme
 	{
 		public override void PostUpdate()
 		{
-			// only do this in MP
 			if (Main.GameUpdateCount % DPSExtreme.UPDATEDELAY == 0)
 			{
-				if (Main.netMode == NetmodeID.MultiplayerClient && Player.whoAmI == Main.myPlayer && Player.accDreamCatcher)
+				if (Player.whoAmI == Main.myPlayer && Player.accDreamCatcher)
 				{
 					int dps = Player.getDPS();
 					if (!Player.dpsStarted)
 						dps = 0;
 
-					ModPacket packet = Mod.GetPacket();
-					packet.Write((byte)DPSExtremeMessageType.InformServerCurrentDPS);
-					packet.Write(dps);
-					packet.Send();
+					ProtocolReqInformServerCurrentDPS req = new ProtocolReqInformServerCurrentDPS();
+					req.myPlayer = Player.whoAmI;
+					req.myDPS = dps;
+
+                    DPSExtreme.instance.packetHandler.SendProtocol(req);
 				}
 			}
 		}
@@ -31,11 +31,6 @@ namespace DPSExtreme
 		{
 			if (DPSExtreme.instance.ToggleTeamDPSHotKey.JustPressed)
 			{
-				if (Main.netMode != NetmodeID.MultiplayerClient && !DPSExtremeUI.instance.ShowTeamDPSPanel)
-				{
-					Main.NewText(Language.GetTextValue(Mod.GetLocalizationKey("OnlyAvailableInMultiplayer")));
-					return;
-				}
 				DPSExtremeUI.instance.ShowTeamDPSPanel = !DPSExtremeUI.instance.ShowTeamDPSPanel;
 			}
 		}

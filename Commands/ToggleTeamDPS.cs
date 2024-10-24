@@ -13,11 +13,6 @@ namespace DPSExtreme.Commands
 
 		public override void Action(CommandCaller caller, string input, string[] args)
 		{
-			if (Main.netMode != NetmodeID.MultiplayerClient && !DPSExtremeUI.instance.ShowTeamDPSPanel)
-			{
-				Main.NewText(Language.GetTextValue(Mod.GetLocalizationKey("OnlyAvailableInMultiplayer")));
-				return;
-			}
 			DPSExtremeUI.instance.ShowTeamDPSPanel = !DPSExtremeUI.instance.ShowTeamDPSPanel;
 			//DPSExtreme.ShowTeamDPS = !DPSExtreme.ShowTeamDPS;
 		}

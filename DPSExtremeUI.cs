@@ -11,6 +11,7 @@ using Terraria.Graphics;
 using DPSExtreme.UIElements;
 using ReLogic.Content;
 using Terraria.Localization;
+using Terraria.ID;
 
 namespace DPSExtreme
 {
@@ -320,9 +321,9 @@ namespace DPSExtreme
 				fakeItem.SetDefaults(0, noMatCheck: true);
 				string textValue = Main.hoverItemName;
 				fakeItem.SetNameOverride(textValue);
-				fakeItem.type = 1;
+				fakeItem.type = ItemID.IronPickaxe;
 				fakeItem.scale = 0f;
-				fakeItem.rare = 8;
+				fakeItem.rare = ItemRarityID.Yellow;
 				fakeItem.value = -1;
 				Main.HoverItem = fakeItem;
 				Main.instance.MouseText("", 0, 0);
