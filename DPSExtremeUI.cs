@@ -9,6 +9,7 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.ModLoader.UI;
 using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 
@@ -295,17 +296,8 @@ namespace DPSExtreme
 				else
 					Main.hoverItemName = Language.GetText(DPSExtreme.instance.GetLocalizationKey("ClickToViewDPSStats")).Value;
 
-				Item fakeItem = new Item();
-				fakeItem.SetDefaults(0, noMatCheck: true);
-				string textValue = Main.hoverItemName;
-				fakeItem.SetNameOverride(textValue);
-				fakeItem.type = ItemID.IronPickaxe;
-				fakeItem.scale = 0f;
-				fakeItem.rare = ItemRarityID.Yellow;
-				fakeItem.value = -1;
-				Main.HoverItem = fakeItem;
-				Main.instance.MouseText("", 0, 0);
-				Main.mouseText = true;
+				float mouseTextPulse = Main.mouseTextColor / 255f;
+				UICommon.TooltipMouseText($"[c/{Utils.Hex3(Colors.RarityYellow * mouseTextPulse)}:{Main.hoverItemName}]");
 			}
 		}
 
