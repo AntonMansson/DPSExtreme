@@ -1,11 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
-using Terraria;
-using System;
-using Terraria.GameContent;
-using Terraria.UI;
-using ReLogic.Graphics;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Graphics;
+using System;
+using Terraria;
+using Terraria.GameContent;
 using Terraria.Localization;
+using Terraria.UI;
 
 namespace DPSExtreme
 {
@@ -18,8 +18,7 @@ namespace DPSExtreme
 		internal int player = 0;
 		internal string text;
 
-		public UIPlayerDPS(int player, string text, string hoverText)
-		{
+		public UIPlayerDPS(int player, string text, string hoverText) {
 			this.hoverText = hoverText;
 			this.player = player;
 			this.text = text;
@@ -32,8 +31,7 @@ namespace DPSExtreme
 			this.MinHeight.Set(textSize.Y + this.PaddingTop + this.PaddingBottom, 0f);
 		}
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
-		{
+		protected override void DrawSelf(SpriteBatch spriteBatch) {
 			Rectangle hitbox = GetOuterDimensions().ToRectangle();
 			hitbox.Width = (int)(hitbox.Width * (dps / max));
 			Color color = DPSExtremeUI.chatColor[(player + DPSExtremeUI.chatColor.Length) % DPSExtremeUI.chatColor.Length];
@@ -52,8 +50,7 @@ namespace DPSExtreme
 			//}
 			//string[] RandomNames = new string[] { "Bob", "Terminator", "TacoBelle", "What Is My Name", "Albert", "jopojelly", "blushie", "jofariden", "someone", "Town/Traps" };
 			string leftText = player == -1 ? Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")) : Main.player[player].name /* + ":"*/;
-			if (player == 255)
-			{
+			if (player == 255) {
 				leftText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC"));
 			}
 			//if (!Main.player[player].active)
@@ -72,23 +69,20 @@ namespace DPSExtreme
 			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, rightText, hitbox.TopRight() + new Vector2(-2, yOffset), color, 0f,
 				new Vector2(1f, 0) * vector, new Vector2(1f), -1f, 1.5f);
 
-			if (IsMouseHovering && player >= 0)
-			{
+			if (IsMouseHovering && player >= 0) {
 				// TODO: IsMouseHovering is false once a second because UpdateDamageLists replaces the UIElement, need to fix that
-				DPSExtremeUI.instance.drawPlayer = player; 
+				DPSExtremeUI.instance.drawPlayer = player;
 				Main.hoverItemName = hoverText;
 			}
 		}
 
-		internal void SetDPS(int dps, float max, int total)
-		{
+		internal void SetDPS(int dps, float max, int total) {
 			this.dps = dps;
 			this.max = max;
 			this.total = total;
 		}
 
-		public override int CompareTo(object obj)
-		{
+		public override int CompareTo(object obj) {
 			UIPlayerDPS other = obj as UIPlayerDPS;
 			return -dps.CompareTo(other.dps);
 		}
