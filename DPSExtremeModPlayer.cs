@@ -22,7 +22,7 @@ namespace DPSExtreme
 					req.myPlayer = Player.whoAmI;
 					req.myDPS = dps;
 
-                    DPSExtreme.instance.packetHandler.SendProtocol(req);
+					DPSExtreme.instance.packetHandler.SendProtocol(req);
 				}
 			}
 		}

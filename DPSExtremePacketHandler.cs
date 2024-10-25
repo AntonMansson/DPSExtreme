@@ -31,7 +31,7 @@ namespace DPSExtreme
 		public bool HandlePacket(BinaryReader reader, int whoAmI)
 		{
 			DPSExtremeMessageType delimiter = (DPSExtremeMessageType)reader.ReadByte();
-			
+
 			switch (delimiter)
 			{
 				case DPSExtremeMessageType.InformServerCurrentDPS:

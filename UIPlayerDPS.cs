@@ -75,7 +75,7 @@ namespace DPSExtreme
 			if (IsMouseHovering && player >= 0)
 			{
 				// TODO: IsMouseHovering is false once a second because UpdateDamageLists replaces the UIElement, need to fix that
-				DPSExtremeUI.instance.drawPlayer = player; 
+				DPSExtremeUI.instance.drawPlayer = player;
 				Main.hoverItemName = hoverText;
 			}
 		}

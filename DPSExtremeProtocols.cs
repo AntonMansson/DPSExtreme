@@ -3,129 +3,129 @@ using System.IO;
 
 namespace DPSExtreme
 {
-    enum DPSExtremeMessageType : byte
-    {
-        InformServerCurrentDPS,
-        InformClientsCurrentDPSs,
-        InformClientsCurrentBossTotals,
-    }
+	enum DPSExtremeMessageType : byte
+	{
+		InformServerCurrentDPS,
+		InformClientsCurrentDPSs,
+		InformClientsCurrentBossTotals,
+	}
 
-    abstract internal class DPSExtremeProtocol
-    {
-        abstract public void ToStream(BinaryWriter aWriter);
-        abstract public bool FromStream(BinaryReader aReader);
+	abstract internal class DPSExtremeProtocol
+	{
+		abstract public void ToStream(BinaryWriter aWriter);
+		abstract public bool FromStream(BinaryReader aReader);
 
-        abstract public DPSExtremeMessageType GetDelimiter();
-    }
-    
-    internal class ProtocolPushBossFightStats : DPSExtremeProtocol
-    {
-        public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.InformClientsCurrentBossTotals; }
+		abstract public DPSExtremeMessageType GetDelimiter();
+	}
 
-        public override void ToStream(BinaryWriter aWriter)
-        {
-            aWriter.Write((byte)GetDelimiter());
+	internal class ProtocolPushBossFightStats : DPSExtremeProtocol
+	{
+		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.InformClientsCurrentBossTotals; }
 
-            aWriter.Write(myBossIsDead);
-            aWriter.Write((byte)myBossIndex);
-            aWriter.Write(myPlayerCount);
+		public override void ToStream(BinaryWriter aWriter)
+		{
+			aWriter.Write((byte)GetDelimiter());
 
-            for (int i = 0; i < myPlayerCount; i++)
-            {
-                aWriter.Write((byte)myPlayerIndices[i]);
-                aWriter.Write(myPlayerDPSs[i]);
-            }
+			aWriter.Write(myBossIsDead);
+			aWriter.Write((byte)myBossIndex);
+			aWriter.Write(myPlayerCount);
 
-            aWriter.Write(myBossDamageTakenFromDOT);
-        }
+			for (int i = 0; i < myPlayerCount; i++)
+			{
+				aWriter.Write((byte)myPlayerIndices[i]);
+				aWriter.Write(myPlayerDPSs[i]);
+			}
 
-        public override bool FromStream(BinaryReader aReader)
-        {
-            myBossIsDead = aReader.ReadBoolean();
-            myBossIndex = aReader.ReadByte();
-            myPlayerCount = aReader.ReadInt32();
+			aWriter.Write(myBossDamageTakenFromDOT);
+		}
 
-            if (myPlayerCount > 256)
-                return false;
+		public override bool FromStream(BinaryReader aReader)
+		{
+			myBossIsDead = aReader.ReadBoolean();
+			myBossIndex = aReader.ReadByte();
+			myPlayerCount = aReader.ReadInt32();
 
-            for (int i = 0; i < myPlayerCount; i++)
-            {
-                myPlayerIndices.Add(aReader.ReadByte());
-                myPlayerDPSs.Add(aReader.ReadInt32());
-            }
+			if (myPlayerCount > 256)
+				return false;
 
-            myBossDamageTakenFromDOT = aReader.ReadInt32();
+			for (int i = 0; i < myPlayerCount; i++)
+			{
+				myPlayerIndices.Add(aReader.ReadByte());
+				myPlayerDPSs.Add(aReader.ReadInt32());
+			}
 
-            return true;
-        }
+			myBossDamageTakenFromDOT = aReader.ReadInt32();
 
-        public bool myBossIsDead = false;
-        public byte myBossIndex = 255;
-        public int myPlayerCount = 0;
-        public List<byte> myPlayerIndices = new List<byte>();
-        public List<int> myPlayerDPSs = new List<int>();
-        public int myBossDamageTakenFromDOT = 0;
-    }
+			return true;
+		}
 
-    internal class ProtocolReqInformServerCurrentDPS : DPSExtremeProtocol
-    {
-        public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.InformServerCurrentDPS; }
+		public bool myBossIsDead = false;
+		public byte myBossIndex = 255;
+		public int myPlayerCount = 0;
+		public List<byte> myPlayerIndices = new List<byte>();
+		public List<int> myPlayerDPSs = new List<int>();
+		public int myBossDamageTakenFromDOT = 0;
+	}
 
-        public override void ToStream(BinaryWriter aWriter)
-        {
-            aWriter.Write((byte)GetDelimiter());
+	internal class ProtocolReqInformServerCurrentDPS : DPSExtremeProtocol
+	{
+		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.InformServerCurrentDPS; }
 
-            aWriter.Write(myPlayer);
-            aWriter.Write(myDPS);
-        }
+		public override void ToStream(BinaryWriter aWriter)
+		{
+			aWriter.Write((byte)GetDelimiter());
 
-        public override bool FromStream(BinaryReader aReader)
-        {
-            myPlayer = aReader.ReadInt32();
-            myDPS = aReader.ReadInt32();
+			aWriter.Write(myPlayer);
+			aWriter.Write(myDPS);
+		}
 
-            return true;
-        }
+		public override bool FromStream(BinaryReader aReader)
+		{
+			myPlayer = aReader.ReadInt32();
+			myDPS = aReader.ReadInt32();
 
-        public int myPlayer = 0;
-        public int myDPS = 0;
-    }
+			return true;
+		}
 
-    internal class ProtocolPushClientDPSs : DPSExtremeProtocol
-    {
-        public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.InformClientsCurrentDPSs; }
+		public int myPlayer = 0;
+		public int myDPS = 0;
+	}
 
-        public override void ToStream(BinaryWriter aWriter)
-        {
-            aWriter.Write((byte)GetDelimiter());
+	internal class ProtocolPushClientDPSs : DPSExtremeProtocol
+	{
+		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.InformClientsCurrentDPSs; }
 
-            aWriter.Write(myPlayerCount);
+		public override void ToStream(BinaryWriter aWriter)
+		{
+			aWriter.Write((byte)GetDelimiter());
 
-            for (int i = 0; i < myPlayerCount; i++)
-            {
-                aWriter.Write((byte)myPlayerIndices[i]);
-                aWriter.Write(myPlayerDPSs[i]);
-            }
-        }
+			aWriter.Write(myPlayerCount);
 
-        public override bool FromStream(BinaryReader aReader)
-        {
-            myPlayerCount = aReader.ReadInt32();
+			for (int i = 0; i < myPlayerCount; i++)
+			{
+				aWriter.Write((byte)myPlayerIndices[i]);
+				aWriter.Write(myPlayerDPSs[i]);
+			}
+		}
 
-            if (myPlayerCount >= 256)
-                return false;
+		public override bool FromStream(BinaryReader aReader)
+		{
+			myPlayerCount = aReader.ReadInt32();
 
-            for (int i = 0; i < myPlayerCount; i++)
-            {
-                myPlayerIndices.Add(aReader.ReadByte());
-                myPlayerDPSs.Add(aReader.ReadInt32());
-            }
+			if (myPlayerCount >= 256)
+				return false;
 
-            return true;
-        }
+			for (int i = 0; i < myPlayerCount; i++)
+			{
+				myPlayerIndices.Add(aReader.ReadByte());
+				myPlayerDPSs.Add(aReader.ReadInt32());
+			}
 
-        public int myPlayerCount = 0;
-        public List<int> myPlayerDPSs = new List<int>();
-        public List<byte> myPlayerIndices = new List<byte>();
-    }
+			return true;
+		}
+
+		public int myPlayerCount = 0;
+		public List<int> myPlayerDPSs = new List<int>();
+		public List<byte> myPlayerIndices = new List<byte>();
+	}
 }
