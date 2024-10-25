@@ -32,39 +32,43 @@ namespace DPSExtreme
 		{
 			DPSExtremeMessageType delimiter = (DPSExtremeMessageType)reader.ReadByte();
 
+			DPSExtremeProtocol protocol = null;
+
 			switch (delimiter)
 			{
 				case DPSExtremeMessageType.InformServerCurrentDPS:
 					{
-						ProtocolReqInformServerCurrentDPS req = new ProtocolReqInformServerCurrentDPS();
-						if (!req.FromStream(reader))
+						protocol = new ProtocolReqInformServerCurrentDPS();
+						if (!protocol.FromStream(reader))
 							return false;
 
-						HandleProtocol(delimiter, req);
 						break;
 					}
 				case DPSExtremeMessageType.InformClientsCurrentDPSs:
 					{
-						ProtocolPushClientDPSs push = new ProtocolPushClientDPSs();
-						if (!push.FromStream(reader))
+						protocol = new ProtocolPushClientDPSs();
+						if (!protocol.FromStream(reader))
 							return false;
 
-						HandleProtocol(delimiter, push);
 						break;
 					}
 				case DPSExtremeMessageType.InformClientsCurrentBossTotals:
 					{
-						ProtocolPushBossFightStats push = new ProtocolPushBossFightStats();
-						if (!push.FromStream(reader))
+						protocol = new ProtocolPushBossFightStats();
+						if (!protocol.FromStream(reader))
 							return false;
 
-						HandleProtocol(delimiter, push);
 						break;
 					}
 				default:
 					DPSExtreme.instance.Logger.Warn("DPSExtreme: Unknown Message type: " + delimiter);
 					break;
 			}
+
+			if (protocol == null)
+				DPSExtreme.instance.Logger.Warn("DPSExtreme: null protocol for message type: " + delimiter);
+
+			HandleProtocol(delimiter, protocol);
 
 			return true;
 		}
