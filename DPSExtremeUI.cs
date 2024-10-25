@@ -194,8 +194,7 @@ namespace DPSExtreme
 						teamDPSPanel.AddDragTarget(t);
 					}
 				}
-				if (DPSExtreme.bossDamageDOTDPS > 0)
-				{
+				if (DPSExtreme.bossDamageDOTDPS > 0) {
 					UIPlayerDPS t = new UIPlayerDPS(-1, "", "");
 					t.SetDPS(DPSExtreme.bossDamageDOTDPS, max, total);
 					t.Recalculate();
@@ -206,8 +205,7 @@ namespace DPSExtreme
 					dpsList.Add(t);
 					teamDPSPanel.AddDragTarget(t);
 				}
-				if (dpsList.Count == 0)
-				{
+				if(dpsList.Count == 0) {
 					UIText t = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter")));
 					dpsList.Add(t);
 					teamDPSPanel.AddDragTarget(t);
@@ -254,8 +252,7 @@ namespace DPSExtreme
 						teamDPSPanel.AddDragTarget(t);
 					}
 				}
-				if (DPSExtreme.bossDamageDOT > 0)
-				{
+				if(DPSExtreme.bossDamageDOT > 0) {
 					UIPlayerDPS t = new UIPlayerDPS(-1, "", "");
 					t.SetDPS(DPSExtreme.bossDamageDOT, max, total);
 					t.Recalculate();
@@ -291,19 +288,15 @@ namespace DPSExtreme
 				Rectangle hitbox = DPSExtremeUI.instance.teamDPSPanel.GetOuterDimensions().ToRectangle();
 				Rectangle r2 = new Rectangle(hitbox.X + hitbox.Width / 2 - 58 / 2, hitbox.Y - 58, 58, 58);
 				spriteBatch.Draw(playerBackGroundTexture.Value, r2.TopLeft(), Color.White);
-				if (drawPlayer == 255)
-				{
+				if (drawPlayer == 255) {
 					NPC nPC = null;
-					for (int i = 0; i < 200; i++)
-					{
-						if (Main.npc[i].active && Main.npc[i].townNPC)
-						{
+					for (int i = 0; i < 200; i++) {
+						if (Main.npc[i].active && Main.npc[i].townNPC) {
 							nPC = Main.npc[i];
 							break;
 						}
 					}
-					if (nPC != null)
-					{
+					if (nPC != null) {
 						nPC.IsABestiaryIconDummy = true;
 						var position = nPC.position;
 						nPC.position = r2.Center.ToVector2() + new Vector2(-10, -21);
@@ -312,15 +305,13 @@ namespace DPSExtreme
 						nPC.IsABestiaryIconDummy = false;
 					}
 				}
-				else
-				{
+				else {
 					Main.PlayerRenderer.DrawPlayer(Main.Camera, Main.player[drawPlayer], Main.screenPosition + r2.Center.ToVector2() + new Vector2(-10, -21), 0, Vector2.Zero);
 				}
 			}
 			drawPlayer = -1;
 
-			if (label.IsMouseHovering)
-			{
+			if (label.IsMouseHovering) {
 				if (showDPSPanel)
 					Main.hoverItemName = Language.GetText(DPSExtreme.instance.GetLocalizationKey("ClickToViewBossDamage")).Value;
 				else

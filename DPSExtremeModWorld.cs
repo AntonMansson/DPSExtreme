@@ -59,7 +59,7 @@ namespace DPSExtreme
 				}
 			}
 
-			DPSExtreme.instance.packetHandler.SendProtocol(push);
+            DPSExtreme.instance.packetHandler.SendProtocol(push);
 		}
 
 		private void PushBossTotalsToClients(byte aBossIndex)
@@ -67,7 +67,7 @@ namespace DPSExtreme
 			ProtocolPushBossFightStats push = new ProtocolPushBossFightStats();
 			push.myBossIsDead = true;
 			push.myBossIndex = aBossIndex;
-
+			
 			DPSExtremeGlobalNPC bossGlobalNPC = Main.npc[aBossIndex].GetGlobalNPC<DPSExtremeGlobalNPC>();
 
 			for (int i = 0; i < 256; i++)
@@ -83,7 +83,7 @@ namespace DPSExtreme
 
 			push.myBossDamageTakenFromDOT = bossGlobalNPC.damageDOT;
 
-			DPSExtreme.instance.packetHandler.SendProtocol(push);
+            DPSExtreme.instance.packetHandler.SendProtocol(push);
 		}
 	}
 }

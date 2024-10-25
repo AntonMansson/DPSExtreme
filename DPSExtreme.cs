@@ -122,13 +122,11 @@ namespace DPSExtreme
 			ToggleTeamDPSHotKey = KeybindLoader.RegisterKeybind(this, "ToggleTeamDPSBossMeter", "F4"); // F4?
 		}
 
-		public override void PostSetupContent()
-		{
-			if (!Main.dedServ)
-			{
+		public override void PostSetupContent() {
+			if (!Main.dedServ) {
 				dpsExtremeTool = new DPSExtremeTool();
 			}
-
+			
 			packetHandler = new DPSExtremePacketHandler();
 		}
 
@@ -167,8 +165,7 @@ namespace DPSExtreme
 		//	Main.NewText(sb.ToString());
 		//}
 
-		public void UpdateUI(GameTime gameTime)
-		{
+		public void UpdateUI(GameTime gameTime) {
 			dpsExtremeTool?.UIUpdate(gameTime);
 		}
 
@@ -260,8 +257,7 @@ namespace DPSExtreme
 		}
 	}
 
-	public class DPSExtremeSystem : ModSystem
-	{
+	public class DPSExtremeSystem : ModSystem {
 		public override bool HijackGetData(ref byte messageType, ref BinaryReader reader, int playerNumber) => ModContent.GetInstance<DPSExtreme>().packetHandler.HijackGetData(ref messageType, ref reader, playerNumber);
 
 		public override void UpdateUI(GameTime gameTime) => ModContent.GetInstance<DPSExtreme>().UpdateUI(gameTime);
