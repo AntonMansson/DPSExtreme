@@ -51,11 +51,16 @@ namespace DPSExtreme
 			//Utils.DrawBorderString(spriteBatch, text, hitbox.TopLeft(), Color.White, 1f, 0f, 0f, -1);
 			//}
 			//string[] RandomNames = new string[] { "Bob", "Terminator", "TacoBelle", "What Is My Name", "Albert", "jopojelly", "blushie", "jofariden", "someone", "Town/Traps" };
-			string leftText = player == -1 ? Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")) : Main.player[player].name /* + ":"*/;
-			if (player == 255)
+			string leftText = Main.player[player].name /* + ":"*/;
+			if (player == (int)InfoListIndices.NPCs || player == (int)InfoListIndices.Traps)
 			{
 				leftText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC"));
 			}
+			else if (player == (int)InfoListIndices.DOTs)
+			{
+				leftText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime"));
+			}
+
 			//if (!Main.player[player].active)
 			//	leftText = RandomNames[player % RandomNames.Length];
 			color = Color.White;

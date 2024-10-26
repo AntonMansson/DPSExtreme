@@ -12,6 +12,7 @@ using DPSExtreme.UIElements;
 using ReLogic.Content;
 using Terraria.Localization;
 using Terraria.ID;
+using DPSExtreme.CombatTracking;
 
 namespace DPSExtreme
 {
@@ -150,6 +151,8 @@ namespace DPSExtreme
 
 		internal void UpdateDamageLists()
 		{
+			DPSExtremeCombat combat = DPSExtreme.instance.combatTracker.myActiveCombat;
+
 			//ShowFavoritePanel = favoritedRecipes.Count > 0;
 			//	teamDPSPanel.RemoveAllChildren();
 
@@ -167,21 +170,20 @@ namespace DPSExtreme
 				int height = 0;
 				float max = 1f;
 				int total = 0;
-				for (int i = 0; i < DPSExtreme.dpss.Length; i++)
+				for (int i = 0; i < combat.myDPSList.Size(); i++)
 				{
-					int playerDPS = DPSExtreme.dpss[i];
-					if (playerDPS > -1)
+					int playerDPS = combat.myDPSList[i].myDamage;
+					if (playerDPS > 0)
 					{
 						max = Math.Max(max, playerDPS);
 						total += playerDPS;
 					}
 				}
-				max = Math.Max(max, DPSExtreme.bossDamageDOTDPS);
-				total += DPSExtreme.bossDamageDOTDPS;
-				for (int i = 0; i < DPSExtreme.dpss.Length; i++)
+				
+				for (int i = 0; i < combat.myDPSList.Size(); i++)
 				{
-					int playerDPS = DPSExtreme.dpss[i];
-					if (playerDPS > -1)
+					int playerDPS = combat.myDPSList[i].myDamage;
+					if (playerDPS > 0)
 					{
 						UIPlayerDPS t = new UIPlayerDPS(i, "", "");
 						t.SetDPS(playerDPS, max, total);
@@ -194,19 +196,8 @@ namespace DPSExtreme
 						teamDPSPanel.AddDragTarget(t);
 					}
 				}
-				if (DPSExtreme.bossDamageDOTDPS > 0)
-				{
-					UIPlayerDPS t = new UIPlayerDPS(-1, "", "");
-					t.SetDPS(DPSExtreme.bossDamageDOTDPS, max, total);
-					t.Recalculate();
-					var inner = t.GetInnerDimensions();
-					t.Width.Set(250, 0);
-					height += (int)(inner.Height + dpsList.ListPadding);
-					width = Math.Max(width, (int)inner.Width);
-					dpsList.Add(t);
-					teamDPSPanel.AddDragTarget(t);
-				}
-				if (dpsList.Count == 0)
+				
+				if (!Main.LocalPlayer.accDreamCatcher)
 				{
 					UIText t = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter")));
 					dpsList.Add(t);
@@ -228,24 +219,23 @@ namespace DPSExtreme
 				int height = 0;
 				int max = 1;
 				int total = 0;
-				for (int i = 0; i < DPSExtreme.bossDamage.Length; i++)
+				for (int i = 0; i < combat.myTotalDamageDealtList.Size(); i++)
 				{
-					int playerBossDamage = DPSExtreme.bossDamage[i];
-					if (playerBossDamage > -1)
+					int damageDealt = combat.myTotalDamageDealtList[i].myDamage;
+					if (damageDealt > -1)
 					{
-						max = Math.Max(max, playerBossDamage);
-						total += playerBossDamage;
+						max = Math.Max(max, damageDealt);
+						total += damageDealt;
 					}
 				}
-				max = Math.Max(max, DPSExtreme.bossDamageDOT);
-				total += DPSExtreme.bossDamageDOT;
-				for (int i = 0; i < DPSExtreme.bossDamage.Length; i++)
+
+				for (int i = 0; i < combat.myTotalDamageDealtList.Size(); i++)
 				{
-					int playerBossDamage = DPSExtreme.bossDamage[i];
-					if (playerBossDamage > -1)
+					int damageDealt = combat.myTotalDamageDealtList[i].myDamage;
+					if (damageDealt > -1)
 					{
 						UIPlayerDPS t = new UIPlayerDPS(i, "", "");
-						t.SetDPS(playerBossDamage, max, total);
+						t.SetDPS(damageDealt, max, total);
 						t.Recalculate();
 						var inner = t.GetInnerDimensions();
 						t.Width.Set(250, 0);
@@ -253,17 +243,6 @@ namespace DPSExtreme
 						bossList.Add(t);
 						teamDPSPanel.AddDragTarget(t);
 					}
-				}
-				if (DPSExtreme.bossDamageDOT > 0)
-				{
-					UIPlayerDPS t = new UIPlayerDPS(-1, "", "");
-					t.SetDPS(DPSExtreme.bossDamageDOT, max, total);
-					t.Recalculate();
-					var inner = t.GetInnerDimensions();
-					t.Width.Set(250, 0);
-					height += (int)(inner.Height + bossList.ListPadding);
-					bossList.Add(t);
-					teamDPSPanel.AddDragTarget(t);
 				}
 
 				if (bossUpdateNeeded)
@@ -286,30 +265,35 @@ namespace DPSExtreme
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
 			base.DrawSelf(spriteBatch);
-			if (drawPlayer > -1)
+
+			bool IsPlayer = drawPlayer >= 0 && drawPlayer < (int)InfoListIndices.SupportedPlayerCount;
+			bool isNPC = drawPlayer == (int)InfoListIndices.NPCs;
+			if (IsPlayer || isNPC)
 			{
 				Rectangle hitbox = DPSExtremeUI.instance.teamDPSPanel.GetOuterDimensions().ToRectangle();
 				Rectangle r2 = new Rectangle(hitbox.X + hitbox.Width / 2 - 58 / 2, hitbox.Y - 58, 58, 58);
 				spriteBatch.Draw(playerBackGroundTexture.Value, r2.TopLeft(), Color.White);
-				if (drawPlayer == 255)
+
+				if (isNPC)
 				{
-					NPC nPC = null;
-					for (int i = 0; i < 200; i++)
+					NPC drawNPC = null;
+					foreach (NPC npc in Main.ActiveNPCs)
 					{
-						if (Main.npc[i].active && Main.npc[i].townNPC)
-						{
-							nPC = Main.npc[i];
-							break;
-						}
+						if (!npc.townNPC)
+							continue;
+
+						drawNPC = npc;
+						break;
 					}
-					if (nPC != null)
+
+					if (drawNPC != null)
 					{
-						nPC.IsABestiaryIconDummy = true;
-						var position = nPC.position;
-						nPC.position = r2.Center.ToVector2() + new Vector2(-10, -21);
-						Main.instance.DrawNPCDirect(spriteBatch, nPC, nPC.behindTiles, Vector2.Zero);
-						nPC.position = position;
-						nPC.IsABestiaryIconDummy = false;
+						drawNPC.IsABestiaryIconDummy = true;
+						var position = drawNPC.position;
+						drawNPC.position = r2.Center.ToVector2() + new Vector2(-10, -21);
+						Main.instance.DrawNPCDirect(spriteBatch, drawNPC, drawNPC.behindTiles, Vector2.Zero);
+						drawNPC.position = position;
+						drawNPC.IsABestiaryIconDummy = false;
 					}
 				}
 				else
@@ -317,6 +301,7 @@ namespace DPSExtreme
 					Main.PlayerRenderer.DrawPlayer(Main.Camera, Main.player[drawPlayer], Main.screenPosition + r2.Center.ToVector2() + new Vector2(-10, -21), 0, Vector2.Zero);
 				}
 			}
+
 			drawPlayer = -1;
 
 			if (label.IsMouseHovering)

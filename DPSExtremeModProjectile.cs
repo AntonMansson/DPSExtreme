@@ -24,7 +24,7 @@ namespace DPSExtreme
 
 			if (source is EntitySource_Wiring wiring)
 			{
-				whoIsMyParent = 255;
+				whoIsMyParent = (int)InfoListIndices.Traps;
 			}
 		}
 	}
