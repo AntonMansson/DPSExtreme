@@ -10,21 +10,27 @@ namespace DPSExtreme
 	{
 		public override void PostUpdate()
 		{
-			if (Main.GameUpdateCount % DPSExtreme.UPDATEDELAY == 0)
-			{
-				if (Player.whoAmI == Main.myPlayer && Player.accDreamCatcher)
-				{
-					int dps = Player.getDPS();
-					if (!Player.dpsStarted)
-						dps = 0;
+			if (Main.GameUpdateCount % DPSExtreme.UPDATEDELAY != 0)
+				return;
 
-					ProtocolReqInformServerCurrentDPS req = new ProtocolReqInformServerCurrentDPS();
-					req.myPlayer = Player.whoAmI;
-					req.myDPS = dps;
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+				return;
 
-					DPSExtreme.instance.packetHandler.SendProtocol(req);
-				}
-			}
+			if (Player.whoAmI != Main.myPlayer)
+				return;
+
+			if (!Player.accDreamCatcher)
+				return;
+
+			int dps = Player.getDPS();
+			if (!Player.dpsStarted)
+				dps = 0;
+
+			ProtocolReqInformServerCurrentDPS req = new ProtocolReqInformServerCurrentDPS();
+			req.myPlayer = Player.whoAmI;
+			req.myDPS = dps;
+
+			DPSExtreme.instance.packetHandler.SendProtocol(req);
 		}
 
 		public override void ProcessTriggers(TriggersSet triggersSet)

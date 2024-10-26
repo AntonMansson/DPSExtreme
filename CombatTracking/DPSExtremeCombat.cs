@@ -11,10 +11,29 @@ namespace DPSExtreme.CombatTracking
 {
 	internal partial class DPSExtremeCombat
 	{
+		internal enum CombatType
+		{
+			BossFight,
+			Invasion,
+			General
+		}
+
+		internal CombatType myCombatType;
+		internal int myBossOrInvasionType;
+
+		DateTime myStartTime;
+
 		public Dictionary<int, DPSExtremeInfoList<DamageDealtInfo>> myDamageDealtPerNPCType = new Dictionary<int, DPSExtremeInfoList<DamageDealtInfo>>();
 
 		internal DPSExtremeInfoList<DamageDealtInfo> myTotalDamageDealtList = new DPSExtremeInfoList<DamageDealtInfo>();
 		internal DPSExtremeInfoList<DamageDealtInfo> myDPSList = new DPSExtremeInfoList<DamageDealtInfo>();
+
+		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionType)
+		{
+			myCombatType = aCombatType;
+			myBossOrInvasionType = aBossOrInvasionType;
+			myStartTime = DateTime.Now;
+		}
 
 		internal void AddDealtDamage(NPC aDamagedNPC, int aDamageDealer, int aDamage)
 		{

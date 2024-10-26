@@ -1,5 +1,6 @@
 Keybinds.ToggleTeamDPSBossMeter.DisplayName: Toggle Team DPS/Boss Meter
 DPS: DPS
+DamageDone: Damage done
 TogglePercent: Toggle %
 NoDPSWearDPSMeter: No DPS Stats, wear [i:DPSMeter]
 NoBoss: No Boss

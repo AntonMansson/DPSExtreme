@@ -155,7 +155,6 @@ namespace DPSExtreme
 				activeCombat.myDPSList[(int)InfoListIndices.DOTs].myDamage = totalDotDPS;
 
 			DPSExtremeUI.instance.updateNeeded = true;
-			DPSExtremeUI.instance.bossUpdateNeeded = true;
 
 			//if (!aPush.myCombatIsActive)
 			//{

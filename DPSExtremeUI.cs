@@ -13,12 +13,15 @@ using ReLogic.Content;
 using Terraria.Localization;
 using Terraria.ID;
 using DPSExtreme.CombatTracking;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DPSExtreme
 {
 	internal class DPSExtremeUI : UIModState
 	{
 		internal static DPSExtremeUI instance;
+
+		DPSExtremeCombat myDisplayedCombat = null;
 
 		internal UIDragablePanel teamDPSPanel;
 		internal UIText label;
@@ -85,6 +88,7 @@ namespace DPSExtreme
 			//Append(favoritePanel);
 
 			label = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("DPS")));
+			label.DynamicallyScaleDownToWidth = true;
 			label.OnLeftClick += Label_OnClick;
 			teamDPSPanel.Append(label);
 			teamDPSPanel.AddDragTarget(label);
@@ -139,7 +143,7 @@ namespace DPSExtreme
 		}
 
 		internal bool updateNeeded;
-		internal bool bossUpdateNeeded;
+
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
@@ -151,8 +155,6 @@ namespace DPSExtreme
 
 		internal void UpdateDamageLists()
 		{
-			DPSExtremeCombat combat = DPSExtreme.instance.combatTracker.myActiveCombat;
-
 			//ShowFavoritePanel = favoritedRecipes.Count > 0;
 			//	teamDPSPanel.RemoveAllChildren();
 
@@ -170,39 +172,44 @@ namespace DPSExtreme
 				int height = 0;
 				float max = 1f;
 				int total = 0;
-				for (int i = 0; i < combat.myDPSList.Size(); i++)
+
+				if (myDisplayedCombat != null)
 				{
-					int playerDPS = combat.myDPSList[i].myDamage;
-					if (playerDPS > 0)
+					for (int i = 0; i < myDisplayedCombat.myDPSList.Size(); i++)
 					{
-						max = Math.Max(max, playerDPS);
-						total += playerDPS;
+						int playerDPS = myDisplayedCombat.myDPSList[i].myDamage;
+						if (playerDPS > 0)
+						{
+							max = Math.Max(max, playerDPS);
+							total += playerDPS;
+						}
 					}
-				}
 				
-				for (int i = 0; i < combat.myDPSList.Size(); i++)
-				{
-					int playerDPS = combat.myDPSList[i].myDamage;
-					if (playerDPS > 0)
+					for (int i = 0; i < myDisplayedCombat.myDPSList.Size(); i++)
 					{
-						UIPlayerDPS t = new UIPlayerDPS(i, "", "");
-						t.SetDPS(playerDPS, max, total);
-						t.Recalculate();
-						var inner = t.GetInnerDimensions();
-						t.Width.Set(250, 0);
-						height += (int)(inner.Height + dpsList.ListPadding);
-						width = Math.Max(width, (int)inner.Width);
+						int playerDPS = myDisplayedCombat.myDPSList[i].myDamage;
+						if (playerDPS > 0)
+						{
+							UIPlayerDPS t = new UIPlayerDPS(i, "", "");
+							t.SetDPS(playerDPS, max, total);
+							t.Recalculate();
+							var inner = t.GetInnerDimensions();
+							t.Width.Set(250, 0);
+							height += (int)(inner.Height + dpsList.ListPadding);
+							width = Math.Max(width, (int)inner.Width);
+							dpsList.Add(t);
+							teamDPSPanel.AddDragTarget(t);
+						}
+					}
+				
+					if (!Main.LocalPlayer.accDreamCatcher)
+					{
+						UIText t = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter")));
 						dpsList.Add(t);
 						teamDPSPanel.AddDragTarget(t);
 					}
 				}
-				
-				if (!Main.LocalPlayer.accDreamCatcher)
-				{
-					UIText t = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter")));
-					dpsList.Add(t);
-					teamDPSPanel.AddDragTarget(t);
-				}
+
 
 				dpsList.Recalculate();
 				var fff = dpsList.GetTotalHeight();
@@ -219,39 +226,33 @@ namespace DPSExtreme
 				int height = 0;
 				int max = 1;
 				int total = 0;
-				for (int i = 0; i < combat.myTotalDamageDealtList.Size(); i++)
+				if (myDisplayedCombat != null)
 				{
-					int damageDealt = combat.myTotalDamageDealtList[i].myDamage;
-					if (damageDealt > -1)
+					for (int i = 0; i < myDisplayedCombat.myTotalDamageDealtList.Size(); i++)
 					{
-						max = Math.Max(max, damageDealt);
-						total += damageDealt;
+						int damageDealt = myDisplayedCombat.myTotalDamageDealtList[i].myDamage;
+						if (damageDealt > -1)
+						{
+							max = Math.Max(max, damageDealt);
+							total += damageDealt;
+						}
 					}
-				}
 
-				for (int i = 0; i < combat.myTotalDamageDealtList.Size(); i++)
-				{
-					int damageDealt = combat.myTotalDamageDealtList[i].myDamage;
-					if (damageDealt > -1)
+					for (int i = 0; i < myDisplayedCombat.myTotalDamageDealtList.Size(); i++)
 					{
-						UIPlayerDPS t = new UIPlayerDPS(i, "", "");
-						t.SetDPS(damageDealt, max, total);
-						t.Recalculate();
-						var inner = t.GetInnerDimensions();
-						t.Width.Set(250, 0);
-						height += (int)(inner.Height + bossList.ListPadding);
-						bossList.Add(t);
-						teamDPSPanel.AddDragTarget(t);
+						int damageDealt = myDisplayedCombat.myTotalDamageDealtList[i].myDamage;
+						if (damageDealt > -1)
+						{
+							UIPlayerDPS t = new UIPlayerDPS(i, "", "");
+							t.SetDPS(damageDealt, max, total);
+							t.Recalculate();
+							var inner = t.GetInnerDimensions();
+							t.Width.Set(250, 0);
+							height += (int)(inner.Height + bossList.ListPadding);
+							bossList.Add(t);
+							teamDPSPanel.AddDragTarget(t);
+						}
 					}
-				}
-
-				if (bossUpdateNeeded)
-				{
-					string bossname = Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoBoss")).Value;
-					if (DPSExtreme.bossIndex > -1)
-						bossname = Lang.GetNPCNameValue(Main.npc[DPSExtreme.bossIndex].type);
-					label.SetText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("BossLabel")).Format(bossname));
-					bossUpdateNeeded = false;
 				}
 
 				bossList.Recalculate();
@@ -260,6 +261,66 @@ namespace DPSExtreme
 				teamDPSPanel.Width.Pixels = 250 + teamDPSPanel.PaddingLeft + teamDPSPanel.PaddingRight;
 				teamDPSPanel.Recalculate();
 			}
+		}
+
+		internal void RefreshLabel()
+		{
+			string title = null;
+
+			if (showDPSPanel)
+				title = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DPS"));
+			else
+				title = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageDone"));
+
+			if (myDisplayedCombat == null)
+			{
+				label.SetText(title);
+				label.Recalculate();
+				return;
+			}
+
+			title += " - ";
+
+			switch (myDisplayedCombat.myCombatType)
+			{
+				case DPSExtremeCombat.CombatType.BossFight:
+					if (myDisplayedCombat.myBossOrInvasionType > -1)
+					{
+						string bossName = Lang.GetNPCNameValue(myDisplayedCombat.myBossOrInvasionType);
+						title += Language.GetText(bossName);
+					}
+					else
+					{
+						title += Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoBoss")).Value;
+					}
+
+					break;
+				case DPSExtremeCombat.CombatType.Invasion:
+					switch (myDisplayedCombat.myBossOrInvasionType)
+					{
+						case InvasionID.GoblinArmy: title += Language.GetTextValue("Goblins"); break;
+						case InvasionID.SnowLegion: title += Language.GetTextValue("FrostLegion"); break;
+						case InvasionID.PirateInvasion: title += Language.GetTextValue("Pirates"); break;
+						case InvasionID.MartianMadness: title += Language.GetTextValue("Martian"); break;
+						default: title += "Invasion"; break; //TODO add to loc
+					}
+					break;
+				case DPSExtremeCombat.CombatType.General:
+					title += "Fight";
+					break;
+				default:
+					title += "Unknown combat type";
+					break;
+			}
+
+			label.SetText(title);
+			label.Recalculate();
+		}
+
+		internal void OnCombatStarted(DPSExtremeCombat aCombat)
+		{
+			myDisplayedCombat = aCombat; //TODO: Think about what should happen if you are currently viewing history. Setting to decide if we swap instantly or not?
+			RefreshLabel();
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)
@@ -331,16 +392,13 @@ namespace DPSExtreme
 			showDPSPanel = !showDPSPanel;
 			if (showDPSPanel)
 			{
-				text.SetText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("DPS")));
+				RefreshLabel();
 				teamDPSPanel.RemoveChild(bossList);
 				teamDPSPanel.Append(dpsList);
 			}
 			else
 			{
-				string bossname = Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoBoss")).Value;
-				if (DPSExtreme.bossIndex > -1)
-					bossname = Lang.GetNPCNameValue(Main.npc[DPSExtreme.bossIndex].type);
-				text.SetText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("BossLabel")).Format(bossname));
+				RefreshLabel();
 				teamDPSPanel.RemoveChild(dpsList);
 				teamDPSPanel.Append(bossList);
 			}

@@ -103,7 +103,6 @@ namespace DPSExtreme
 
 		// NPCLoader.StrikeNPC doesn't specify which player dealt the damage.
 
-		internal static int bossIndex = -1;
 		//internal static bool ShowTeamDPS;
 
 		public override void Load()

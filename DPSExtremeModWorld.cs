@@ -16,20 +16,19 @@ namespace DPSExtreme
 			if ((Main.GameUpdateCount % DPSExtreme.UPDATEDELAY) != 0)
 				return;
 
+			DPSExtreme.instance.combatTracker.Update();
+
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+				return;
+
 			if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.SinglePlayer)
 			{
-				PushDPSsToClients();
+				ProtocolPushClientDPSs push = new ProtocolPushClientDPSs();
+				push.myDPSList = DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList;
 
+				DPSExtreme.instance.packetHandler.SendProtocol(push);
 				DPSExtreme.instance.combatTracker.myActiveCombat.SendStats();
 			}
-		}
-
-		private void PushDPSsToClients()
-		{
-			ProtocolPushClientDPSs push = new ProtocolPushClientDPSs();
-			push.myDPSList = DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList;
-
-			DPSExtreme.instance.packetHandler.SendProtocol(push);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 Keybinds.ToggleTeamDPSBossMeter.DisplayName: Отобразить статистику DPS/Босс-инфо
 DPS: DPS
+// DamageDone: Damage done
 TogglePercent: Вкл/откл %
 NoDPSWearDPSMeter: Нет инфо об DPS, возьмите [i:DPSMeter]
 NoBoss: Нет босса

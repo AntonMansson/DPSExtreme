@@ -4,6 +4,7 @@ using Terraria.ModLoader;
 using System;
 using MonoMod.Cil;
 using DPSExtreme.CombatTracking;
+using Terraria.DataStructures;
 
 namespace DPSExtreme
 {
@@ -91,6 +92,14 @@ namespace DPSExtreme
 		//	return null;
 		//}
 
+		public override void OnSpawn(NPC npc, IEntitySource source)
+		{
+			if (npc.boss)
+			{
+				DPSExtreme.instance.combatTracker.StartCombat(DPSExtremeCombat.CombatType.BossFight, npc.type);
+			}
+		}
+
 		// question, in MP, is this called before or after last hit?
 		public override void OnKill(NPC npc)
 		{
@@ -131,6 +140,9 @@ namespace DPSExtreme
 					damagedNPC = Main.npc[damagedNPC.realLife];
 				}
 
+				if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+					DPSExtreme.instance.combatTracker.StartCombat(DPSExtremeCombat.CombatType.General);
+
 				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, player.whoAmI, damageDone);
 
 				DPSExtremeGlobalNPC info = damagedNPC.GetGlobalNPC<DPSExtremeGlobalNPC>();
@@ -167,6 +179,9 @@ namespace DPSExtreme
 				whoIsMyParent could be used to diffirentiate between individual npcs in the future. And could also seperate other damage sources like traps apart from npcs*/
 				if (projectile.GetGlobalProjectile<DPSExtremeModProjectile>().whoIsMyParent != -1)
 					projectileOwner = (int)InfoListIndices.NPCs;
+
+				if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+					DPSExtreme.instance.combatTracker.StartCombat(DPSExtremeCombat.CombatType.General);
 
 				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, projectileOwner, damageDone);
 
