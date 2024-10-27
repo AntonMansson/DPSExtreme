@@ -73,10 +73,11 @@ namespace DPSExtreme
 		{
 			playerBackGroundTexture = Main.Assets.Request<Texture2D>("Images/UI/PlayerBackground");
 
+			//TODO: Save window position etc
 			teamDPSPanel = new UIDragablePanel();
 			teamDPSPanel.SetPadding(6);
 			teamDPSPanel.Left.Set(-310f, 0f);
-			teamDPSPanel.HAlign = 1f;
+			teamDPSPanel.HAlign = 0.75f;
 			teamDPSPanel.Top.Set(90f, 0f);
 			teamDPSPanel.Width.Set(415f, 0f);
 			teamDPSPanel.MinWidth.Set(50f, 0f);
@@ -85,10 +86,12 @@ namespace DPSExtreme
 			teamDPSPanel.MinHeight.Set(50, 0f);
 			teamDPSPanel.MaxHeight.Set(300, 0f);
 			teamDPSPanel.BackgroundColor = new Color(73, 94, 171);
-			//Append(favoritePanel);
 
-			label = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("DPS")));
+			label = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("DPS")), 0.8f);
+			label.OverflowHidden = true;
 			label.DynamicallyScaleDownToWidth = true;
+			label.MaxWidth.Set(50, 0);
+
 			label.OnLeftClick += Label_OnClick;
 			teamDPSPanel.Append(label);
 			teamDPSPanel.AddDragTarget(label);
@@ -281,7 +284,7 @@ namespace DPSExtreme
 
 			title += " - ";
 
-			switch (myDisplayedCombat.myCombatType)
+			switch (myDisplayedCombat.myHighestCombatType)
 			{
 				case DPSExtremeCombat.CombatType.BossFight:
 					if (myDisplayedCombat.myBossOrInvasionType > -1)
@@ -305,7 +308,7 @@ namespace DPSExtreme
 						default: title += "Invasion"; break; //TODO add to loc
 					}
 					break;
-				case DPSExtremeCombat.CombatType.General:
+				case DPSExtremeCombat.CombatType.Generic:
 					title += "Fight";
 					break;
 				default:
@@ -323,9 +326,49 @@ namespace DPSExtreme
 			RefreshLabel();
 		}
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
+		internal void OnCombatUpgraded(DPSExtremeCombat aCombat)
 		{
-			base.DrawSelf(spriteBatch);
+			RefreshLabel();
+		}
+
+        internal void OnCombatEnded()
+        {
+            //Should we change combat view here?
+            //RefreshLabel();
+        }
+
+        protected override void DrawSelf(SpriteBatch spriteBatch)
+		{
+			//Figure out why tf label's width can exceed its maxWidth
+
+			//Vector2 topLeft = new Vector2(teamDPSPanel.GetInnerDimensions().X, teamDPSPanel.GetInnerDimensions().Y);
+			//Vector2 bottomRight = new Vector2(teamDPSPanel.GetInnerDimensions().Width, teamDPSPanel.GetInnerDimensions().Height) + topLeft;
+			//topLeft = Vector2.Transform(topLeft, Main.UIScaleMatrix);
+			//Rectangle rectangle = new Rectangle((int)topLeft.X, (int)topLeft.Y, (int)(bottomRight.X - topLeft.X), (int)(bottomRight.Y - topLeft.Y));
+			////int num = (int)((float)Main.screenWidth * 1);
+			//int num = (int)((float)Main.screenWidth * Main.UIScale);
+			////int num2 = (int)((float)Main.screenHeight * 1);
+			//int asd = Terraria.GameInput.PlayerInput.RealScreenWidth;
+			//int num2 = (int)((float)Main.screenHeight * Main.UIScale);
+			//rectangle.X = Utils.Clamp(rectangle.X, 0, num);
+			//rectangle.Y = Utils.Clamp(rectangle.Y, 0, num2);
+			//rectangle.Width = Utils.Clamp(rectangle.Width, 0, num - rectangle.X);
+			//rectangle.Height = Utils.Clamp(rectangle.Height, 0, num2 - rectangle.Y);
+			
+			//Rectangle scissorRectangle = spriteBatch.GraphicsDevice.ScissorRectangle;
+
+			//int num3 = Utils.Clamp(rectangle.Left, (int)(scissorRectangle.Left), (int)(scissorRectangle .Right));
+			//int num4 = Utils.Clamp(rectangle.Top, (int)(scissorRectangle .Top), (int)(scissorRectangle .Bottom));
+			//int num5 = Utils.Clamp(rectangle.Right, (int)(scissorRectangle .Left), (int)(scissorRectangle .Right));
+			//int num6 = Utils.Clamp(rectangle.Bottom, (int)(scissorRectangle .Top), (int)(scissorRectangle .Bottom));
+			////Rectangle clipRectBase = teamDPSPanel.GetClippingRectangle(spriteBatch);
+			//Rectangle clipRectBase = new Rectangle(num3, num4, num5 - num3, num6 - num4);
+
+			//Rectangle clipRect = label.GetInnerDimensions().ToRectangle();
+			//spriteBatch.Draw(TextureAssets.MagicPixel.Value, clipRectBase, Color.Blue);
+			//spriteBatch.Draw(TextureAssets.MagicPixel.Value, clipRect, Color.Red);
+
+			//base.DrawSelf(spriteBatch);
 
 			bool IsPlayer = drawPlayer >= 0 && drawPlayer < (int)InfoListIndices.SupportedPlayerCount;
 			bool isNPC = drawPlayer == (int)InfoListIndices.NPCs;
@@ -404,6 +447,6 @@ namespace DPSExtreme
 			}
 			updateNeeded = true;
 		}
-	}
+    }
 }
 

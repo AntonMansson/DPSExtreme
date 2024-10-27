@@ -11,17 +11,21 @@ namespace DPSExtreme.CombatTracking
 {
 	internal partial class DPSExtremeCombat
 	{
+		[Flags]
 		internal enum CombatType
 		{
-			BossFight,
-			Invasion,
-			General
+			//Order matters. Highest value is considered most important and will be used when displaying title of combat
+			Generic = 1 << 0,
+			Invasion = 1 << 1,
+			BossFight = 1 << 2
 		}
 
-		internal CombatType myCombatType;
+		internal CombatType myCombatTypeFlags;
+		internal CombatType myHighestCombatType;
 		internal int myBossOrInvasionType;
 
-		DateTime myStartTime;
+		internal DateTime myStartTime;
+		internal DateTime myLastActivityTime;
 
 		public Dictionary<int, DPSExtremeInfoList<DamageDealtInfo>> myDamageDealtPerNPCType = new Dictionary<int, DPSExtremeInfoList<DamageDealtInfo>>();
 
@@ -30,9 +34,11 @@ namespace DPSExtreme.CombatTracking
 
 		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionType)
 		{
-			myCombatType = aCombatType;
+			myCombatTypeFlags = aCombatType;
+			myHighestCombatType = aCombatType;
 			myBossOrInvasionType = aBossOrInvasionType;
 			myStartTime = DateTime.Now;
+			myLastActivityTime = myStartTime;
 		}
 
 		internal void AddDealtDamage(NPC aDamagedNPC, int aDamageDealer, int aDamage)

@@ -26,7 +26,7 @@ namespace DPSExtreme
 			if (!Player.dpsStarted)
 				dps = 0;
 
-			ProtocolReqInformServerCurrentDPS req = new ProtocolReqInformServerCurrentDPS();
+			ProtocolReqShareCurrentDPS req = new ProtocolReqShareCurrentDPS();
 			req.myPlayer = Player.whoAmI;
 			req.myDPS = dps;
 

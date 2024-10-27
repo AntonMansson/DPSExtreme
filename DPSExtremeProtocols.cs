@@ -6,9 +6,11 @@ namespace DPSExtreme
 {
 	enum DPSExtremeMessageType : byte
 	{
-		InformServerCurrentDPS,
-		InformClientsCurrentDPSs,
-		InformClientsCurrentCombatTotals,
+		StartCombatPush,
+		EndCombatPush,
+		ShareCurrentDPSReq,
+		CurrentDPSsPush,
+		CurrentCombatTotalsPush,
 	}
 
 	abstract internal class DPSExtremeProtocol
@@ -19,9 +21,54 @@ namespace DPSExtreme
 		abstract public DPSExtremeMessageType GetDelimiter();
 	}
 
+	internal class ProtocolPushStartCombat : DPSExtremeProtocol
+	{
+		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.StartCombatPush; }
+
+		public override void ToStream(BinaryWriter aWriter)
+		{
+			aWriter.Write((byte)GetDelimiter());
+
+			aWriter.Write((byte)myCombatType);
+			aWriter.Write(myBossOrInvasionType);
+		}
+
+		public override bool FromStream(BinaryReader aReader)
+		{
+			myCombatType = (CombatType)aReader.ReadByte();
+			myBossOrInvasionType = aReader.ReadInt32();
+
+			return true;
+		}
+
+		public CombatType myCombatType = CombatType.Generic;
+		public int myBossOrInvasionType = -1;
+	}
+
+	internal class ProtocolPushEndCombat : DPSExtremeProtocol
+	{
+		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.EndCombatPush; }
+
+		public override void ToStream(BinaryWriter aWriter)
+		{
+			aWriter.Write((byte)GetDelimiter());
+
+			aWriter.Write((byte)myCombatType);
+		}
+
+		public override bool FromStream(BinaryReader aReader)
+		{
+			myCombatType = (CombatType)aReader.ReadByte();
+
+			return true;
+		}
+
+		public CombatType myCombatType = CombatType.Generic;
+	}
+
 	internal class ProtocolPushCombatStats : DPSExtremeProtocol
 	{
-		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.InformClientsCurrentCombatTotals; }
+		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.CurrentCombatTotalsPush; }
 
 		public override void ToStream(BinaryWriter aWriter)
 		{
@@ -74,9 +121,9 @@ namespace DPSExtreme
 		public DPSExtremeInfoList<DamageDealtInfo> myTotalDamageDealtList= new DPSExtremeInfoList<DamageDealtInfo>();
 	}
 
-	internal class ProtocolReqInformServerCurrentDPS : DPSExtremeProtocol
+	internal class ProtocolReqShareCurrentDPS : DPSExtremeProtocol
 	{
-		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.InformServerCurrentDPS; }
+		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.ShareCurrentDPSReq; }
 
 		public override void ToStream(BinaryWriter aWriter)
 		{
@@ -100,7 +147,7 @@ namespace DPSExtreme
 
 	internal class ProtocolPushClientDPSs : DPSExtremeProtocol
 	{
-		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.InformClientsCurrentDPSs; }
+		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.CurrentDPSsPush; }
 
 		public override void ToStream(BinaryWriter aWriter)
 		{

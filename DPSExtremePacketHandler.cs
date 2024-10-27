@@ -31,15 +31,15 @@ namespace DPSExtreme
 
 			switch (delimiter)
 			{
-				case DPSExtremeMessageType.InformServerCurrentDPS:
+				case DPSExtremeMessageType.ShareCurrentDPSReq:
 					{
-						protocol = new ProtocolReqInformServerCurrentDPS();
+						protocol = new ProtocolReqShareCurrentDPS();
 						if (!protocol.FromStream(reader))
 							return false;
 
 						break;
 					}
-				case DPSExtremeMessageType.InformClientsCurrentDPSs:
+				case DPSExtremeMessageType.CurrentDPSsPush:
 					{
 						protocol = new ProtocolPushClientDPSs();
 						if (!protocol.FromStream(reader))
@@ -47,7 +47,7 @@ namespace DPSExtreme
 
 						break;
 					}
-				case DPSExtremeMessageType.InformClientsCurrentCombatTotals:
+				case DPSExtremeMessageType.CurrentCombatTotalsPush:
 					{
 						protocol = new ProtocolPushCombatStats();
 						if (!protocol.FromStream(reader))
@@ -104,14 +104,26 @@ namespace DPSExtreme
 		{
 			switch (aDelimiter)
 			{
-				case DPSExtremeMessageType.InformServerCurrentDPS: HandleInformServerDPSReq(aProtocol as ProtocolReqInformServerCurrentDPS); break;
-				case DPSExtremeMessageType.InformClientsCurrentDPSs: HandleClientDPSsPush(aProtocol as ProtocolPushClientDPSs); break;
-				case DPSExtremeMessageType.InformClientsCurrentCombatTotals: HandleCombatStatsPush(aProtocol as ProtocolPushCombatStats); break;
+				case DPSExtremeMessageType.StartCombatPush: HandleStartCombatPush(aProtocol as ProtocolPushStartCombat); break;
+				case DPSExtremeMessageType.EndCombatPush: HandleEndCombatPush(aProtocol as ProtocolPushEndCombat); break;
+				case DPSExtremeMessageType.ShareCurrentDPSReq: HandleInformServerDPSReq(aProtocol as ProtocolReqShareCurrentDPS); break;
+				case DPSExtremeMessageType.CurrentDPSsPush: HandleClientDPSsPush(aProtocol as ProtocolPushClientDPSs); break;
+				case DPSExtremeMessageType.CurrentCombatTotalsPush: HandleCombatStatsPush(aProtocol as ProtocolPushCombatStats); break;
 				default: DPSExtreme.instance.Logger.Warn("DPSExtreme: Unknown Message type: " + aDelimiter); break;
 			}
 		}
 
-		public void HandleInformServerDPSReq(ProtocolReqInformServerCurrentDPS aReq)
+		public void HandleStartCombatPush(ProtocolPushStartCombat aPush)
+		{
+			DPSExtreme.instance.combatTracker.StartCombat(aPush.myCombatType, aPush.myBossOrInvasionType);
+		}
+
+		public void HandleEndCombatPush(ProtocolPushEndCombat aPush)
+		{
+			DPSExtreme.instance.combatTracker.EndCombat(aPush.myCombatType);
+		}
+
+		public void HandleInformServerDPSReq(ProtocolReqShareCurrentDPS aReq)
 		{
 			DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList[aReq.myPlayer].myDamage = aReq.myDPS;
 		}

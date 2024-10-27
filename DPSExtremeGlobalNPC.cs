@@ -10,9 +10,8 @@ namespace DPSExtreme
 {
 	internal class DPSExtremeGlobalNPC : GlobalNPC
 	{
-		public override bool InstancePerEntity => true;
-
-		internal bool onDeathBed; // SP only flag for something?
+		//Not needed anymore as we don't have instanced data?
+		//public override bool InstancePerEntity => true;
 
 		public DPSExtremeGlobalNPC()
 		{
@@ -96,30 +95,19 @@ namespace DPSExtreme
 		{
 			if (npc.boss)
 			{
-				DPSExtreme.instance.combatTracker.StartCombat(DPSExtremeCombat.CombatType.BossFight, npc.type);
+				ProtocolPushStartCombat push = new ProtocolPushStartCombat();
+				push.myCombatType = DPSExtremeCombat.CombatType.BossFight;
+				push.myBossOrInvasionType = npc.type;
+
+				DPSExtreme.instance.packetHandler.SendProtocol(push);
 			}
 		}
 
-		// question, in MP, is this called before or after last hit?
 		public override void OnKill(NPC npc)
 		{
 			try
 			{
-				//System.Console.WriteLine("NPCLoot");
-
-				if (npc.boss)
-				{
-					if (Main.netMode == NetmodeID.SinglePlayer)
-					{
-						onDeathBed = true;
-					}
-					else
-					{
-						//Rethink how this is handled. Should happen when combat ends, not just when an npc dies
-						DPSExtreme.instance.combatTracker.myActiveCombat.SendStats();
-						DPSExtreme.instance.combatTracker.myActiveCombat.PrintStats();
-					}
-				}
+				
 			}
 			catch (Exception)
 			{
@@ -141,18 +129,18 @@ namespace DPSExtreme
 				}
 
 				if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-					DPSExtreme.instance.combatTracker.StartCombat(DPSExtremeCombat.CombatType.General);
+				{
+					ProtocolPushStartCombat push = new ProtocolPushStartCombat();
+					push.myCombatType = DPSExtremeCombat.CombatType.Generic;
+
+					DPSExtreme.instance.packetHandler.SendProtocol(push);
+				}
+				else
+				{
+					DPSExtreme.instance.combatTracker.myActiveCombat.myLastActivityTime = DateTime.Now;
+				}
 
 				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, player.whoAmI, damageDone);
-
-				DPSExtremeGlobalNPC info = damagedNPC.GetGlobalNPC<DPSExtremeGlobalNPC>();
-
-				if (info.onDeathBed) // oh wait, is this the same as .active in this case? probably not.
-				{
-					//Same thing here, should happen OnCombatEnd
-					DPSExtreme.instance.combatTracker.myActiveCombat.SendStats();
-					info.onDeathBed = false; // multiple things can hit while on deathbed.
-				}
 			}
 			catch (Exception)
 			{
@@ -181,18 +169,18 @@ namespace DPSExtreme
 					projectileOwner = (int)InfoListIndices.NPCs;
 
 				if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-					DPSExtreme.instance.combatTracker.StartCombat(DPSExtremeCombat.CombatType.General);
+				{
+					ProtocolPushStartCombat push = new ProtocolPushStartCombat();
+					push.myCombatType = DPSExtremeCombat.CombatType.Generic;
+
+					DPSExtreme.instance.packetHandler.SendProtocol(push);
+				}
+				else
+				{
+					DPSExtreme.instance.combatTracker.myActiveCombat.myLastActivityTime = DateTime.Now;
+				}
 
 				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, projectileOwner, damageDone);
-
-				DPSExtremeGlobalNPC info = damagedNPC.GetGlobalNPC<DPSExtremeGlobalNPC>();
-
-				if (info.onDeathBed)
-				{
-					//OnCombatEnd
-					DPSExtreme.instance.combatTracker.myActiveCombat.SendStats();
-					info.onDeathBed = false;
-				}
 			}
 			catch (Exception)
 			{
