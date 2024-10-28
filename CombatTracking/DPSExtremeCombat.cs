@@ -16,13 +16,43 @@ namespace DPSExtreme.CombatTracking
 		{
 			//Order matters. Highest value is considered most important and will be used when displaying title of combat
 			Generic = 1 << 0,
-			Invasion = 1 << 1,
-			BossFight = 1 << 2
+			Event = 1 << 1,
+			Invasion = 1 << 2,
+			BossFight = 1 << 3
+		}
+
+		internal enum InvasionType
+		{
+			None = 0,
+
+			//Matching Terraria.InvasionID
+			GoblinArmy = 1,
+			SnowLegion = 2,
+			PirateInvasion = 3,
+			MartianMadness = 4,
+
+			ModdedInvasionsStart = 5,
+			//Range for modded invasions
+			ModdedInvasionsEnd = 1000,
+
+			//Outside of Terraria.InvasionID. Gets set based on bools
+			PumpkinMoon = 1001,
+			FrostMoon = 1002,
+			OldOnesArmy = 1003,
+			Count
+		}
+
+		internal enum EventType
+		{
+			BloodMoon = InvasionType.Count,
+			Eclipse,
+			SlimeRain,
+			//No support for modded events
 		}
 
 		internal CombatType myCombatTypeFlags;
 		internal CombatType myHighestCombatType;
-		internal int myBossOrInvasionType;
+		internal int myBossOrInvasionOrEventType = -1;
 
 		internal DateTime myStartTime;
 		internal DateTime myLastActivityTime;
@@ -32,11 +62,11 @@ namespace DPSExtreme.CombatTracking
 		internal DPSExtremeInfoList<DamageDealtInfo> myTotalDamageDealtList = new DPSExtremeInfoList<DamageDealtInfo>();
 		internal DPSExtremeInfoList<DamageDealtInfo> myDPSList = new DPSExtremeInfoList<DamageDealtInfo>();
 
-		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionType)
+		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType)
 		{
 			myCombatTypeFlags = aCombatType;
 			myHighestCombatType = aCombatType;
-			myBossOrInvasionType = aBossOrInvasionType;
+			myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
 			myStartTime = DateTime.Now;
 			myLastActivityTime = myStartTime;
 		}

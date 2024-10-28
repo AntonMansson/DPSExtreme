@@ -12,3 +12,5 @@ TrapsTownNPC: 陷阱/城镇NPC
 DamageOverTime: 减益总伤害
 OnlyAvailableInMultiplayer: 伤害统计仅在多人模式生效
 ToggleTeamDPSCommandDescription: 显示队伍成员伤害统计
+// Invasion: Invasion
+// Event: Event

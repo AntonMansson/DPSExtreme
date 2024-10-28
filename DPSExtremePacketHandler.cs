@@ -145,12 +145,12 @@ namespace DPSExtreme
 
 		public void HandleStartCombatPush(ProtocolPushStartCombat aPush)
 		{
-			DPSExtreme.instance.combatTracker.StartCombat(aPush.myCombatType, aPush.myBossOrInvasionType);
+			DPSExtreme.instance.combatTracker.StartCombat(aPush.myCombatType, aPush.myBossOrInvasionOrEventType);
 		}
 
 		public void HandleUpgradeCombatPush(ProtocolPushUpgradeCombat aPush)
 		{
-			DPSExtreme.instance.combatTracker.UpgradeCombat(aPush.myCombatType, aPush.myBossOrInvasionType);
+			DPSExtreme.instance.combatTracker.UpgradeCombat(aPush.myCombatType, aPush.myBossOrInvasionOrEventType);
 		}
 
 		public void HandleEndCombatPush(ProtocolPushEndCombat aPush)

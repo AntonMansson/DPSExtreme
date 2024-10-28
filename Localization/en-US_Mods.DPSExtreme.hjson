@@ -12,3 +12,5 @@ TrapsTownNPC: Traps/TownNPC
 DamageOverTime: Debuff DOT
 OnlyAvailableInMultiplayer: Team DPS only available in Multiplayer game.
 ToggleTeamDPSCommandDescription: Toggle Team DPS display
+Invasion: Invasion
+Event: Event

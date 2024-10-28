@@ -31,19 +31,19 @@ namespace DPSExtreme
 			aWriter.Write((byte)GetDelimiter());
 
 			aWriter.Write((byte)myCombatType);
-			aWriter.Write(myBossOrInvasionType);
+			aWriter.Write(myBossOrInvasionOrEventType);
 		}
 
 		public override bool FromStream(BinaryReader aReader)
 		{
 			myCombatType = (CombatType)aReader.ReadByte();
-			myBossOrInvasionType = aReader.ReadInt32();
+			myBossOrInvasionOrEventType = aReader.ReadInt32();
 
 			return true;
 		}
 
 		public CombatType myCombatType = CombatType.Generic;
-		public int myBossOrInvasionType = -1;
+		public int myBossOrInvasionOrEventType = -1;
 	}
 
 	internal class ProtocolPushUpgradeCombat : DPSExtremeProtocol
@@ -55,19 +55,19 @@ namespace DPSExtreme
 			aWriter.Write((byte)GetDelimiter());
 
 			aWriter.Write((byte)myCombatType);
-			aWriter.Write(myBossOrInvasionType);
+			aWriter.Write(myBossOrInvasionOrEventType);
 		}
 
 		public override bool FromStream(BinaryReader aReader)
 		{
 			myCombatType = (CombatType)aReader.ReadByte();
-			myBossOrInvasionType = aReader.ReadInt32();
+			myBossOrInvasionOrEventType = aReader.ReadInt32();
 
 			return true;
 		}
 
 		public CombatType myCombatType = CombatType.Generic;
-		public int myBossOrInvasionType = -1;
+		public int myBossOrInvasionOrEventType = -1;
 	}
 
 	internal class ProtocolPushEndCombat : DPSExtremeProtocol

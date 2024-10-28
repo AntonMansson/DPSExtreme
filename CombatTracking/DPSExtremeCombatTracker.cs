@@ -18,6 +18,7 @@ namespace DPSExtreme.CombatTracking
 		internal DPSExtremeCombat myActiveCombat = null;
 
 		internal int myLastFrameInvasionType = InvasionID.None;
+		internal int myLastFrameEventType = 0;
 
 		internal DPSExtremeCombat GetCombatHistory(int aIndex)
 		{
@@ -29,27 +30,94 @@ namespace DPSExtreme.CombatTracking
 			if (Main.netMode != NetmodeID.SinglePlayer && Main.netMode != NetmodeID.Server)
 				return;
 
+			UpdateEventCheckStart();
+			UpdateEventCheckEnd();
+			myLastFrameEventType = GetActiveEventType();
+
 			UpdateInvasionCheckStart();
 			UpdateInvasionCheckEnd();
-			myLastFrameInvasionType = Main.invasionType;
+			myLastFrameInvasionType = GetActiveInvasionType();
 
 			UpdateAllBossesDeadCheck();
 			UpdateGenericCombatTimeoutCheck();
+		}
+
+		private int GetActiveEventType()
+		{
+			if (Main.eclipse)
+				return (int)EventType.Eclipse;
+
+			if (Main.bloodMoon)
+				return (int)EventType.BloodMoon;
+
+			if (Main.slimeRain)
+				return (int)EventType.SlimeRain;
+
+			return 0;
+		}
+
+		void UpdateEventCheckStart()
+		{
+			int eventType = GetActiveEventType();
+			if (eventType == 0)
+				return;
+
+			if (myLastFrameEventType == eventType)
+				return;
+
+			//Wait for invasion delay?
+
+			TriggerCombat(CombatType.Event, eventType);
+		}
+
+		void UpdateEventCheckEnd()
+		{
+			if (myActiveCombat == null)
+				return;
+
+			if ((myActiveCombat.myCombatTypeFlags & CombatType.Event) == 0)
+				return;
+
+			if (GetActiveEventType() != 0)
+				return;
+
+			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
+			push.myCombatType = CombatType.Event;
+
+			//Needs to happen before it gets sent to clients
+			if (Main.netMode == NetmodeID.Server)
+				DPSExtreme.instance.packetHandler.HandleEndCombatPush(push);
+
+			DPSExtreme.instance.packetHandler.SendProtocol(push);
+		}
+
+		private int GetActiveInvasionType()
+		{
+			if (Main.invasionType != InvasionID.None)
+				return Main.invasionType;
+
+			if (Main.snowMoon)
+				return (int)InvasionType.FrostMoon;
+
+			if (Main.pumpkinMoon)
+				return (int)InvasionType.PumpkinMoon;
+
+			return InvasionID.None;
 		}
 
 		void UpdateInvasionCheckStart()
 		{
 			//TODO: Fix issue with combat not being started if invasion is active when world loads
 
-			if (Main.invasionType == InvasionID.None)
+			if (GetActiveInvasionType() == InvasionID.None)
 				return;
 
-			if (myLastFrameInvasionType != InvasionID.None)
+			if (myLastFrameInvasionType == GetActiveInvasionType())
 				return;
 
 			//Wait for invasion delay?
 
-			TriggerCombat(CombatType.Invasion, Main.invasionType);
+			TriggerCombat(CombatType.Invasion, GetActiveInvasionType());
 		}
 
 		void UpdateInvasionCheckEnd()
@@ -60,7 +128,7 @@ namespace DPSExtreme.CombatTracking
 			if ((myActiveCombat.myCombatTypeFlags & CombatType.Invasion) == 0)
 				return;
 
-			if (Main.invasionType != InvasionID.None)
+			if (GetActiveInvasionType() != InvasionID.None)
 				return;
 
 			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
@@ -128,18 +196,18 @@ namespace DPSExtreme.CombatTracking
 		}
 
 		//Called when damage is dealt or bosses spawn etc
-		internal void TriggerCombat(CombatType aCombatType, int aBossOrInvasionType = -1)
+		internal void TriggerCombat(CombatType aCombatType, int aBossOrInvasionOrEventType = -1)
 		{
 			if (myActiveCombat != null)
 			{
-				UpgradeCombat(aCombatType, aBossOrInvasionType);
+				UpgradeCombat(aCombatType, aBossOrInvasionOrEventType);
 				myActiveCombat.myLastActivityTime = DateTime.Now;
 				return;
 			}
 
 			ProtocolPushStartCombat push = new ProtocolPushStartCombat();
 			push.myCombatType = aCombatType;
-			push.myBossOrInvasionType = aBossOrInvasionType;
+			push.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
 
 			if (Main.netMode == NetmodeID.Server)
 				DPSExtreme.instance.packetHandler.HandleStartCombatPush(push);
@@ -148,11 +216,11 @@ namespace DPSExtreme.CombatTracking
 		}
 
 		//Called from TriggerCombat or from server pushing combat status
-		internal void StartCombat(CombatType aCombatType, int aBossOrInvasionType = -1)
+		internal void StartCombat(CombatType aCombatType, int aBossOrInvasionOrEventType = -1)
 		{
 			if (myActiveCombat != null)
 			{
-				UpgradeCombat(aCombatType, aBossOrInvasionType);
+				UpgradeCombat(aCombatType, aBossOrInvasionOrEventType);
 				Main.NewText("Upgrade through StartCombat. Should probably never happen");
 				return;
 			}
@@ -162,13 +230,13 @@ namespace DPSExtreme.CombatTracking
 			else if (Main.netMode == NetmodeID.Server)
 				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Server started combat"), Color.Orange);
 
-			myActiveCombat = new DPSExtremeCombat(aCombatType, aBossOrInvasionType);
+			myActiveCombat = new DPSExtremeCombat(aCombatType, aBossOrInvasionOrEventType);
 
 			DPSExtremeUI.instance?.OnCombatStarted(myActiveCombat);
 		}
 
 		//Boss fight starts during an invastion etc
-		internal void UpgradeCombat(CombatType aCombatType, int aBossOrInvasionType = -1)
+		internal void UpgradeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType = -1)
 		{
 			int oldHighestCombat = (int)myActiveCombat.myHighestCombatType;
 			myActiveCombat.myHighestCombatType = (CombatType)Math.Max((int)myActiveCombat.myHighestCombatType, (int)aCombatType);
@@ -183,7 +251,7 @@ namespace DPSExtreme.CombatTracking
 
 				if (aCombatType == CombatType.Invasion || aCombatType == CombatType.BossFight)
 				{
-					myActiveCombat.myBossOrInvasionType = aBossOrInvasionType;
+					myActiveCombat.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
 				}
 
 				DPSExtremeUI.instance?.OnCombatUpgraded(myActiveCombat);
@@ -192,7 +260,7 @@ namespace DPSExtreme.CombatTracking
 				{
 					ProtocolPushUpgradeCombat push = new ProtocolPushUpgradeCombat();
 					push.myCombatType = myActiveCombat.myHighestCombatType;
-					push.myBossOrInvasionType = myActiveCombat.myBossOrInvasionType;
+					push.myBossOrInvasionOrEventType = myActiveCombat.myBossOrInvasionOrEventType;
 
 					DPSExtreme.instance.packetHandler.SendProtocol(push);
 				}

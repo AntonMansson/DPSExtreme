@@ -12,3 +12,5 @@ TrapsTownNPC: Ловушки/NPC
 DamageOverTime: DOT Дебафф
 OnlyAvailableInMultiplayer: Статистика DPS доступна только в многопользовательской игре.
 ToggleTeamDPSCommandDescription: Переключить отображение командного DPS
+// Invasion: Invasion
+// Event: Event
