@@ -5,6 +5,7 @@ using System;
 using MonoMod.Cil;
 using DPSExtreme.CombatTracking;
 using Terraria.DataStructures;
+using static DPSExtreme.CombatTracking.DPSExtremeCombat;
 
 namespace DPSExtreme
 {
@@ -43,10 +44,14 @@ namespace DPSExtreme
 			c.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_0);
 			c.EmitDelegate<Action<int, int>>((int whoAmI, int damage) =>
 			{
+				if (Main.netMode != NetmodeID.Server)
+					return;
+
 				// whoAmI already accounts for realLife
 
 				NPC npc = Main.npc[whoAmI];
 				//TODO Verify that damage has already been applied when we reach this point (otherwise overkill calculation is incorrect)
+				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
 				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, damage);
 
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
@@ -67,9 +72,13 @@ namespace DPSExtreme
 			c.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
 			c.EmitDelegate<Action<int, int>>((int whoAmI, int damage) =>
 			{
+				if (Main.netMode != NetmodeID.Server)
+					return;
+
 				// whoAmI already accounts for realLife
 				NPC npc = Main.npc[whoAmI];
 
+				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
 				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, damage);
 
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
@@ -95,11 +104,7 @@ namespace DPSExtreme
 		{
 			if (npc.boss)
 			{
-				ProtocolPushStartCombat push = new ProtocolPushStartCombat();
-				push.myCombatType = DPSExtremeCombat.CombatType.BossFight;
-				push.myBossOrInvasionType = npc.type;
-
-				DPSExtreme.instance.packetHandler.SendProtocol(push);
+				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.BossFight, npc.type);
 			}
 		}
 
@@ -120,6 +125,9 @@ namespace DPSExtreme
 		{
 			try
 			{
+				if (Main.netMode == NetmodeID.MultiplayerClient)
+					return;
+
 				//System.Console.WriteLine("OnHitByItem " + player.whoAmI);
 
 				NPC damagedNPC = npc;
@@ -128,18 +136,7 @@ namespace DPSExtreme
 					damagedNPC = Main.npc[damagedNPC.realLife];
 				}
 
-				if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-				{
-					ProtocolPushStartCombat push = new ProtocolPushStartCombat();
-					push.myCombatType = DPSExtremeCombat.CombatType.Generic;
-
-					DPSExtreme.instance.packetHandler.SendProtocol(push);
-				}
-				else
-				{
-					DPSExtreme.instance.combatTracker.myActiveCombat.myLastActivityTime = DateTime.Now;
-				}
-
+				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
 				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, player.whoAmI, damageDone);
 			}
 			catch (Exception)
@@ -154,6 +151,9 @@ namespace DPSExtreme
 			//TODO, owner could be -1?
 			try
 			{
+				if (Main.netMode == NetmodeID.MultiplayerClient)
+					return;
+
 				//System.Console.WriteLine("OnHitByProjectile " + projectile.owner);
 				NPC damagedNPC = npc;
 				if (npc.realLife >= 0)
@@ -168,18 +168,7 @@ namespace DPSExtreme
 				if (projectile.GetGlobalProjectile<DPSExtremeModProjectile>().whoIsMyParent != -1)
 					projectileOwner = (int)InfoListIndices.NPCs;
 
-				if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-				{
-					ProtocolPushStartCombat push = new ProtocolPushStartCombat();
-					push.myCombatType = DPSExtremeCombat.CombatType.Generic;
-
-					DPSExtreme.instance.packetHandler.SendProtocol(push);
-				}
-				else
-				{
-					DPSExtreme.instance.combatTracker.myActiveCombat.myLastActivityTime = DateTime.Now;
-				}
-
+				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
 				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, projectileOwner, damageDone);
 			}
 			catch (Exception)

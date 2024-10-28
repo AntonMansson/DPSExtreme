@@ -3,6 +3,7 @@ using System.IO;
 using Terraria.ID;
 using Terraria;
 using Terraria.ModLoader;
+using static DPSExtreme.CombatTracking.DPSExtremeCombat;
 
 namespace DPSExtreme
 {
@@ -31,6 +32,30 @@ namespace DPSExtreme
 
 			switch (delimiter)
 			{
+				case DPSExtremeMessageType.StartCombatPush:
+					{
+						protocol = new ProtocolPushStartCombat();
+						if (!protocol.FromStream(reader))
+							return false;
+
+						break;
+					}
+				case DPSExtremeMessageType.UpgradeCombatPush:
+					{
+						protocol = new ProtocolPushUpgradeCombat();
+						if (!protocol.FromStream(reader))
+							return false;
+
+						break;
+					}
+				case DPSExtremeMessageType.EndCombatPush:
+					{
+						protocol = new ProtocolPushEndCombat();
+						if (!protocol.FromStream(reader))
+							return false;
+
+						break;
+					}
 				case DPSExtremeMessageType.ShareCurrentDPSReq:
 					{
 						protocol = new ProtocolReqShareCurrentDPS();
@@ -61,9 +86,12 @@ namespace DPSExtreme
 			}
 
 			if (protocol == null)
-				DPSExtreme.instance.Logger.Warn("DPSExtreme: null protocol for message type: " + delimiter);
-
-			HandleProtocol(delimiter, protocol);
+			{
+				Main.NewText("DPSExtreme: null protocol for message type: " + delimiter.ToString());
+				DPSExtreme.instance.Logger.Warn("DPSExtreme: null protocol for message type: " + delimiter.ToString());
+			}
+			else
+				HandleProtocol(delimiter, protocol);
 
 			return true;
 		}
@@ -87,6 +115,7 @@ namespace DPSExtreme
 						damagedNPC = Main.npc[damagedNPC.realLife];
 					}
 
+					DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
 					DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, playerNumber, damage);
 
 					// TODO: Reimplement DPS with ring buffer for accurate?  !!! or send 0?
@@ -105,6 +134,7 @@ namespace DPSExtreme
 			switch (aDelimiter)
 			{
 				case DPSExtremeMessageType.StartCombatPush: HandleStartCombatPush(aProtocol as ProtocolPushStartCombat); break;
+				case DPSExtremeMessageType.UpgradeCombatPush: HandleUpgradeCombatPush(aProtocol as ProtocolPushUpgradeCombat); break;
 				case DPSExtremeMessageType.EndCombatPush: HandleEndCombatPush(aProtocol as ProtocolPushEndCombat); break;
 				case DPSExtremeMessageType.ShareCurrentDPSReq: HandleInformServerDPSReq(aProtocol as ProtocolReqShareCurrentDPS); break;
 				case DPSExtremeMessageType.CurrentDPSsPush: HandleClientDPSsPush(aProtocol as ProtocolPushClientDPSs); break;
@@ -118,6 +148,11 @@ namespace DPSExtreme
 			DPSExtreme.instance.combatTracker.StartCombat(aPush.myCombatType, aPush.myBossOrInvasionType);
 		}
 
+		public void HandleUpgradeCombatPush(ProtocolPushUpgradeCombat aPush)
+		{
+			DPSExtreme.instance.combatTracker.UpgradeCombat(aPush.myCombatType, aPush.myBossOrInvasionType);
+		}
+
 		public void HandleEndCombatPush(ProtocolPushEndCombat aPush)
 		{
 			DPSExtreme.instance.combatTracker.EndCombat(aPush.myCombatType);
@@ -125,11 +160,17 @@ namespace DPSExtreme
 
 		public void HandleInformServerDPSReq(ProtocolReqShareCurrentDPS aReq)
 		{
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+				return;
+
 			DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList[aReq.myPlayer].myDamage = aReq.myDPS;
 		}
 
 		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush)
 		{
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+				return;
+
 			DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList = aPush.myDPSList;
 
 			DPSExtremeUI.instance.updateNeeded = true;
@@ -137,6 +178,9 @@ namespace DPSExtreme
 
 		public void HandleCombatStatsPush(ProtocolPushCombatStats aPush)
 		{
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+				return;
+
 			CombatTracking.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
 
 			activeCombat.myDamageDealtPerNPCType = aPush.myDamageDealtPerNPCType;
@@ -158,6 +202,7 @@ namespace DPSExtreme
 						activeCombat.myTotalDamageDealtList[(int)InfoListIndices.DOTs].myDamage = 0;
 
 					float ratio = DPSExtreme.UPDATEDELAY / 60f;
+					//TODO: Handle remainder
 					int dealtDamage = (int)(dotDPS * ratio);
 					activeCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, dealtDamage);
 				}

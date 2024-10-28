@@ -7,13 +7,11 @@ using Terraria.ModLoader.UI.Elements;
 using Terraria.GameContent.UI.Elements;
 using System.Reflection;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.Graphics;
 using DPSExtreme.UIElements;
 using ReLogic.Content;
 using Terraria.Localization;
 using Terraria.ID;
 using DPSExtreme.CombatTracking;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DPSExtreme
 {
@@ -29,7 +27,7 @@ namespace DPSExtreme
 		internal UIGrid bossList;
 
 		internal bool showPercent = true;
-		internal bool showDPSPanel = true;
+		internal bool showDPSPanel = false;
 		internal int drawPlayer = -1;
 
 		private bool showTeamDPSPanel;
@@ -77,7 +75,7 @@ namespace DPSExtreme
 			teamDPSPanel = new UIDragablePanel();
 			teamDPSPanel.SetPadding(6);
 			teamDPSPanel.Left.Set(-310f, 0f);
-			teamDPSPanel.HAlign = 0.75f;
+			teamDPSPanel.HAlign = 1;
 			teamDPSPanel.Top.Set(90f, 0f);
 			teamDPSPanel.Width.Set(415f, 0f);
 			teamDPSPanel.MinWidth.Set(50f, 0f);
@@ -87,14 +85,16 @@ namespace DPSExtreme
 			teamDPSPanel.MaxHeight.Set(300, 0f);
 			teamDPSPanel.BackgroundColor = new Color(73, 94, 171);
 
-			label = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("DPS")), 0.8f);
-			label.OverflowHidden = true;
+			label = new UIText("", 0.8f);
+			//Figure out why tf this doesn't work
 			label.DynamicallyScaleDownToWidth = true;
 			label.MaxWidth.Set(50, 0);
 
 			label.OnLeftClick += Label_OnClick;
 			teamDPSPanel.Append(label);
 			teamDPSPanel.AddDragTarget(label);
+
+			RefreshLabel();
 
 			//var togglePercentButton = new UIHoverImageButton(Main.itemTexture[ItemID.SuspiciousLookingEye], "Toggle %");
 			var togglePercentButton = new UIHoverImageButton(DPSExtreme.instance.Assets.Request<Texture2D>("PercentButton", AssetRequestMode.ImmediateLoad), Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TogglePercent")));
@@ -112,7 +112,10 @@ namespace DPSExtreme
 			dpsList.Height.Set(-top, 1f);
 			dpsList.Top.Set(top, 0f);
 			dpsList.ListPadding = 0f;
-			teamDPSPanel.Append(dpsList);
+
+			if (showDPSPanel)
+				teamDPSPanel.Append(dpsList);
+
 			teamDPSPanel.AddDragTarget(dpsList);
 
 			var type = Assembly.GetAssembly(typeof(Mod)).GetType("Terraria.ModLoader.UI.Elements.UIGrid");
@@ -124,7 +127,10 @@ namespace DPSExtreme
 			bossList.Height.Set(-top, 1f);
 			bossList.Top.Set(top, 0f);
 			bossList.ListPadding = 0f;
-			//teamDPSPanel.Append(bossList);
+
+			if (!showDPSPanel)
+				teamDPSPanel.Append(bossList);
+
 			teamDPSPanel.AddDragTarget(bossList);
 			teamDPSPanel.AddDragTarget((UIElement)loadModsField.GetValue(bossList));
 
@@ -339,35 +345,6 @@ namespace DPSExtreme
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
-			//Figure out why tf label's width can exceed its maxWidth
-
-			//Vector2 topLeft = new Vector2(teamDPSPanel.GetInnerDimensions().X, teamDPSPanel.GetInnerDimensions().Y);
-			//Vector2 bottomRight = new Vector2(teamDPSPanel.GetInnerDimensions().Width, teamDPSPanel.GetInnerDimensions().Height) + topLeft;
-			//topLeft = Vector2.Transform(topLeft, Main.UIScaleMatrix);
-			//Rectangle rectangle = new Rectangle((int)topLeft.X, (int)topLeft.Y, (int)(bottomRight.X - topLeft.X), (int)(bottomRight.Y - topLeft.Y));
-			////int num = (int)((float)Main.screenWidth * 1);
-			//int num = (int)((float)Main.screenWidth * Main.UIScale);
-			////int num2 = (int)((float)Main.screenHeight * 1);
-			//int asd = Terraria.GameInput.PlayerInput.RealScreenWidth;
-			//int num2 = (int)((float)Main.screenHeight * Main.UIScale);
-			//rectangle.X = Utils.Clamp(rectangle.X, 0, num);
-			//rectangle.Y = Utils.Clamp(rectangle.Y, 0, num2);
-			//rectangle.Width = Utils.Clamp(rectangle.Width, 0, num - rectangle.X);
-			//rectangle.Height = Utils.Clamp(rectangle.Height, 0, num2 - rectangle.Y);
-			
-			//Rectangle scissorRectangle = spriteBatch.GraphicsDevice.ScissorRectangle;
-
-			//int num3 = Utils.Clamp(rectangle.Left, (int)(scissorRectangle.Left), (int)(scissorRectangle .Right));
-			//int num4 = Utils.Clamp(rectangle.Top, (int)(scissorRectangle .Top), (int)(scissorRectangle .Bottom));
-			//int num5 = Utils.Clamp(rectangle.Right, (int)(scissorRectangle .Left), (int)(scissorRectangle .Right));
-			//int num6 = Utils.Clamp(rectangle.Bottom, (int)(scissorRectangle .Top), (int)(scissorRectangle .Bottom));
-			////Rectangle clipRectBase = teamDPSPanel.GetClippingRectangle(spriteBatch);
-			//Rectangle clipRectBase = new Rectangle(num3, num4, num5 - num3, num6 - num4);
-
-			//Rectangle clipRect = label.GetInnerDimensions().ToRectangle();
-			//spriteBatch.Draw(TextureAssets.MagicPixel.Value, clipRectBase, Color.Blue);
-			//spriteBatch.Draw(TextureAssets.MagicPixel.Value, clipRect, Color.Red);
-
 			//base.DrawSelf(spriteBatch);
 
 			bool IsPlayer = drawPlayer >= 0 && drawPlayer < (int)InfoListIndices.SupportedPlayerCount;

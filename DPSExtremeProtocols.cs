@@ -7,6 +7,7 @@ namespace DPSExtreme
 	enum DPSExtremeMessageType : byte
 	{
 		StartCombatPush,
+		UpgradeCombatPush,
 		EndCombatPush,
 		ShareCurrentDPSReq,
 		CurrentDPSsPush,
@@ -24,6 +25,30 @@ namespace DPSExtreme
 	internal class ProtocolPushStartCombat : DPSExtremeProtocol
 	{
 		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.StartCombatPush; }
+
+		public override void ToStream(BinaryWriter aWriter)
+		{
+			aWriter.Write((byte)GetDelimiter());
+
+			aWriter.Write((byte)myCombatType);
+			aWriter.Write(myBossOrInvasionType);
+		}
+
+		public override bool FromStream(BinaryReader aReader)
+		{
+			myCombatType = (CombatType)aReader.ReadByte();
+			myBossOrInvasionType = aReader.ReadInt32();
+
+			return true;
+		}
+
+		public CombatType myCombatType = CombatType.Generic;
+		public int myBossOrInvasionType = -1;
+	}
+
+	internal class ProtocolPushUpgradeCombat : DPSExtremeProtocol
+	{
+		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.UpgradeCombatPush; }
 
 		public override void ToStream(BinaryWriter aWriter)
 		{
@@ -109,6 +134,7 @@ namespace DPSExtreme
 			{
 				int npcType = aReader.ReadInt32();
 
+				myDamageDealtPerNPCType[npcType] = new DPSExtremeInfoList<DamageDealtInfo>();
 				myDamageDealtPerNPCType[npcType].FromStream(aReader);
 			}
 

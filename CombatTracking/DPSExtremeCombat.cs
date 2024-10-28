@@ -61,8 +61,12 @@ namespace DPSExtreme.CombatTracking
 		{
 			try
 			{
+				if (Main.netMode != NetmodeID.Server)
+					return;
+
 				ProtocolPushCombatStats push = new ProtocolPushCombatStats();
 				push.myCombatIsActive = true;
+				push.myDamageDealtPerNPCType = myDamageDealtPerNPCType;
 				push.myTotalDamageDealtList = myTotalDamageDealtList;
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);

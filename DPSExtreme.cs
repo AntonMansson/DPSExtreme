@@ -85,7 +85,7 @@ namespace DPSExtreme
 
 	internal class DPSExtreme : Mod
 	{
-		internal const int UPDATEDELAY = 60; // 1 seconds. Configurable later?
+		internal const int UPDATEDELAY = 30; // 0.5 seconds. Configurable later?
 
 		internal static DPSExtreme instance;
 

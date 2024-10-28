@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using Terraria;
+using Terraria.Chat;
 using Terraria.ID;
+using Terraria.Localization;
 using static DPSExtreme.CombatTracking.DPSExtremeCombat;
 
 namespace DPSExtreme.CombatTracking
@@ -23,6 +26,9 @@ namespace DPSExtreme.CombatTracking
 
 		internal void Update()
 		{
+			if (Main.netMode != NetmodeID.SinglePlayer && Main.netMode != NetmodeID.Server)
+				return;
+
 			UpdateInvasionCheckStart();
 			UpdateInvasionCheckEnd();
 			myLastFrameInvasionType = Main.invasionType;
@@ -33,6 +39,8 @@ namespace DPSExtreme.CombatTracking
 
 		void UpdateInvasionCheckStart()
 		{
+			//TODO: Fix issue with combat not being started if invasion is active when world loads
+
 			if (Main.invasionType == InvasionID.None)
 				return;
 
@@ -41,11 +49,7 @@ namespace DPSExtreme.CombatTracking
 
 			//Wait for invasion delay?
 
-			ProtocolPushStartCombat push = new ProtocolPushStartCombat();
-			push.myCombatType = CombatType.Invasion;
-			push.myBossOrInvasionType = Main.invasionType;
-
-			DPSExtreme.instance.packetHandler.SendProtocol(push);
+			TriggerCombat(CombatType.Invasion, Main.invasionType);
 		}
 
 		void UpdateInvasionCheckEnd()
@@ -61,6 +65,11 @@ namespace DPSExtreme.CombatTracking
 
 			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
 			push.myCombatType = CombatType.Invasion;
+
+			//Needs to happen before it gets sent to clients
+			if (Main.netMode == NetmodeID.Server)
+				DPSExtreme.instance.packetHandler.HandleEndCombatPush(push);
+
 			DPSExtreme.instance.packetHandler.SendProtocol(push);
 		}
 
@@ -87,6 +96,11 @@ namespace DPSExtreme.CombatTracking
 
 			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
 			push.myCombatType = CombatType.BossFight;
+
+			//Needs to happen before it gets sent to clients
+			if (Main.netMode == NetmodeID.Server)
+				DPSExtreme.instance.packetHandler.HandleEndCombatPush(push);
+
 			DPSExtreme.instance.packetHandler.SendProtocol(push);
 		}
 
@@ -105,23 +119,52 @@ namespace DPSExtreme.CombatTracking
 
 			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
 			push.myCombatType = CombatType.Generic;
+
+			//Needs to happen before it gets sent to clients
+			if (Main.netMode == NetmodeID.Server)
+				DPSExtreme.instance.packetHandler.HandleEndCombatPush(push);
+
 			DPSExtreme.instance.packetHandler.SendProtocol(push);
 		}
 
+		//Called when damage is dealt or bosses spawn etc
+		internal void TriggerCombat(CombatType aCombatType, int aBossOrInvasionType = -1)
+		{
+			if (myActiveCombat != null)
+			{
+				UpgradeCombat(aCombatType, aBossOrInvasionType);
+				myActiveCombat.myLastActivityTime = DateTime.Now;
+				return;
+			}
+
+			ProtocolPushStartCombat push = new ProtocolPushStartCombat();
+			push.myCombatType = aCombatType;
+			push.myBossOrInvasionType = aBossOrInvasionType;
+
+			if (Main.netMode == NetmodeID.Server)
+				DPSExtreme.instance.packetHandler.HandleStartCombatPush(push);
+
+			DPSExtreme.instance.packetHandler.SendProtocol(push);
+		}
+
+		//Called from TriggerCombat or from server pushing combat status
 		internal void StartCombat(CombatType aCombatType, int aBossOrInvasionType = -1)
 		{
 			if (myActiveCombat != null)
 			{
 				UpgradeCombat(aCombatType, aBossOrInvasionType);
+				Main.NewText("Upgrade through StartCombat. Should probably never happen");
 				return;
 			}
 
-			if (Main.netMode == NetmodeID.SinglePlayer)
+			if (Main.netMode == NetmodeID.SinglePlayer || Main.netMode == NetmodeID.MultiplayerClient)
 				Main.NewText(String.Format("Started combat of type: {0}", aCombatType.ToString()));
+			else if (Main.netMode == NetmodeID.Server)
+				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Server started combat"), Color.Orange);
 
 			myActiveCombat = new DPSExtremeCombat(aCombatType, aBossOrInvasionType);
 
-			DPSExtremeUI.instance.OnCombatStarted(myActiveCombat);
+			DPSExtremeUI.instance?.OnCombatStarted(myActiveCombat);
 		}
 
 		//Boss fight starts during an invastion etc
@@ -133,17 +176,27 @@ namespace DPSExtreme.CombatTracking
 
 			if ((int)myActiveCombat.myHighestCombatType > oldHighestCombat)
 			{
-				Main.NewText(String.Format("Upgraded combat from {0} to {1}", ((CombatType)oldHighestCombat).ToString(), aCombatType.ToString()));
+				if (Main.netMode == NetmodeID.SinglePlayer || Main.netMode == NetmodeID.MultiplayerClient)
+					Main.NewText(String.Format("Upgraded combat from {0} to {1}", ((CombatType)oldHighestCombat).ToString(), aCombatType.ToString()));
+				else if (Main.netMode == NetmodeID.Server)
+					ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(String.Format("Server upgraded combat from {0} to {1}", ((CombatType)oldHighestCombat).ToString(), aCombatType.ToString())), Color.Orange);
 
 				if (aCombatType == CombatType.Invasion || aCombatType == CombatType.BossFight)
 				{
 					myActiveCombat.myBossOrInvasionType = aBossOrInvasionType;
 				}
 
-				DPSExtremeUI.instance.OnCombatUpgraded(myActiveCombat);
-			}
+				DPSExtremeUI.instance?.OnCombatUpgraded(myActiveCombat);
 
-			//pass upgrade to clients
+				if (Main.netMode == NetmodeID.Server)
+				{
+					ProtocolPushUpgradeCombat push = new ProtocolPushUpgradeCombat();
+					push.myCombatType = myActiveCombat.myHighestCombatType;
+					push.myBossOrInvasionType = myActiveCombat.myBossOrInvasionType;
+
+					DPSExtreme.instance.packetHandler.SendProtocol(push);
+				}
+			}
 		}
 
 		internal void EndCombat(CombatType aCombatType)
@@ -159,6 +212,8 @@ namespace DPSExtreme.CombatTracking
 
 			if (Main.netMode == NetmodeID.SinglePlayer)
 				Main.NewText(String.Format("Ended combat"));
+			else if (Main.netMode == NetmodeID.Server)
+				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Ended combat"), Color.White);
 
 			myCurrentHistoryIndex++;
 
@@ -166,7 +221,7 @@ namespace DPSExtreme.CombatTracking
 			myActiveCombat.PrintStats();
 			myActiveCombat = null;
 
-			DPSExtremeUI.instance.OnCombatEnded();
+			DPSExtremeUI.instance?.OnCombatEnded();
 		}
 	}
 }
