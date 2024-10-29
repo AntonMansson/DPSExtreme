@@ -74,7 +74,7 @@ namespace DPSExtreme
 				new Vector2(0, 0) * vector, new Vector2(1f), -1f, 1.5f);
 
 			string rightText = dps.ToString(); // + " dps";
-			if (DPSExtremeUI.instance.showPercent && total > 0)
+			if (DPSExtremeUI.instance.myShowPercent && total > 0)
 				rightText = $"{dps} ({String.Format("{0:P0}", (float)dps / total)})";
 			vector = fontMouseText.MeasureString(rightText);
 			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, rightText, hitbox.TopRight() + new Vector2(-2, yOffset), color, 0f,
@@ -83,7 +83,7 @@ namespace DPSExtreme
 			if (IsMouseHovering && player >= 0)
 			{
 				// TODO: IsMouseHovering is false once a second because UpdateDamageLists replaces the UIElement, need to fix that
-				DPSExtremeUI.instance.drawPlayer = player;
+				DPSExtremeUI.instance.myHoveredParticipant = player;
 				Main.hoverItemName = "";
 			}
 		}
