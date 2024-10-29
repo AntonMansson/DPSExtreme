@@ -10,59 +10,70 @@ namespace DPSExtreme
 	internal class DPSExtremePacketHandler
 	{
 		//Allows us to unify SP & MP code flows into a single function call
-		public void SendProtocol(DPSExtremeProtocol aProtocol, int aTargetClient = -1) {
-			if (Main.netMode == NetmodeID.SinglePlayer) {
+		public void SendProtocol(DPSExtremeProtocol aProtocol, int aTargetClient = -1)
+		{
+			if (Main.netMode == NetmodeID.SinglePlayer)
+			{
 				HandleProtocol(aProtocol.GetDelimiter(), aProtocol);
 			}
-			else {
+			else
+			{
 				ModPacket netMessage = DPSExtreme.instance.GetPacket();
 				aProtocol.ToStream(netMessage);
 				netMessage.Send(aTargetClient);
 			}
 		}
 
-		public bool HandlePacket(BinaryReader reader, int whoAmI) {
+		public bool HandlePacket(BinaryReader reader, int whoAmI)
+		{
 			DPSExtremeMessageType delimiter = (DPSExtremeMessageType)reader.ReadByte();
 
 			DPSExtremeProtocol protocol = null;
 
-			switch (delimiter) {
-				case DPSExtremeMessageType.StartCombatPush: {
+			switch (delimiter)
+			{
+				case DPSExtremeMessageType.StartCombatPush:
+					{
 						protocol = new ProtocolPushStartCombat();
 						if (!protocol.FromStream(reader))
 							return false;
 
 						break;
 					}
-				case DPSExtremeMessageType.UpgradeCombatPush: {
+				case DPSExtremeMessageType.UpgradeCombatPush:
+					{
 						protocol = new ProtocolPushUpgradeCombat();
 						if (!protocol.FromStream(reader))
 							return false;
 
 						break;
 					}
-				case DPSExtremeMessageType.EndCombatPush: {
+				case DPSExtremeMessageType.EndCombatPush:
+					{
 						protocol = new ProtocolPushEndCombat();
 						if (!protocol.FromStream(reader))
 							return false;
 
 						break;
 					}
-				case DPSExtremeMessageType.ShareCurrentDPSReq: {
+				case DPSExtremeMessageType.ShareCurrentDPSReq:
+					{
 						protocol = new ProtocolReqShareCurrentDPS();
 						if (!protocol.FromStream(reader))
 							return false;
 
 						break;
 					}
-				case DPSExtremeMessageType.CurrentDPSsPush: {
+				case DPSExtremeMessageType.CurrentDPSsPush:
+					{
 						protocol = new ProtocolPushClientDPSs();
 						if (!protocol.FromStream(reader))
 							return false;
 
 						break;
 					}
-				case DPSExtremeMessageType.CurrentCombatTotalsPush: {
+				case DPSExtremeMessageType.CurrentCombatTotalsPush:
+					{
 						protocol = new ProtocolPushCombatStats();
 						if (!protocol.FromStream(reader))
 							return false;
@@ -74,7 +85,8 @@ namespace DPSExtreme
 					break;
 			}
 
-			if (protocol == null) {
+			if (protocol == null)
+			{
 				Main.NewText("DPSExtreme: null protocol for message type: " + delimiter.ToString());
 				DPSExtreme.instance.Logger.Warn("DPSExtreme: null protocol for message type: " + delimiter.ToString());
 			}
@@ -84,17 +96,21 @@ namespace DPSExtreme
 			return true;
 		}
 
-		public bool HijackGetData(ref byte messageType, ref BinaryReader reader, int playerNumber) {
-			try {
+		public bool HijackGetData(ref byte messageType, ref BinaryReader reader, int playerNumber)
+		{
+			try
+			{
 				if (Main.netMode != NetmodeID.Server)
 					return false;
 
-				if (messageType == MessageID.PlayerSpawn) {
+				if (messageType == MessageID.PlayerSpawn)
+				{
 					if (Netplay.Clients[playerNumber].State == 3) //Only handle it when player is joining. Not on respawns etc
 						DPSExtreme.instance.combatTracker.myJoiningPlayers.Add(playerNumber);
 				}
 
-				if (messageType == MessageID.DamageNPC) {
+				if (messageType == MessageID.DamageNPC)
+				{
 					int npcIndex = reader.ReadInt16();
 					int damage = reader.Read7BitEncodedInt();
 					if (damage < 0)
@@ -103,7 +119,8 @@ namespace DPSExtreme
 
 					//System.Console.WriteLine("HijackGetData StrikeNPC: " + npcIndex + " " + damage + " " + playerNumber);
 					NPC damagedNPC = Main.npc[npcIndex];
-					if (damagedNPC.realLife >= 0) {
+					if (damagedNPC.realLife >= 0)
+					{
 						damagedNPC = Main.npc[damagedNPC.realLife];
 					}
 
@@ -114,14 +131,17 @@ namespace DPSExtreme
 					// TODO: Verify real life adjustment
 				}
 			}
-			catch (Exception) {
+			catch (Exception)
+			{
 				//ErrorLogger.Log("HijackGetData StrikeNPC " + e.Message);
 			}
 			return false;
 		}
 
-		private void HandleProtocol(DPSExtremeMessageType aDelimiter, DPSExtremeProtocol aProtocol) {
-			switch (aDelimiter) {
+		private void HandleProtocol(DPSExtremeMessageType aDelimiter, DPSExtremeProtocol aProtocol)
+		{
+			switch (aDelimiter)
+			{
 				case DPSExtremeMessageType.StartCombatPush:
 					HandleStartCombatPush(aProtocol as ProtocolPushStartCombat);
 					break;
@@ -146,26 +166,31 @@ namespace DPSExtreme
 			}
 		}
 
-		public void HandleStartCombatPush(ProtocolPushStartCombat aPush) {
+		public void HandleStartCombatPush(ProtocolPushStartCombat aPush)
+		{
 			DPSExtreme.instance.combatTracker.StartCombat(aPush.myCombatType, aPush.myBossOrInvasionOrEventType);
 		}
 
-		public void HandleUpgradeCombatPush(ProtocolPushUpgradeCombat aPush) {
+		public void HandleUpgradeCombatPush(ProtocolPushUpgradeCombat aPush)
+		{
 			DPSExtreme.instance.combatTracker.UpgradeCombat(aPush.myCombatType, aPush.myBossOrInvasionOrEventType);
 		}
 
-		public void HandleEndCombatPush(ProtocolPushEndCombat aPush) {
+		public void HandleEndCombatPush(ProtocolPushEndCombat aPush)
+		{
 			DPSExtreme.instance.combatTracker.EndCombat(aPush.myCombatType);
 		}
 
-		public void HandleInformServerDPSReq(ProtocolReqShareCurrentDPS aReq) {
+		public void HandleInformServerDPSReq(ProtocolReqShareCurrentDPS aReq)
+		{
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
 			DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList[aReq.myPlayer].myDamage = aReq.myDPS;
 		}
 
-		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush) {
+		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush)
+		{
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
@@ -174,7 +199,8 @@ namespace DPSExtreme
 			DPSExtremeUI.instance.updateNeeded = true;
 		}
 
-		public void HandleCombatStatsPush(ProtocolPushCombatStats aPush) {
+		public void HandleCombatStatsPush(ProtocolPushCombatStats aPush)
+		{
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
@@ -187,12 +213,14 @@ namespace DPSExtreme
 			//TODO: Fix issue with dots appearing before player dpss
 			int totalDotDPS = 0;
 
-			foreach (NPC npc in Main.ActiveNPCs) {
+			foreach (NPC npc in Main.ActiveNPCs)
+			{
 				int dotDPS = -1 * npc.lifeRegen / 2;
 				totalDotDPS += dotDPS;
 
 				//Since the dot hook doesn't seem to work in SP, add damage here to the best of our abilities
-				if (Main.netMode == NetmodeID.SinglePlayer) {
+				if (Main.netMode == NetmodeID.SinglePlayer)
+				{
 					if (totalDotDPS > 0 && activeCombat.myTotalDamageDealtList[(int)InfoListIndices.DOTs].myDamage < 0) //Make sure we don't start at -1
 						activeCombat.myTotalDamageDealtList[(int)InfoListIndices.DOTs].myDamage = 0;
 

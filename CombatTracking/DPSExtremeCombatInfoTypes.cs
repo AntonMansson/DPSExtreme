@@ -22,12 +22,14 @@ namespace DPSExtreme.CombatTracking
 		{
 			internal int myDamage = -1;
 
-			public DamageDealtInfo() {
+			public DamageDealtInfo()
+			{
 			}
 
 			public bool HasData() { return myDamage != -1; }
 
-			public bool ToStream(BinaryWriter aWriter) {
+			public bool ToStream(BinaryWriter aWriter)
+			{
 				if (myDamage == -1)
 					return false;
 
@@ -35,7 +37,8 @@ namespace DPSExtreme.CombatTracking
 				return true;
 			}
 
-			public bool FromStream(BinaryReader aReader) {
+			public bool FromStream(BinaryReader aReader)
+			{
 				myDamage = aReader.ReadInt32();
 
 				return true;
