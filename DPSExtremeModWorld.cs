@@ -11,8 +11,7 @@ namespace DPSExtreme
 	// Do we even need to send?
 	internal class DPSExtremeModWorld : ModSystem
 	{
-		public override void PostUpdateWorld()
-		{
+		public override void PostUpdateWorld() {
 			if ((Main.GameUpdateCount % DPSExtreme.UPDATEDELAY) != 0)
 				return;
 
@@ -21,8 +20,7 @@ namespace DPSExtreme
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
-			if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.SinglePlayer)
-			{
+			if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.SinglePlayer) {
 				ProtocolPushClientDPSs push = new ProtocolPushClientDPSs();
 				push.myDPSList = DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList;
 

@@ -18,21 +18,17 @@ namespace DPSExtreme
 		internal int player = 0;
 		internal string nameText;
 
-		public UIPlayerDPS(int aPlayer)
-		{
+		public UIPlayerDPS(int aPlayer) {
 			player = aPlayer;
 
 			nameText = Main.player[player].name;
-			if (player >= (int)InfoListIndices.DisconnectedPlayersStart && player <= (int)InfoListIndices.DisconnectedPlayersEnd)
-			{
+			if (player >= (int)InfoListIndices.DisconnectedPlayersStart && player <= (int)InfoListIndices.DisconnectedPlayersEnd) {
 				nameText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DisconnectedPlayer"));
 			}
-			else if (player == (int)InfoListIndices.NPCs || player == (int)InfoListIndices.Traps)
-			{
+			else if (player == (int)InfoListIndices.NPCs || player == (int)InfoListIndices.Traps) {
 				nameText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC"));
 			}
-			else if (player == (int)InfoListIndices.DOTs)
-			{
+			else if (player == (int)InfoListIndices.DOTs) {
 				nameText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime"));
 			}
 
@@ -44,8 +40,7 @@ namespace DPSExtreme
 			MinHeight.Set(textSize.Y + PaddingTop + PaddingBottom, 0f);
 		}
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
-		{
+		protected override void DrawSelf(SpriteBatch spriteBatch) {
 			Rectangle hitbox = GetOuterDimensions().ToRectangle();
 			hitbox.Width = (int)(hitbox.Width * (dps / max));
 			Color color = DPSExtremeUI.chatColor[(player + DPSExtremeUI.chatColor.Length) % DPSExtremeUI.chatColor.Length];
@@ -80,23 +75,20 @@ namespace DPSExtreme
 			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, rightText, hitbox.TopRight() + new Vector2(-2, yOffset), color, 0f,
 				new Vector2(1f, 0) * vector, new Vector2(1f), -1f, 1.5f);
 
-			if (IsMouseHovering && player >= 0)
-			{
+			if (IsMouseHovering && player >= 0) {
 				// TODO: IsMouseHovering is false once a second because UpdateDamageLists replaces the UIElement, need to fix that
 				DPSExtremeUI.instance.drawPlayer = player;
 				Main.hoverItemName = "";
 			}
 		}
 
-		internal void SetDPS(int dps, float max, int total)
-		{
+		internal void SetDPS(int dps, float max, int total) {
 			this.dps = dps;
 			this.max = max;
 			this.total = total;
 		}
 
-		public override int CompareTo(object obj)
-		{
+		public override int CompareTo(object obj) {
 			UIPlayerDPS other = obj as UIPlayerDPS;
 			return -dps.CompareTo(other.dps);
 		}

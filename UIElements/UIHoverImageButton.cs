@@ -10,16 +10,13 @@ namespace DPSExtreme.UIElements
 	{
 		internal string hoverText;
 
-		public UIHoverImageButton(Asset<Texture2D> texture, string hoverText) : base(texture)
-		{
+		public UIHoverImageButton(Asset<Texture2D> texture, string hoverText) : base(texture) {
 			this.hoverText = hoverText;
 		}
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
-		{
+		protected override void DrawSelf(SpriteBatch spriteBatch) {
 			base.DrawSelf(spriteBatch);
-			if (IsMouseHovering)
-			{
+			if (IsMouseHovering) {
 				Main.hoverItemName = hoverText;
 
 				Item fakeItem = new Item();

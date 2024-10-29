@@ -23,40 +23,33 @@ namespace DPSExtreme
 	{
 		internal T[] myInfos;
 
-		public DPSExtremeInfoList()
-		{
+		public DPSExtremeInfoList() {
 			myInfos = new T[Size()];
 
-			for (int i = 0; i < Size(); i++)
-			{
+			for (int i = 0; i < Size(); i++) {
 				myInfos[i] = new T();
 			}
 		}
 
-		public ref T this[int i]
-		{
+		public ref T this[int i] {
 			get { return ref myInfos[i]; }
 		}
 
 		public int Size() { return 256; }
 
-		public void Clear()
-		{
-			for (int i = 0; i < Size(); i++)
-			{
+		public void Clear() {
+			for (int i = 0; i < Size(); i++) {
 				myInfos[i] = default;
 			}
 		}
 
-		public void ToStream(BinaryWriter aWriter)
-		{
+		public void ToStream(BinaryWriter aWriter) {
 			long startPos = aWriter.BaseStream.Position;
 
 			aWriter.Write((byte)123); //placeholder for count
 
 			byte count = 0;
-			for (int i = 0; i < Size(); i++)
-			{
+			for (int i = 0; i < Size(); i++) {
 				if (!myInfos[i].HasData())
 					continue;
 
@@ -72,12 +65,10 @@ namespace DPSExtreme
 			aWriter.BaseStream.Seek(endPos, SeekOrigin.Begin);
 		}
 
-		public void FromStream(BinaryReader aReader)
-		{
+		public void FromStream(BinaryReader aReader) {
 			int count = aReader.ReadByte();
 
-			for (int i = 0; i < count; i++)
-			{
+			for (int i = 0; i < count; i++) {
 				byte damageDealerIndex = aReader.ReadByte();
 				myInfos[damageDealerIndex].FromStream(aReader);
 			}

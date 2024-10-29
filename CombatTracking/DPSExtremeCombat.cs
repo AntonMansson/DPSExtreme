@@ -62,8 +62,7 @@ namespace DPSExtreme.CombatTracking
 		internal DPSExtremeInfoList<DamageDealtInfo> myTotalDamageDealtList = new DPSExtremeInfoList<DamageDealtInfo>();
 		internal DPSExtremeInfoList<DamageDealtInfo> myDPSList = new DPSExtremeInfoList<DamageDealtInfo>();
 
-		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType)
-		{
+		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType) {
 			myCombatTypeFlags = aCombatType;
 			myHighestCombatType = aCombatType;
 			myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
@@ -71,8 +70,7 @@ namespace DPSExtreme.CombatTracking
 			myLastActivityTime = myStartTime;
 		}
 
-		internal void AddDealtDamage(NPC aDamagedNPC, int aDamageDealer, int aDamage)
-		{
+		internal void AddDealtDamage(NPC aDamagedNPC, int aDamageDealer, int aDamage) {
 			int npcRemainingHealth = 0;
 			int npcMaxHealth = 0;
 			aDamagedNPC.GetLifeStats(out npcRemainingHealth, out npcMaxHealth);
@@ -87,11 +85,9 @@ namespace DPSExtreme.CombatTracking
 			myTotalDamageDealtList[aDamageDealer].myDamage += clampedDamageAmount;
 		}
 
-		internal void OnPlayerLeft(int aPlayer)
-		{
+		internal void OnPlayerLeft(int aPlayer) {
 			//Move player's stats into designated part of the buffer for disconnected players
-			for (int i = (int)InfoListIndices.DisconnectedPlayersStart; i < (int)InfoListIndices.DisconnectedPlayersEnd; i++)
-			{
+			for (int i = (int)InfoListIndices.DisconnectedPlayersStart; i < (int)InfoListIndices.DisconnectedPlayersEnd; i++) {
 				if (myTotalDamageDealtList[i].myDamage > -1)
 					continue;
 
@@ -100,12 +96,10 @@ namespace DPSExtreme.CombatTracking
 			}
 		}
 
-		internal void ReassignStats(int aFrom, int aTo)
-		{
+		internal void ReassignStats(int aFrom, int aTo) {
 			myTotalDamageDealtList[aTo] = myTotalDamageDealtList[aFrom];
 
-			foreach ((int npcType, DPSExtremeInfoList<DamageDealtInfo> damageInfo) in myDamageDealtPerNPCType)
-			{
+			foreach ((int npcType, DPSExtremeInfoList<DamageDealtInfo> damageInfo) in myDamageDealtPerNPCType) {
 				myDamageDealtPerNPCType[npcType][aTo] = myDamageDealtPerNPCType[npcType][aFrom];
 			}
 
@@ -114,8 +108,7 @@ namespace DPSExtreme.CombatTracking
 			ClearStatsForPlayer(aFrom);
 		}
 
-		internal void ClearStatsForPlayer(int aPlayer)
-		{
+		internal void ClearStatsForPlayer(int aPlayer) {
 			myTotalDamageDealtList[aPlayer] = new DamageDealtInfo();
 
 			foreach ((int npcType, DPSExtremeInfoList<DamageDealtInfo> damageInfo) in myDamageDealtPerNPCType)
@@ -124,10 +117,8 @@ namespace DPSExtreme.CombatTracking
 			myDPSList[aPlayer] = new DamageDealtInfo();
 		}
 
-		internal void SendStats()
-		{
-			try
-			{
+		internal void SendStats() {
+			try {
 				if (Main.netMode != NetmodeID.Server)
 					return;
 
@@ -138,49 +129,39 @@ namespace DPSExtreme.CombatTracking
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);
 
-				if (Main.netMode == NetmodeID.Server)
-				{
+				if (Main.netMode == NetmodeID.Server) {
 					Dictionary<byte, int> stats = new Dictionary<byte, int>();
-					for (int i = 0; i < 256; i++)
-					{
-						if (myTotalDamageDealtList[i].myDamage > -1)
-						{
+					for (int i = 0; i < 256; i++) {
+						if (myTotalDamageDealtList[i].myDamage > -1) {
 							stats[(byte)i] = myTotalDamageDealtList[i].myDamage;
 						}
 					}
-					
+
 					DPSExtreme.instance.InvokeOnSimpleBossStats(stats);
 				}
-				
+
 			}
-			catch (Exception)
-			{
+			catch (Exception) {
 				//ErrorLogger.Log("SendStats" + e.Message);
 			}
 		}
 
-		internal void PrintStats()
-		{
+		internal void PrintStats() {
 			StringBuilder sb = new StringBuilder();
 			//sb.Append(Language.GetText(DPSExtreme.instance.GetLocalizationKey("DamageStatsForNPC")).Format(Lang.GetNPCNameValue(npc.type)));
 			// Add DamageStatsForCombat line
 
-			for (int i = 0; i < 256; i++)
-			{
+			for (int i = 0; i < 256; i++) {
 				DamageDealtInfo damageInfo = myTotalDamageDealtList[i];
 
-				if (damageInfo.myDamage > 0)
-				{
-					if (i == (int)InfoListIndices.NPCs)
-					{
+				if (damageInfo.myDamage > 0) {
+					if (i == (int)InfoListIndices.NPCs) {
 						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC")), damageInfo.myDamage));
 					}
-					if (i == (int)InfoListIndices.DOTs)
-					{
+					if (i == (int)InfoListIndices.DOTs) {
 						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")), damageInfo.myDamage));
 					}
-					else
-					{
+					else {
 						sb.Append(string.Format("{0}: {1}, ", Main.player[i].name, damageInfo.myDamage));
 					}
 				}
@@ -191,12 +172,10 @@ namespace DPSExtreme.CombatTracking
 
 			Color messageColor = Color.Orange;
 
-			if (Main.netMode == NetmodeID.Server)
-			{
+			if (Main.netMode == NetmodeID.Server) {
 				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(sb.ToString()), messageColor);
 			}
-			else if (Main.netMode == NetmodeID.SinglePlayer)
-			{
+			else if (Main.netMode == NetmodeID.SinglePlayer) {
 				Main.NewText(sb.ToString(), messageColor);
 			}
 		}
