@@ -1,27 +1,52 @@
-﻿using Terraria;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameInput;
-using Terraria.Localization;
+using System.Collections.Generic;
 
 namespace DPSExtreme
 {
 	internal class DPSExtremeModPlayer : ModPlayer
 	{
-		public override void PostUpdate() {
-			if (Main.GameUpdateCount % DPSExtreme.UPDATEDELAY == 0) {
-				if (Player.whoAmI == Main.myPlayer && Player.accDreamCatcher) {
-					int dps = Player.getDPS();
-					if (!Player.dpsStarted)
-						dps = 0;
+		internal static List<int> ourConnectedPlayers = new List<int>();
 
-					ProtocolReqInformServerCurrentDPS req = new ProtocolReqInformServerCurrentDPS();
-					req.myPlayer = Player.whoAmI;
-					req.myDPS = dps;
+		public override void PlayerDisconnect() {
+			if (Main.netMode != NetmodeID.Server)
+				return;
 
-					DPSExtreme.instance.packetHandler.SendProtocol(req);
-				}
+			foreach (int playerIndex in ourConnectedPlayers) {
+				if (Main.player[playerIndex].active)
+					continue;
+
+				ourConnectedPlayers.Remove(playerIndex);
+				DPSExtreme.instance?.combatTracker.OnPlayerLeft(playerIndex);
+
+				break;
 			}
+		}
+
+		public override void PostUpdate() {
+			if (Main.GameUpdateCount % DPSExtreme.UPDATEDELAY != 0)
+				return;
+
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+				return;
+
+			if (Player.whoAmI != Main.myPlayer)
+				return;
+
+			if (!Player.accDreamCatcher)
+				return;
+
+			int dps = Player.getDPS();
+			if (!Player.dpsStarted)
+				dps = 0;
+
+			ProtocolReqShareCurrentDPS req = new ProtocolReqShareCurrentDPS();
+			req.myPlayer = Player.whoAmI;
+			req.myDPS = dps;
+
+			DPSExtreme.instance.packetHandler.SendProtocol(req);
 		}
 
 		public override void ProcessTriggers(TriggersSet triggersSet) {

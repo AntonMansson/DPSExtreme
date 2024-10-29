@@ -7,8 +7,9 @@ using System;
 using Terraria.UI;
 using DPSExtreme.UIElements;
 using Microsoft.Xna.Framework;
+using DPSExtreme.CombatTracking;
 
-// TODO, mod to share fog of war maps
+// TODO, mod to share fog of war 
 // TODO: Death counter for each boss
 // TODO: Track events in some way
 // TODO: Track damage per weapon, minion, mounts, etc.
@@ -84,7 +85,7 @@ namespace DPSExtreme
 
 	internal class DPSExtreme : Mod
 	{
-		internal const int UPDATEDELAY = 90; // 1.5 seconds. Configurable later?
+		internal const int UPDATEDELAY = 30; // 0.5 seconds. Configurable later?
 
 		internal static DPSExtreme instance;
 
@@ -92,7 +93,8 @@ namespace DPSExtreme
 
 		internal DPSExtremeTool dpsExtremeTool;
 
-		internal DPSExtremePacketHandler packetHandler;
+		internal DPSExtremeCombatTracker combatTracker = new DPSExtremeCombatTracker();
+		internal DPSExtremePacketHandler packetHandler = new DPSExtremePacketHandler();
 
 		private int lastSeenScreenWidth;
 		private int lastSeenScreenHeight;
@@ -101,21 +103,10 @@ namespace DPSExtreme
 
 		// NPCLoader.StrikeNPC doesn't specify which player dealt the damage.
 
-		internal static int bossIndex = -1;
-		internal static int[] bossDamage; // Server sends stats for a specific Boss NPC
-		internal static int[] dpss;
-		internal static int bossDamageDOT;
-		internal static int bossDamageDOTDPS;
 		//internal static bool ShowTeamDPS;
 
 		public override void Load() {
 			instance = this;
-			dpss = new int[256];
-			bossDamage = new int[256];
-			for (int i = 0; i < 256; i++) {
-				dpss[i] = -1;
-				bossDamage[i] = -1;
-			}
 			//ShowTeamDPS = false;
 			ToggleTeamDPSHotKey = KeybindLoader.RegisterKeybind(this, "ToggleTeamDPSBossMeter", "F4"); // F4?
 		}
@@ -124,8 +115,6 @@ namespace DPSExtreme
 			if (!Main.dedServ) {
 				dpsExtremeTool = new DPSExtremeTool();
 			}
-
-			packetHandler = new DPSExtremePacketHandler();
 		}
 
 		public override void Unload() {
