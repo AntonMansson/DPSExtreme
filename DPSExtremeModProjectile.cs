@@ -1,4 +1,4 @@
-﻿using Terraria;
+using Terraria;
 using Terraria.DataStructures;
 using Terraria.Enums;
 using Terraria.ID;
@@ -20,7 +20,7 @@ namespace DPSExtreme
 			}
 
 			if (source is EntitySource_Wiring wiring) {
-				whoIsMyParent = 255;
+				whoIsMyParent = (int)InfoListIndices.Traps;
 			}
 		}
 	}

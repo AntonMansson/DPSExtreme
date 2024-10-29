@@ -1,5 +1,6 @@
 Keybinds.ToggleTeamDPSBossMeter.DisplayName: 开关队伍成员伤害/对Boss伤害统计
 DPS: 队伍成员伤害
+// DamageDone: Damage done
 TogglePercent: 显示 %
 NoDPSWearDPSMeter: 需要[i:DPSMeter]
 NoBoss: 当前无Boss存活
@@ -7,7 +8,10 @@ BossLabel: Boss - {0}
 ClickToViewBossDamage: 点击查看对Boss伤害
 ClickToViewDPSStats: 点击查看队伍成员伤害
 DamageStatsForNPC: "{0} 伤害: "
+// DisconnectedPlayer: Disconnected player
 TrapsTownNPC: 陷阱/城镇NPC
 DamageOverTime: 减益总伤害
 OnlyAvailableInMultiplayer: 伤害统计仅在多人模式生效
 ToggleTeamDPSCommandDescription: 显示队伍成员伤害统计
+// Invasion: Invasion
+// Event: Event

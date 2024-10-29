@@ -16,24 +16,31 @@ namespace DPSExtreme
 		internal int total = 1;
 		internal string hoverText;
 		internal int player = 0;
-		internal string text;
+		internal string nameText;
 
-		public UIPlayerDPS(int player, string text, string hoverText)
-		{
-			this.hoverText = hoverText;
-			this.player = player;
-			this.text = text;
+		public UIPlayerDPS(int aPlayer) {
+			player = aPlayer;
+
+			nameText = Main.player[player].name;
+			if (player >= (int)InfoListIndices.DisconnectedPlayersStart && player <= (int)InfoListIndices.DisconnectedPlayersEnd) {
+				nameText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DisconnectedPlayer"));
+			}
+			else if (player == (int)InfoListIndices.NPCs || player == (int)InfoListIndices.Traps) {
+				nameText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC"));
+			}
+			else if (player == (int)InfoListIndices.DOTs) {
+				nameText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime"));
+			}
 
 			PaddingTop = 8f;
 
 			DynamicSpriteFont dynamicSpriteFont = FontAssets.MouseText.Value;
-			Vector2 textSize = new Vector2(dynamicSpriteFont.MeasureString(text.ToString()).X, 16f) * 1f;
-			this.MinWidth.Set(textSize.X + this.PaddingLeft + this.PaddingRight, 0f);
-			this.MinHeight.Set(textSize.Y + this.PaddingTop + this.PaddingBottom, 0f);
+			Vector2 textSize = new Vector2(dynamicSpriteFont.MeasureString(nameText.ToString()).X, 16f) * 1f;
+			MinWidth.Set(textSize.X + PaddingLeft + PaddingRight, 0f);
+			MinHeight.Set(textSize.Y + PaddingTop + PaddingBottom, 0f);
 		}
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
-		{
+		protected override void DrawSelf(SpriteBatch spriteBatch) {
 			Rectangle hitbox = GetOuterDimensions().ToRectangle();
 			hitbox.Width = (int)(hitbox.Width * (dps / max));
 			Color color = DPSExtremeUI.chatColor[(player + DPSExtremeUI.chatColor.Length) % DPSExtremeUI.chatColor.Length];
@@ -51,18 +58,14 @@ namespace DPSExtreme
 			//Utils.DrawBorderString(spriteBatch, text, hitbox.TopLeft(), Color.White, 1f, 0f, 0f, -1);
 			//}
 			//string[] RandomNames = new string[] { "Bob", "Terminator", "TacoBelle", "What Is My Name", "Albert", "jopojelly", "blushie", "jofariden", "someone", "Town/Traps" };
-			string leftText = player == -1 ? Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")) : Main.player[player].name /* + ":"*/;
-			if (player == 255)
-			{
-				leftText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC"));
-			}
+
 			//if (!Main.player[player].active)
 			//	leftText = RandomNames[player % RandomNames.Length];
 			color = Color.White;
 			DynamicSpriteFont fontMouseText = FontAssets.MouseText.Value;
-			Vector2 vector = fontMouseText.MeasureString(leftText);
+			Vector2 vector = fontMouseText.MeasureString(nameText);
 			int yOffset = -6;
-			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, leftText, hitbox.TopLeft() + new Vector2(4, yOffset), color, 0f,
+			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, nameText, hitbox.TopLeft() + new Vector2(4, yOffset), color, 0f,
 				new Vector2(0, 0) * vector, new Vector2(1f), -1f, 1.5f);
 
 			string rightText = dps.ToString(); // + " dps";
@@ -72,23 +75,20 @@ namespace DPSExtreme
 			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, rightText, hitbox.TopRight() + new Vector2(-2, yOffset), color, 0f,
 				new Vector2(1f, 0) * vector, new Vector2(1f), -1f, 1.5f);
 
-			if (IsMouseHovering && player >= 0)
-			{
+			if (IsMouseHovering && player >= 0) {
 				// TODO: IsMouseHovering is false once a second because UpdateDamageLists replaces the UIElement, need to fix that
-				DPSExtremeUI.instance.drawPlayer = player; 
-				Main.hoverItemName = hoverText;
+				DPSExtremeUI.instance.drawPlayer = player;
+				Main.hoverItemName = "";
 			}
 		}
 
-		internal void SetDPS(int dps, float max, int total)
-		{
+		internal void SetDPS(int dps, float max, int total) {
 			this.dps = dps;
 			this.max = max;
 			this.total = total;
 		}
 
-		public override int CompareTo(object obj)
-		{
+		public override int CompareTo(object obj) {
 			UIPlayerDPS other = obj as UIPlayerDPS;
 			return -dps.CompareTo(other.dps);
 		}
