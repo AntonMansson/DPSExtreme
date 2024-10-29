@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Terraria.ID;
 using Terraria;

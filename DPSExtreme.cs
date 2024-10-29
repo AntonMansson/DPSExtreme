@@ -9,7 +9,7 @@ using DPSExtreme.UIElements;
 using Microsoft.Xna.Framework;
 using DPSExtreme.CombatTracking;
 
-// TODO, mod to share fog of war maps
+// TODO, mod to share fog of war 
 // TODO: Death counter for each boss
 // TODO: Track events in some way
 // TODO: Track damage per weapon, minion, mounts, etc.
