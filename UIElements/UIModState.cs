@@ -6,13 +6,11 @@ namespace DPSExtreme.UIElements
 	{
 		internal UserInterface userInterface;
 
-		public UIModState(UserInterface userInterface)
-		{
+		public UIModState(UserInterface userInterface) {
 			this.userInterface = userInterface;
 		}
 
-		public void ReverseChildren()
-		{
+		public void ReverseChildren() {
 			Elements.Reverse();
 		}
 	}

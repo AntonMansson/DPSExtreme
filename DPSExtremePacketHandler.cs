@@ -14,46 +14,38 @@ namespace DPSExtreme
 	internal class DPSExtremePacketHandler
 	{
 		//Allows us to unify SP & MP code flows into a single function call
-		public void SendProtocol(DPSExtremeProtocol aProtocol)
-		{
-			if (Main.netMode == NetmodeID.Server)
-			{
+		public void SendProtocol(DPSExtremeProtocol aProtocol) {
+			if (Main.netMode == NetmodeID.Server) {
 				ModPacket netMessage = DPSExtreme.instance.GetPacket();
 				aProtocol.ToStream(netMessage);
 				netMessage.Send();
 			}
-			else if (Main.netMode == NetmodeID.SinglePlayer)
-			{
+			else if (Main.netMode == NetmodeID.SinglePlayer) {
 				HandleProtocol(aProtocol.GetDelimiter(), aProtocol);
 			}
 		}
 
-		public bool HandlePacket(BinaryReader reader, int whoAmI)
-		{
+		public bool HandlePacket(BinaryReader reader, int whoAmI) {
 			DPSExtremeMessageType delimiter = (DPSExtremeMessageType)reader.ReadByte();
 
 			DPSExtremeProtocol protocol = null;
 
-			switch (delimiter)
-			{
-				case DPSExtremeMessageType.InformServerCurrentDPS:
-					{
+			switch (delimiter) {
+				case DPSExtremeMessageType.InformServerCurrentDPS: {
 						protocol = new ProtocolReqInformServerCurrentDPS();
 						if (!protocol.FromStream(reader))
 							return false;
 
 						break;
 					}
-				case DPSExtremeMessageType.InformClientsCurrentDPSs:
-					{
+				case DPSExtremeMessageType.InformClientsCurrentDPSs: {
 						protocol = new ProtocolPushClientDPSs();
 						if (!protocol.FromStream(reader))
 							return false;
 
 						break;
 					}
-				case DPSExtremeMessageType.InformClientsCurrentBossTotals:
-					{
+				case DPSExtremeMessageType.InformClientsCurrentBossTotals: {
 						protocol = new ProtocolPushBossFightStats();
 						if (!protocol.FromStream(reader))
 							return false;
@@ -73,12 +65,9 @@ namespace DPSExtreme
 			return true;
 		}
 
-		public bool HijackGetData(ref byte messageType, ref BinaryReader reader, int playerNumber)
-		{
-			try
-			{
-				if (messageType == MessageID.DamageNPC && Main.netMode == NetmodeID.Server)
-				{
+		public bool HijackGetData(ref byte messageType, ref BinaryReader reader, int playerNumber) {
+			try {
+				if (messageType == MessageID.DamageNPC && Main.netMode == NetmodeID.Server) {
 					int npcIndex = reader.ReadInt16();
 					int damage = reader.Read7BitEncodedInt();
 					if (damage < 0)
@@ -87,8 +76,7 @@ namespace DPSExtreme
 
 					//System.Console.WriteLine("HijackGetData StrikeNPC: " + npcIndex + " " + damage + " " + playerNumber);
 					NPC damagedNPC = Main.npc[npcIndex];
-					if (damagedNPC.realLife >= 0)
-					{
+					if (damagedNPC.realLife >= 0) {
 						damagedNPC = Main.npc[damagedNPC.realLife];
 					}
 
@@ -98,31 +86,34 @@ namespace DPSExtreme
 					// TODO: Verify real life adjustment
 				}
 			}
-			catch (Exception)
-			{
+			catch (Exception) {
 				//ErrorLogger.Log("HijackGetData StrikeNPC " + e.Message);
 			}
 			return false;
 		}
 
-		private void HandleProtocol(DPSExtremeMessageType aDelimiter, DPSExtremeProtocol aProtocol)
-		{
-			switch (aDelimiter)
-			{
-				case DPSExtremeMessageType.InformServerCurrentDPS: HandleInformServerDPSReq(aProtocol as ProtocolReqInformServerCurrentDPS); break;
-				case DPSExtremeMessageType.InformClientsCurrentDPSs: HandleClientDPSsPush(aProtocol as ProtocolPushClientDPSs); break;
-				case DPSExtremeMessageType.InformClientsCurrentBossTotals: HandleBossFightStatsPush(aProtocol as ProtocolPushBossFightStats); break;
-				default: DPSExtreme.instance.Logger.Warn("DPSExtreme: Unknown Message type: " + aDelimiter); break;
+		private void HandleProtocol(DPSExtremeMessageType aDelimiter, DPSExtremeProtocol aProtocol) {
+			switch (aDelimiter) {
+				case DPSExtremeMessageType.InformServerCurrentDPS:
+					HandleInformServerDPSReq(aProtocol as ProtocolReqInformServerCurrentDPS);
+					break;
+				case DPSExtremeMessageType.InformClientsCurrentDPSs:
+					HandleClientDPSsPush(aProtocol as ProtocolPushClientDPSs);
+					break;
+				case DPSExtremeMessageType.InformClientsCurrentBossTotals:
+					HandleBossFightStatsPush(aProtocol as ProtocolPushBossFightStats);
+					break;
+				default:
+					DPSExtreme.instance.Logger.Warn("DPSExtreme: Unknown Message type: " + aDelimiter);
+					break;
 			}
 		}
 
-		public void HandleInformServerDPSReq(ProtocolReqInformServerCurrentDPS aReq)
-		{
+		public void HandleInformServerDPSReq(ProtocolReqInformServerCurrentDPS aReq) {
 			DPSExtreme.dpss[aReq.myPlayer] = aReq.myDPS;
 		}
 
-		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush)
-		{
+		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush) {
 			for (int i = 0; i < 256; i++)
 				DPSExtreme.dpss[i] = -1;
 
@@ -132,16 +123,14 @@ namespace DPSExtreme
 			DPSExtremeUI.instance.updateNeeded = true;
 		}
 
-		public void HandleBossFightStatsPush(ProtocolPushBossFightStats aPush)
-		{
+		public void HandleBossFightStatsPush(ProtocolPushBossFightStats aPush) {
 			bool dead = aPush.myBossIsDead;
 			DPSExtreme.bossIndex = aPush.myBossIndex;
 
 			for (int i = 0; i < 256; i++)
 				DPSExtreme.bossDamage[i] = -1;
 
-			for (int i = 0; i < aPush.myPlayerCount; i++)
-			{
+			for (int i = 0; i < aPush.myPlayerCount; i++) {
 				byte playerIndex = aPush.myPlayerIndices[i];
 				int playerdps = aPush.myPlayerDPSs[i];
 

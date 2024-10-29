@@ -108,13 +108,11 @@ namespace DPSExtreme
 		internal static int bossDamageDOTDPS;
 		//internal static bool ShowTeamDPS;
 
-		public override void Load()
-		{
+		public override void Load() {
 			instance = this;
 			dpss = new int[256];
 			bossDamage = new int[256];
-			for (int i = 0; i < 256; i++)
-			{
+			for (int i = 0; i < 256; i++) {
 				dpss[i] = -1;
 				bossDamage[i] = -1;
 			}
@@ -126,20 +124,18 @@ namespace DPSExtreme
 			if (!Main.dedServ) {
 				dpsExtremeTool = new DPSExtremeTool();
 			}
-			
+
 			packetHandler = new DPSExtremePacketHandler();
 		}
 
-		public override void Unload()
-		{
+		public override void Unload() {
 			instance = null;
 			ToggleTeamDPSHotKey = null;
 		}
 
 		// 255 is server damage, 256 is server whoami
 
-		public override void HandlePacket(BinaryReader reader, int whoAmI)
-		{
+		public override void HandlePacket(BinaryReader reader, int whoAmI) {
 			packetHandler.HandlePacket(reader, whoAmI);
 		}
 
@@ -169,17 +165,13 @@ namespace DPSExtreme
 			dpsExtremeTool?.UIUpdate(gameTime);
 		}
 
-		public void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
-		{
+		public void ModifyInterfaceLayers(List<GameInterfaceLayer> layers) {
 			int inventoryLayerIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
-			if (inventoryLayerIndex != -1)
-			{
+			if (inventoryLayerIndex != -1) {
 				layers.Insert(inventoryLayerIndex, new LegacyGameInterfaceLayer(
 					"DPSExtreme: Team DPS",
-					delegate
-					{
-						if (lastSeenScreenWidth != Main.screenWidth || lastSeenScreenHeight != Main.screenHeight)
-						{
+					delegate {
+						if (lastSeenScreenWidth != Main.screenWidth || lastSeenScreenHeight != Main.screenHeight) {
 							dpsExtremeTool.ScreenResolutionChanged();
 							lastSeenScreenWidth = Main.screenWidth;
 							lastSeenScreenHeight = Main.screenHeight;
@@ -223,41 +215,35 @@ namespace DPSExtreme
 		//	}
 		//}
 
-		public override object Call(params object[] args)
-		{
-			try
-			{
+		public override object Call(params object[] args) {
+			try {
 				string message = args[0] as string;
-				if (message == "RegisterForSimpleBossDamageStats")
-				{
+				if (message == "RegisterForSimpleBossDamageStats") {
 					Action<Dictionary<byte, int>> callback = args[1] as Action<Dictionary<byte, int>>;
 					OnSimpleBossStats += callback;
 					return "RegisterSuccess";
 				}
-				else
-				{
+				else {
 					Logger.Warn("DPSExtreme Call Error: Unknown Message: " + message);
 				}
 			}
-			catch (Exception e)
-			{
+			catch (Exception e) {
 				Logger.Warn("DPSExtreme Call Error: " + e.StackTrace + e.Message);
 			}
 			return "Failure";
 		}
 
-		public void RegisterForSimpleBossDamageStats(Action<Dictionary<byte, int>> callback)
-		{
+		public void RegisterForSimpleBossDamageStats(Action<Dictionary<byte, int>> callback) {
 			OnSimpleBossStats += callback;
 		}
 
-		internal void InvokeOnSimpleBossStats(Dictionary<byte, int> stats)
-		{
+		internal void InvokeOnSimpleBossStats(Dictionary<byte, int> stats) {
 			OnSimpleBossStats?.Invoke(stats);
 		}
 	}
 
-	public class DPSExtremeSystem : ModSystem {
+	public class DPSExtremeSystem : ModSystem
+	{
 		public override bool HijackGetData(ref byte messageType, ref BinaryReader reader, int playerNumber) => ModContent.GetInstance<DPSExtreme>().packetHandler.HijackGetData(ref messageType, ref reader, playerNumber);
 
 		public override void UpdateUI(GameTime gameTime) => ModContent.GetInstance<DPSExtreme>().UpdateUI(gameTime);
@@ -267,8 +253,7 @@ namespace DPSExtreme
 
 	public static class DPSExtremeInterface
 	{
-		public static void RegisterForSimpleBossDamageStats(Action<Dictionary<byte, int>> callback)
-		{
+		public static void RegisterForSimpleBossDamageStats(Action<Dictionary<byte, int>> callback) {
 			DPSExtreme.instance.RegisterForSimpleBossDamageStats(callback);
 		}
 	}

@@ -19,8 +19,7 @@ namespace DPSExtreme
 		internal int damageDOT; // damage from damage over time buffs.
 		internal bool onDeathBed; // SP only flag for something?
 
-		public DPSExtremeGlobalNPC()
-		{
+		public DPSExtremeGlobalNPC() {
 			damageDone = new int[256];
 		}
 
@@ -28,18 +27,17 @@ namespace DPSExtreme
 			Terraria.IL_NPC.UpdateNPC_BuffApplyDOTs += IL_NPC_UpdateNPC_BuffApplyDOTs;
 		}
 
-		private void AddDamageReceived(NPC aDamagedNPC, int aDamageSource, int aDamageAmount)
-		{
-            DPSExtremeGlobalNPC info = aDamagedNPC.GetGlobalNPC<DPSExtremeGlobalNPC>();
+		private void AddDamageReceived(NPC aDamagedNPC, int aDamageSource, int aDamageAmount) {
+			DPSExtremeGlobalNPC info = aDamagedNPC.GetGlobalNPC<DPSExtremeGlobalNPC>();
 
-            int npcRemainingHealth = 0;
-            int npcMaxHealth = 0;
-            aDamagedNPC.GetLifeStats(out npcRemainingHealth, out npcMaxHealth);
-            npcRemainingHealth += aDamageAmount; //damage has already been applied when we reach this point. But we're interested in the value pre-damage
+			int npcRemainingHealth = 0;
+			int npcMaxHealth = 0;
+			aDamagedNPC.GetLifeStats(out npcRemainingHealth, out npcMaxHealth);
+			npcRemainingHealth += aDamageAmount; //damage has already been applied when we reach this point. But we're interested in the value pre-damage
 
-            int clampedDamageAmount = Math.Clamp(aDamageAmount, 0, npcRemainingHealth); //Avoid overkill
-            info.damageDone[aDamageSource] += clampedDamageAmount;
-        }
+			int clampedDamageAmount = Math.Clamp(aDamageAmount, 0, npcRemainingHealth); //Avoid overkill
+			info.damageDone[aDamageSource] += clampedDamageAmount;
+		}
 
 		private void IL_NPC_UpdateNPC_BuffApplyDOTs(MonoMod.Cil.ILContext il) {
 			// with realLife, worm npc take more damage. Eater of worlds doesn't use realLife, each takes damage individually. Eventually need to account for this?
@@ -103,99 +101,81 @@ namespace DPSExtreme
 		//}
 
 		// question, in MP, is this called before or after last hit?
-		public override void OnKill(NPC npc)
-		{
-			try
-			{
+		public override void OnKill(NPC npc) {
+			try {
 				//System.Console.WriteLine("NPCLoot");
 
-				if (npc.boss)
-				{
-					if (Main.netMode == NetmodeID.SinglePlayer)
-					{
+				if (npc.boss) {
+					if (Main.netMode == NetmodeID.SinglePlayer) {
 						onDeathBed = true;
 					}
-					else
-					{
+					else {
 						SendStats(npc);
 					}
 				}
 			}
-			catch (Exception)
-			{
+			catch (Exception) {
 				//ErrorLogger.Log("NPCLoot" + e.Message);
 			}
 		}
 
-		void SendStats(NPC npc)
-		{
-			try
-			{
+		void SendStats(NPC npc) {
+			try {
 				//System.Console.WriteLine("SendStats");
 
 				StringBuilder sb = new StringBuilder();
 				sb.Append(Language.GetText(DPSExtreme.instance.GetLocalizationKey("DamageStatsForNPC")).Format(Lang.GetNPCNameValue(npc.type)));
-				for (int i = 0; i < 256; i++)
-				{
+				for (int i = 0; i < 256; i++) {
 					int playerDamage = damageDone[i];
-					if (playerDamage > 0)
-					{
-						if (i == 255)
-						{
+					if (playerDamage > 0) {
+						if (i == 255) {
 							sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC")), playerDamage));
 						}
-						else
-						{
+						else {
 							sb.Append(string.Format("{0}: {1}, ", Main.player[i].name, playerDamage));
 						}
 					}
 				}
-				if(damageDOT > 0) {
+				if (damageDOT > 0) {
 					sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")), damageDOT));
 				}
 				sb.Length -= 2; // removes last ,
 				Color messageColor = Color.Orange;
 
-                ProtocolPushBossFightStats push = new ProtocolPushBossFightStats();
-                push.myBossIsDead = true;
-                push.myBossIndex = (byte)npc.whoAmI;
+				ProtocolPushBossFightStats push = new ProtocolPushBossFightStats();
+				push.myBossIsDead = true;
+				push.myBossIndex = (byte)npc.whoAmI;
 
-                DPSExtremeGlobalNPC bossGlobalNPC = npc.GetGlobalNPC<DPSExtremeGlobalNPC>();
-                for (int i = 0; i < 256; i++)
-                {
-                    if (bossGlobalNPC.damageDone[i] > 0)
-                    {
-                        push.myPlayerCount++;
+				DPSExtremeGlobalNPC bossGlobalNPC = npc.GetGlobalNPC<DPSExtremeGlobalNPC>();
+				for (int i = 0; i < 256; i++) {
+					if (bossGlobalNPC.damageDone[i] > 0) {
+						push.myPlayerCount++;
 
-                        push.myPlayerIndices.Add((byte)i);
-                        push.myPlayerDPSs.Add(bossGlobalNPC.damageDone[i]);
-                    }
-                }
+						push.myPlayerIndices.Add((byte)i);
+						push.myPlayerDPSs.Add(bossGlobalNPC.damageDone[i]);
+					}
+				}
 
-                push.myBossDamageTakenFromDOT = bossGlobalNPC.damageDOT;
-                // No need to send DOT dps.
+				push.myBossDamageTakenFromDOT = bossGlobalNPC.damageDOT;
+				// No need to send DOT dps.
 
-                DPSExtreme.instance.packetHandler.SendProtocol(push);
+				DPSExtreme.instance.packetHandler.SendProtocol(push);
 
-                if (Main.netMode == NetmodeID.Server)
-				{
+				if (Main.netMode == NetmodeID.Server) {
 					ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(sb.ToString()), messageColor);
 
 					Dictionary<byte, int> stats = new Dictionary<byte, int>();
-					for (int i = 0; i < 256; i++)
-					{
-						if (bossGlobalNPC.damageDone[i] > -1)
-						{
+					for (int i = 0; i < 256; i++) {
+						if (bossGlobalNPC.damageDone[i] > -1) {
 							stats[(byte)i] = bossGlobalNPC.damageDone[i];
 						}
 					}
 					// DOT can't be in simple boss stats it seems, would need to adjust call.
 					DPSExtreme.instance.InvokeOnSimpleBossStats(stats);
 				}
-				else if (Main.netMode == NetmodeID.SinglePlayer)
-				{
+				else if (Main.netMode == NetmodeID.SinglePlayer) {
 					Main.NewText(sb.ToString(), messageColor);
-                }
+				}
 			}
 			catch (Exception) {
 				//ErrorLogger.Log("SendStats" + e.Message);
@@ -203,18 +183,15 @@ namespace DPSExtreme
 		}
 
 		// Things like townNPC and I think traps will trigger this in Server. In SP, all is done here.
-		public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
-		{
-			try
-			{
+		public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone) {
+			try {
 				//System.Console.WriteLine("OnHitByItem " + player.whoAmI);
 
 				NPC damagedNPC = npc;
-				if (npc.realLife >= 0)
-				{
+				if (npc.realLife >= 0) {
 					damagedNPC = Main.npc[damagedNPC.realLife];
 				}
-				
+
 				AddDamageReceived(damagedNPC, player.whoAmI, damageDone);
 
 				DPSExtremeGlobalNPC info = damagedNPC.GetGlobalNPC<DPSExtremeGlobalNPC>();
@@ -231,39 +208,34 @@ namespace DPSExtreme
 				//	SendStats(npc);
 				//}
 			}
-			catch (Exception)
-			{
+			catch (Exception) {
 				//ErrorLogger.Log("OnHitByItem" + e.Message);
 			}
 		}
 
 		// Things like townNPC and I think traps will trigger this in Server. In SP, all is done here.
-		public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
-		{
+		public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone) {
 			//TODO, owner could be -1?
-			try
-			{
+			try {
 				//System.Console.WriteLine("OnHitByProjectile " + projectile.owner);
 
 				NPC damagedNPC = npc;
-				if (npc.realLife >= 0)
-				{
+				if (npc.realLife >= 0) {
 					damagedNPC = Main.npc[damagedNPC.realLife];
 				}
 
-                int projectileOwner = projectile.owner;
+				int projectileOwner = projectile.owner;
 
-                /*Temp hack to assign npc projectiles to npc table. Necessary for them to appear in list on SP clients
+				/*Temp hack to assign npc projectiles to npc table. Necessary for them to appear in list on SP clients
 				whoIsMyParent could be used to diffirentiate between individual npcs in the future. And could also seperate other damage sources like traps apart from npcs*/
-                if (projectile.GetGlobalProjectile<DPSExtremeModProjectile>().whoIsMyParent != -1) 
-                    projectileOwner = 255;
+				if (projectile.GetGlobalProjectile<DPSExtremeModProjectile>().whoIsMyParent != -1)
+					projectileOwner = 255;
 
-				AddDamageReceived(damagedNPC , projectileOwner, damageDone);
+				AddDamageReceived(damagedNPC, projectileOwner, damageDone);
 
 				DPSExtremeGlobalNPC info = damagedNPC.GetGlobalNPC<DPSExtremeGlobalNPC>();
-				
-				if (info.onDeathBed)
-				{
+
+				if (info.onDeathBed) {
 					info.SendStats(damagedNPC);
 					info.onDeathBed = false;
 				}
@@ -274,8 +246,7 @@ namespace DPSExtreme
 				//	SendStats(npc);
 				//}
 			}
-			catch (Exception)
-			{
+			catch (Exception) {
 				//ErrorLogger.Log("OnHitByProjectile" + e.Message);
 			}
 		}
