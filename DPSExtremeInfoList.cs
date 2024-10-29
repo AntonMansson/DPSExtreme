@@ -11,7 +11,9 @@ namespace DPSExtreme
 	{
 		Players = 0,
 		//0-... is players
-		SupportedPlayerCount = 250,
+		SupportedPlayerCount = 240,
+		DisconnectedPlayersStart = 241,
+		DisconnectedPlayersEnd = 250,
 		DOTs = 253,
 		Traps = 255,
 		NPCs = 255

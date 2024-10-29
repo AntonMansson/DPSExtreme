@@ -93,8 +93,8 @@ namespace DPSExtreme
 
 		internal DPSExtremeTool dpsExtremeTool;
 
-		internal DPSExtremeCombatTracker combatTracker;
-		internal DPSExtremePacketHandler packetHandler;
+		internal DPSExtremeCombatTracker combatTracker = new DPSExtremeCombatTracker();
+		internal DPSExtremePacketHandler packetHandler = new DPSExtremePacketHandler();
 
 		private int lastSeenScreenWidth;
 		private int lastSeenScreenHeight;
@@ -118,9 +118,6 @@ namespace DPSExtreme
 			{
 				dpsExtremeTool = new DPSExtremeTool();
 			}
-
-			packetHandler = new DPSExtremePacketHandler();
-			combatTracker = new DPSExtremeCombatTracker();
 		}
 
 		public override void Unload()

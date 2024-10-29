@@ -87,6 +87,43 @@ namespace DPSExtreme.CombatTracking
 			myTotalDamageDealtList[aDamageDealer].myDamage += clampedDamageAmount;
 		}
 
+		internal void OnPlayerLeft(int aPlayer)
+		{
+			//Move player's stats into designated part of the buffer for disconnected players
+			for (int i = (int)InfoListIndices.DisconnectedPlayersStart; i < (int)InfoListIndices.DisconnectedPlayersEnd; i++)
+			{
+				if (myTotalDamageDealtList[i].myDamage > -1)
+					continue;
+
+				ReassignStats(aPlayer, i);
+				break;
+			}
+		}
+
+		internal void ReassignStats(int aFrom, int aTo)
+		{
+			myTotalDamageDealtList[aTo] = myTotalDamageDealtList[aFrom];
+
+			foreach ((int npcType, DPSExtremeInfoList<DamageDealtInfo> damageInfo) in myDamageDealtPerNPCType)
+			{
+				myDamageDealtPerNPCType[npcType][aTo] = myDamageDealtPerNPCType[npcType][aFrom];
+			}
+
+			myDPSList[aTo] = myDPSList[aFrom];
+
+			ClearStatsForPlayer(aFrom);
+		}
+
+		internal void ClearStatsForPlayer(int aPlayer)
+		{
+			myTotalDamageDealtList[aPlayer] = new DamageDealtInfo();
+
+			foreach ((int npcType, DPSExtremeInfoList<DamageDealtInfo> damageInfo) in myDamageDealtPerNPCType)
+				myDamageDealtPerNPCType[npcType][aPlayer] = new DamageDealtInfo();
+
+			myDPSList[aPlayer] = new DamageDealtInfo();
+		}
+
 		internal void SendStats()
 		{
 			try

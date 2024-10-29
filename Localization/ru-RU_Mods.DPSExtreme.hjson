@@ -8,6 +8,7 @@ BossLabel: Босс - {0}
 ClickToViewBossDamage: Нажмите, чтобы просмотреть урон полученный боссом
 ClickToViewDPSStats: Нажмите, чтобы просмотреть статистику DPS
 DamageStatsForNPC: "Статистика урона для {0}: "
+// DisconnectedPlayer: Disconnected player
 TrapsTownNPC: Ловушки/NPC
 DamageOverTime: DOT Дебафф
 OnlyAvailableInMultiplayer: Статистика DPS доступна только в многопользовательской игре.

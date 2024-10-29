@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.Chat;
 using Terraria.ID;
@@ -9,7 +10,7 @@ using static DPSExtreme.CombatTracking.DPSExtremeCombat;
 namespace DPSExtreme.CombatTracking
 {
 	internal class DPSExtremeCombatTracker
-	{
+{
 		const int ourHistorySize = 5;
 		const int ourGenericCombatTimeout = 5;
 
@@ -19,6 +20,8 @@ namespace DPSExtreme.CombatTracking
 
 		internal int myLastFrameInvasionType = InvasionID.None;
 		internal int myLastFrameEventType = 0;
+
+		public List<int> myJoiningPlayers = new List<int>();
 
 		internal DPSExtremeCombat GetCombatHistory(int aIndex)
 		{
@@ -30,6 +33,14 @@ namespace DPSExtreme.CombatTracking
 			if (Main.netMode != NetmodeID.SinglePlayer && Main.netMode != NetmodeID.Server)
 				return;
 
+			if (Main.netMode == NetmodeID.Server)
+			{
+				foreach (int player in myJoiningPlayers)
+					OnPlayerJoined(player);
+
+				myJoiningPlayers.Clear();
+			}
+
 			UpdateEventCheckStart();
 			UpdateEventCheckEnd();
 			myLastFrameEventType = GetActiveEventType();
@@ -40,6 +51,34 @@ namespace DPSExtreme.CombatTracking
 
 			UpdateAllBossesDeadCheck();
 			UpdateGenericCombatTimeoutCheck();
+		}
+
+		public void OnPlayerJoined(int aPlayer)
+		{
+			DPSExtremeModPlayer.ourConnectedPlayers.Add(aPlayer);
+
+			if (myActiveCombat == null)
+			{
+				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("OnPlayerJoined - No Combat"), Color.Orange);
+				myJoiningPlayers.Clear();
+				return;
+			}
+
+			ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(String.Format("OnPlayerJoined - {0}", aPlayer)), Color.Orange);
+
+			ProtocolPushStartCombat push = new ProtocolPushStartCombat();
+			push.myCombatType = myActiveCombat.myCombatTypeFlags;
+			push.myBossOrInvasionOrEventType = myActiveCombat.myBossOrInvasionOrEventType;
+
+			DPSExtreme.instance.packetHandler.SendProtocol(push, aPlayer);
+		}
+
+		public void OnPlayerLeft(int aPlayer)
+		{
+			if (myActiveCombat == null)
+				return;
+
+			myActiveCombat.OnPlayerLeft(aPlayer);
 		}
 
 		private int GetActiveEventType()

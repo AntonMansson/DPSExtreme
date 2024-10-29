@@ -10,7 +10,7 @@ namespace DPSExtreme
 	internal class DPSExtremePacketHandler
 	{
 		//Allows us to unify SP & MP code flows into a single function call
-		public void SendProtocol(DPSExtremeProtocol aProtocol)
+		public void SendProtocol(DPSExtremeProtocol aProtocol, int aTargetClient = -1)
 		{
 			if (Main.netMode == NetmodeID.SinglePlayer)
 			{
@@ -20,7 +20,7 @@ namespace DPSExtreme
 			{
 				ModPacket netMessage = DPSExtreme.instance.GetPacket();
 				aProtocol.ToStream(netMessage);
-				netMessage.Send();
+				netMessage.Send(aTargetClient);
 			}
 		}
 
@@ -100,7 +100,16 @@ namespace DPSExtreme
 		{
 			try
 			{
-				if (messageType == MessageID.DamageNPC && Main.netMode == NetmodeID.Server)
+				if (Main.netMode != NetmodeID.Server)
+					return false;
+
+				if (messageType == MessageID.PlayerSpawn)
+				{
+					if (Netplay.Clients[playerNumber].State == 3) //Only handle it when player is joining. Not on respawns etc
+						DPSExtreme.instance.combatTracker.myJoiningPlayers.Add(playerNumber);
+				}
+
+				if (messageType == MessageID.DamageNPC)
 				{
 					int npcIndex = reader.ReadInt16();
 					int damage = reader.Read7BitEncodedInt();

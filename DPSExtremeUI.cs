@@ -19,7 +19,7 @@ namespace DPSExtreme
 	{
 		internal static DPSExtremeUI instance;
 
-		DPSExtremeCombat myDisplayedCombat = null;
+		internal DPSExtremeCombat myDisplayedCombat = null;
 
 		internal UIDragablePanel teamDPSPanel;
 		internal UIText label;
@@ -199,7 +199,7 @@ namespace DPSExtreme
 						int playerDPS = myDisplayedCombat.myDPSList[i].myDamage;
 						if (playerDPS > 0)
 						{
-							UIPlayerDPS t = new UIPlayerDPS(i, "", "");
+							UIPlayerDPS t = new UIPlayerDPS(i);
 							t.SetDPS(playerDPS, max, total);
 							t.Recalculate();
 							var inner = t.GetInnerDimensions();
@@ -252,7 +252,7 @@ namespace DPSExtreme
 						int damageDealt = myDisplayedCombat.myTotalDamageDealtList[i].myDamage;
 						if (damageDealt > -1)
 						{
-							UIPlayerDPS t = new UIPlayerDPS(i, "", "");
+							UIPlayerDPS t = new UIPlayerDPS(i);
 							t.SetDPS(damageDealt, max, total);
 							t.Recalculate();
 							var inner = t.GetInnerDimensions();

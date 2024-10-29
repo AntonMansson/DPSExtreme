@@ -2,12 +2,31 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameInput;
-using Terraria.Localization;
+using System.Collections.Generic;
 
 namespace DPSExtreme
 {
 	internal class DPSExtremeModPlayer : ModPlayer
 	{
+		internal static List<int> ourConnectedPlayers = new List<int>();
+
+		public override void PlayerDisconnect()
+		{
+			if (Main.netMode != NetmodeID.Server)
+				return;
+
+			foreach (int playerIndex in ourConnectedPlayers)
+			{
+				if (Main.player[playerIndex].active)
+					continue;
+
+				ourConnectedPlayers.Remove(playerIndex);
+				DPSExtreme.instance?.combatTracker.OnPlayerLeft(playerIndex);
+
+				break;
+			}
+		}
+
 		public override void PostUpdate()
 		{
 			if (Main.GameUpdateCount % DPSExtreme.UPDATEDELAY != 0)

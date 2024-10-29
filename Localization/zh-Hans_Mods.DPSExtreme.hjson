@@ -8,6 +8,7 @@ BossLabel: Boss - {0}
 ClickToViewBossDamage: 点击查看对Boss伤害
 ClickToViewDPSStats: 点击查看队伍成员伤害
 DamageStatsForNPC: "{0} 伤害: "
+// DisconnectedPlayer: Disconnected player
 TrapsTownNPC: 陷阱/城镇NPC
 DamageOverTime: 减益总伤害
 OnlyAvailableInMultiplayer: 伤害统计仅在多人模式生效
