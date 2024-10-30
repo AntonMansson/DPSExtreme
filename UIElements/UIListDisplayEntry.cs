@@ -14,27 +14,32 @@ namespace DPSExtreme
 		internal int myTotal = 1;
 		internal int myValue = 1;
 
-		internal string myNameText;
+		internal string _myNameText;
+		internal string myNameText
+		{
+			get { return _myNameText; }
+			set
+			{ 
+				_myNameText = value;
+
+				DynamicSpriteFont dynamicSpriteFont = FontAssets.MouseText.Value;
+				Vector2 textSize = new Vector2(dynamicSpriteFont.MeasureString(_myNameText.ToString()).X, 16f) * 1f;
+				MinWidth.Set(textSize.X + PaddingLeft + PaddingRight, 0f);
+				MinHeight.Set(textSize.Y + PaddingTop + PaddingBottom, 0f);
+			}
+		}
+
 		internal int myParticipantIndex = -1;
+		internal int myBaseKey = -1;
 		internal Color myColor;
 
-		internal static int ourColorCount = 0;
-
-		public UIListDisplayEntry(string aName, int aIndex = -1)
+		public UIListDisplayEntry(int aIndex = -1)
 		{
-			myNameText = aName;
 			myParticipantIndex = aIndex;
-
-			myColor = DPSExtremeUI.chatColor[ourColorCount++ % DPSExtremeUI.chatColor.Length];
 
 			PaddingTop = 8f;
 			Width.Percent = 1f;
 			Height.Pixels = 25f;
-
-			DynamicSpriteFont dynamicSpriteFont = FontAssets.MouseText.Value;
-			Vector2 textSize = new Vector2(dynamicSpriteFont.MeasureString(myNameText.ToString()).X, 16f) * 1f;
-			MinWidth.Set(textSize.X + PaddingLeft + PaddingRight, 0f);
-			MinHeight.Set(textSize.Y + PaddingTop + PaddingBottom, 0f);
 
 			DPSExtremeUI.instance.myRootPanel.AddDragTarget(this);
 
@@ -48,21 +53,6 @@ namespace DPSExtreme
 			
 			Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, hitbox, myColor/** 0.6f*/);
 			hitbox = GetInnerDimensions().ToRectangle();
-
-			//if (Main.rand.NextBool(2))
-			//{
-			//	Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, Main.fontMouseText, text, 
-			//	hitbox.TopLeft(), Color.White,  
-			//	0f, Vector2.Zero, Vector2.One, -1f, 2f);
-			//}
-			//else
-			//{
-			//Utils.DrawBorderString(spriteBatch, text, hitbox.TopLeft(), Color.White, 1f, 0f, 0f, -1);
-			//}
-			//string[] RandomNames = new string[] { "Bob", "Terminator", "TacoBelle", "What Is My Name", "Albert", "jopojelly", "blushie", "jofariden", "someone", "Town/Traps" };
-
-			//if (!Main.player[player].active)
-			//	leftText = RandomNames[player % RandomNames.Length];
 
 			DynamicSpriteFont fontMouseText = FontAssets.MouseText.Value;
 			Vector2 vector = fontMouseText.MeasureString(myNameText);
@@ -79,7 +69,6 @@ namespace DPSExtreme
 
 			if (IsMouseHovering && myParticipantIndex >= 0)
 			{
-				// TODO: IsMouseHovering is false once a second because UpdateDamageLists replaces the UIElement, need to fix that
 				DPSExtremeUI.instance.myHoveredParticipant = myParticipantIndex;
 				Main.hoverItemName = "";
 			}

@@ -209,6 +209,10 @@ namespace DPSExtreme
 			activeCombat.myEnemyDamageTaken = aPush.myEnemyDamageTaken;
 			activeCombat.myDamageDoneList = aPush.myDamageDoneList;
 
+			//HACK Figure out a better way around this. Basically we need to call SetInfo on all the displays again
+			if (activeCombat == DPSExtremeUI.instance.myDisplayedCombat)
+				DPSExtremeUI.instance.myDisplayedCombat = DPSExtremeUI.instance.myDisplayedCombat;
+
 			//Best-effort DOT DPS approx.
 			//TODO: Fix issue with dots appearing before player dpss
 			int totalDotDPS = 0;
