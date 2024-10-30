@@ -186,7 +186,7 @@ namespace DPSExtreme
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList[aReq.myPlayer].myDamage = aReq.myDPS;
+			DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList[aReq.myPlayer] = aReq.myDPS;
 		}
 
 		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush)
@@ -206,8 +206,8 @@ namespace DPSExtreme
 
 			CombatTracking.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
 
-			activeCombat.myDamageDealtPerNPCType = aPush.myDamageDealtPerNPCType;
-			activeCombat.myTotalDamageDealtList = aPush.myTotalDamageDealtList;
+			activeCombat.myEnemyDamageTaken = aPush.myEnemyDamageTaken;
+			activeCombat.myDamageDoneList = aPush.myDamageDoneList;
 
 			//Best-effort DOT DPS approx.
 			//TODO: Fix issue with dots appearing before player dpss
@@ -221,8 +221,8 @@ namespace DPSExtreme
 				//Since the dot hook doesn't seem to work in SP, add damage here to the best of our abilities
 				if (Main.netMode == NetmodeID.SinglePlayer)
 				{
-					if (totalDotDPS > 0 && activeCombat.myTotalDamageDealtList[(int)InfoListIndices.DOTs].myDamage < 0) //Make sure we don't start at -1
-						activeCombat.myTotalDamageDealtList[(int)InfoListIndices.DOTs].myDamage = 0;
+					if (totalDotDPS > 0 && activeCombat.myDamageDoneList[(int)InfoListIndices.DOTs] < 0) //Make sure we don't start at -1
+						activeCombat.myDamageDoneList[(int)InfoListIndices.DOTs] = 0;
 
 					float ratio = DPSExtreme.UPDATEDELAY / 60f;
 					//TODO: Handle remainder
@@ -232,7 +232,7 @@ namespace DPSExtreme
 			}
 
 			if (totalDotDPS > 0)
-				activeCombat.myDPSList[(int)InfoListIndices.DOTs].myDamage = totalDotDPS;
+				activeCombat.myDPSList[(int)InfoListIndices.DOTs] = totalDotDPS;
 
 			DPSExtremeUI.instance.updateNeeded = true;
 

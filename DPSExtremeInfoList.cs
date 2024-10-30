@@ -19,23 +19,23 @@ namespace DPSExtreme
 		NPCs = 255
 	}
 
-	internal class DPSExtremeInfoList<T> where T : IDPSExtremeCombatInfo, new()
+	internal class DPSExtremeInfoList
 	{
-		internal T[] myInfos;
+		internal int[] myValues;
 
 		public DPSExtremeInfoList()
 		{
-			myInfos = new T[Size()];
+			myValues = new int[Size()];
 
 			for (int i = 0; i < Size(); i++)
 			{
-				myInfos[i] = new T();
+				myValues[i] = new int();
 			}
 		}
 
-		public ref T this[int i]
+		public ref int this[int i]
 		{
-			get { return ref myInfos[i]; }
+			get { return ref myValues[i]; }
 		}
 
 		public int Size() { return 256; }
@@ -44,7 +44,23 @@ namespace DPSExtreme
 		{
 			for (int i = 0; i < Size(); i++)
 			{
-				myInfos[i] = default;
+				myValues[i] = default;
+			}
+		}
+
+		public void GetMaxAndTotal(out int aMax, out int aTotal)
+		{
+			aMax = 0;
+			aTotal = 0;
+
+			for (int i = 0; i < Size(); i++)
+			{
+				int value = myValues[i];
+				if (value > 0)
+				{
+					aMax = Math.Max(aMax, value);
+					aTotal += value;
+				}
 			}
 		}
 
@@ -57,11 +73,11 @@ namespace DPSExtreme
 			byte count = 0;
 			for (int i = 0; i < Size(); i++)
 			{
-				if (!myInfos[i].HasData())
+				if (myValues[i] <= 0)
 					continue;
 
 				aWriter.Write((byte)i);
-				myInfos[i].ToStream(aWriter);
+				aWriter.Write(myValues[i]);
 				count++;
 			}
 
@@ -78,8 +94,8 @@ namespace DPSExtreme
 
 			for (int i = 0; i < count; i++)
 			{
-				byte damageDealerIndex = aReader.ReadByte();
-				myInfos[damageDealerIndex].FromStream(aReader);
+				byte index = aReader.ReadByte();
+				myValues[index] = aReader.ReadInt32();
 			}
 		}
 	}
