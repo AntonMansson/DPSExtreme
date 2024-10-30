@@ -1,4 +1,5 @@
 Keybinds.ToggleTeamDPSBossMeter.DisplayName: Отобразить статистику DPS/Босс-инфо
+// NeedAccessory: Missing accessory
 // DamagePerSecond: DPS
 // DamageDone: Damage done
 // EnemyDamageTaken: Enemy damage taken

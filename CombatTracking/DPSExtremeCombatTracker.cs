@@ -53,6 +53,12 @@ namespace DPSExtreme.CombatTracking
 			UpdateGenericCombatTimeoutCheck();
 		}
 
+		internal void OnEnterWorld()
+		{
+			myActiveCombat = null;
+			myCombatHistory = new DPSExtremeCombat[ourHistorySize];
+		}
+
 		public void OnPlayerJoined(int aPlayer)
 		{
 			DPSExtremeModPlayer.ourConnectedPlayers.Add(aPlayer);

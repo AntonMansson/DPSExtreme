@@ -21,6 +21,15 @@ namespace DPSExtreme.UIElements
 
 		internal UIListDisplay(ListDisplayMode aDisplayMode) : base(aDisplayMode) { }
 
+		public override void OnActivate()
+		{
+		}
+
+		public override void OnDeactivate()
+		{
+			DPSExtremeUI.instance.myRootPanel.RemoveChild(this);
+		}
+
 		internal override void Update()
 		{
 			RecalculateTotals();

@@ -1,4 +1,5 @@
 Keybinds.ToggleTeamDPSBossMeter.DisplayName: Toggle Team DPS/Boss Meter
+NeedAccessory: Missing accessory
 DamagePerSecond: DPS
 DamageDone: Damage done
 EnemyDamageTaken: Enemy damage taken

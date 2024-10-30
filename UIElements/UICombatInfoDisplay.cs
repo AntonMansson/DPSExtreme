@@ -4,6 +4,7 @@ namespace DPSExtreme.UIElements
 {
 	internal enum ListDisplayMode
 	{
+		NeedAccessory,
 		DamageDone,
 		DamagePerSecond,
 		EnemyDamageTaken,
