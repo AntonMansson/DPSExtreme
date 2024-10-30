@@ -67,7 +67,7 @@ namespace DPSExtreme.CombatTracking
 			ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(String.Format("OnPlayerJoined - {0}", aPlayer)), Color.Orange);
 
 			ProtocolPushStartCombat push = new ProtocolPushStartCombat();
-			push.myCombatType = myActiveCombat.myCombatTypeFlags;
+			push.myCombatType = myActiveCombat.myHighestCombatType;
 			push.myBossOrInvasionOrEventType = myActiveCombat.myBossOrInvasionOrEventType;
 
 			DPSExtreme.instance.packetHandler.SendProtocol(push, aPlayer);
