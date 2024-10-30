@@ -41,8 +41,6 @@ namespace DPSExtreme
 			Width.Percent = 1f;
 			Height.Pixels = 25f;
 
-			DPSExtremeUI.instance.myRootPanel.AddDragTarget(this);
-
 			Recalculate();
 		}
 
