@@ -10,6 +10,7 @@ namespace DPSExtreme.UIElements
 		internal Func<int, string> myNameCallback;
 
 		UIListDisplay myBreakdownDisplay = null;
+		int myBreakdownBaseKey = -1;
 
 		internal UIBreakdownableDisplay(ListDisplayMode aDisplayMode) : base(aDisplayMode) { }
 
@@ -17,6 +18,9 @@ namespace DPSExtreme.UIElements
 		{
 			if (myInfoLookup == null)
 				return;
+
+			if (myBreakdownDisplay != null)
+				myBreakdownDisplay.myInfoOverrideList = myInfoLookup[myBreakdownBaseKey];
 
 			RecalculateTotals();
 			UpdateValues();
@@ -104,6 +108,8 @@ namespace DPSExtreme.UIElements
 			myBreakdownDisplay.OnRightClick += OnRightClickBreakdownDisplay;
 			Add(myBreakdownDisplay);
 
+			myBreakdownBaseKey = entry.myBaseKey;
+
 			if (myNameCallback != null)
 				myLabelOverride = myNameCallback(entry.myBaseKey);
 
@@ -116,6 +122,7 @@ namespace DPSExtreme.UIElements
 			Remove(myBreakdownDisplay);
 			myBreakdownDisplay = null;
 			myLabelOverride = null;
+			myBreakdownBaseKey = -1;
 
 			DPSExtremeUI.instance.RefreshLabel();
 			DPSExtremeUI.instance.updateNeeded = true;
