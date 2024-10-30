@@ -16,6 +16,7 @@ namespace DPSExtreme.UIElements
 		internal int myTotal = 0;
 
 		protected ListDisplayMode myDisplayMode;
+		internal string myLabelOverride = null;
 
 		protected UICombatInfoDisplay(ListDisplayMode aDisplayMode)
 		{
