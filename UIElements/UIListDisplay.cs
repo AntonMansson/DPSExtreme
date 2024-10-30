@@ -1,11 +1,6 @@
 ﻿
-using Humanizer;
-using System;
 using Terraria.Localization;
 using Terraria;
-using Terraria.ModLoader.UI.Elements;
-using static DPSExtreme.CombatTracking.DPSExtremeCombat;
-using Microsoft.Xna.Framework;
 
 namespace DPSExtreme.UIElements
 {
@@ -36,8 +31,6 @@ namespace DPSExtreme.UIElements
 			if (myInfoList == null)
 				return;
 
-			UIListDisplayEntry.ourColorCount = 0;
-
 			int entryIndex = 0;
 
 			for (int i = 0; i < myInfoList.Size(); i++)
@@ -63,7 +56,7 @@ namespace DPSExtreme.UIElements
 
 					if (entryIndex >= _items.Count)
 					{
-						entry = new UIListDisplayEntry(name, i);
+						entry = new UIListDisplayEntry(i);
 						Add(entry);
 					}
 					else
@@ -71,10 +64,16 @@ namespace DPSExtreme.UIElements
 						entry = _items[entryIndex] as UIListDisplayEntry;
 					}
 
+					entry.myParticipantIndex = i;
+					entry.myColor = DPSExtremeUI.chatColor[i % DPSExtremeUI.chatColor.Length];
+					entry.myNameText = name;
 					entry.SetValues(value, myHighestValue, myTotal);
 					entryIndex++;
 				}
 			}
+
+			//In case no new entries were added but they need to be re-sorted
+			UpdateOrder();
 		}
 	}
 }

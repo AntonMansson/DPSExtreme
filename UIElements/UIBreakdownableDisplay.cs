@@ -1,13 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Terraria;
-using Terraria.Localization;
-using Terraria.ModLoader;
-using Terraria.ModLoader.UI.Elements;
-using static DPSExtreme.CombatTracking.DPSExtremeCombat;
+using Terraria.UI;
 
 namespace DPSExtreme.UIElements
 {
@@ -15,19 +8,27 @@ namespace DPSExtreme.UIElements
 	{
 		internal Dictionary<int, DPSExtremeInfoList> myInfoLookup;
 		internal Func<int, string> myNameCallback;
-		int myHighlightedKey = -1;
+
+		UIListDisplay myBreakdownDisplay = null;
 
 		internal void SetInfo(Dictionary<int, DPSExtremeInfoList> aInfoLookup)
 		{
 			myInfoLookup = aInfoLookup;
+
+			Clear();
+
+			if (myBreakdownDisplay != null)
+			{
+
+				Remove(myBreakdownDisplay);
+				myBreakdownDisplay = null;
+			}
 		}
 
 		internal override void Update()
 		{
 			if (myInfoLookup == null)
 				return;
-
-			Clear();
 
 			RecalculateTotals();
 			UpdateValues();
@@ -37,6 +38,12 @@ namespace DPSExtreme.UIElements
 
 		internal override void RecalculateTotals()
 		{
+			if (myBreakdownDisplay != null)
+			{
+				myBreakdownDisplay.RecalculateTotals();
+				return;
+			}
+
 			myHighestValue = 0;
 			myTotal = 0;
 
@@ -53,11 +60,15 @@ namespace DPSExtreme.UIElements
 
 		internal override void UpdateValues()
 		{
-			UIListDisplayEntry.ourColorCount = 0;
+			if (myBreakdownDisplay != null)
+			{
+				myBreakdownDisplay.UpdateValues();
+				return;
+			}
 
 			int entryIndex = 0;
 
-			foreach ((int npcType, DPSExtremeInfoList damageInfo) in myInfoLookup)
+			foreach ((int baseKey, DPSExtremeInfoList damageInfo) in myInfoLookup)
 			{
 				int listMax = 0;
 				int listTotal = 0;
@@ -68,13 +79,14 @@ namespace DPSExtreme.UIElements
 				{
 					string name = "Missing name callback";
 					if (myNameCallback != null)
-						name = myNameCallback.Invoke(npcType);
+						name = myNameCallback.Invoke(baseKey);
 
 					UIListDisplayEntry entry = null;
 
 					if (entryIndex >= _items.Count)
 					{
-						entry = new UIListDisplayEntry(name);
+						entry = new UIListDisplayEntry();
+						entry.OnLeftClick += OnClickBaseEntry;
 						Add(entry);
 					}
 					else
@@ -82,10 +94,37 @@ namespace DPSExtreme.UIElements
 						entry = _items[entryIndex] as UIListDisplayEntry;
 					}
 
+					entry.myColor = DPSExtremeUI.chatColor[baseKey % DPSExtremeUI.chatColor.Length];
+					entry.myNameText = name;
+					entry.myBaseKey = baseKey;
 					entry.SetValues(listTotal, myHighestValue, myTotal);
 					entryIndex++;
 				}
 			}
+
+			//In case no new entries were added but they need to be re-sorted
+			UpdateOrder();
+		}
+
+		private void OnClickBaseEntry(UIMouseEvent evt, UIElement listeningElement)
+		{
+			Clear();
+			UIListDisplayEntry entry = listeningElement as UIListDisplayEntry;
+
+			myBreakdownDisplay = new UIListDisplay();
+			myBreakdownDisplay.SetInfo(myInfoLookup[entry.myBaseKey]);
+			myBreakdownDisplay.OnRightClick += OnRightClickBreakdownDisplay;
+			Add(myBreakdownDisplay);
+
+			DPSExtremeUI.instance.updateNeeded = true;
+		}
+
+		private void OnRightClickBreakdownDisplay(UIMouseEvent evt, UIElement listeningElement)
+		{
+			Remove(myBreakdownDisplay);
+			myBreakdownDisplay = null;
+
+			DPSExtremeUI.instance.updateNeeded = true;
 		}
 	}
 }
