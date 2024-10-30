@@ -104,6 +104,10 @@ namespace DPSExtreme.UIElements
 			myBreakdownDisplay.OnRightClick += OnRightClickBreakdownDisplay;
 			Add(myBreakdownDisplay);
 
+			if (myNameCallback != null)
+				myLabelOverride = myNameCallback(entry.myBaseKey);
+
+			DPSExtremeUI.instance.RefreshLabel();
 			DPSExtremeUI.instance.updateNeeded = true;
 		}
 
@@ -111,7 +115,9 @@ namespace DPSExtreme.UIElements
 		{
 			Remove(myBreakdownDisplay);
 			myBreakdownDisplay = null;
+			myLabelOverride = null;
 
+			DPSExtremeUI.instance.RefreshLabel();
 			DPSExtremeUI.instance.updateNeeded = true;
 		}
 	}

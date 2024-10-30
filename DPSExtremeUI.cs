@@ -230,88 +230,95 @@ namespace DPSExtreme
 
 			title += " - ";
 
-			switch (myDisplayedCombat.myHighestCombatType)
+			if (myCurrentDisplay.myLabelOverride != null)
 			{
-				case DPSExtremeCombat.CombatType.BossFight:
-					if (myDisplayedCombat.myBossOrInvasionOrEventType > -1)
-					{
-						string bossName = Lang.GetNPCNameValue(myDisplayedCombat.myBossOrInvasionOrEventType);
-						title += Language.GetText(bossName);
-					}
-					else
-					{
-						title += Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoBoss")).Value;
-					}
+				title += myCurrentDisplay.myLabelOverride;
+			}
+			else
+			{
+				switch (myDisplayedCombat.myHighestCombatType)
+				{
+					case DPSExtremeCombat.CombatType.BossFight:
+						if (myDisplayedCombat.myBossOrInvasionOrEventType > -1)
+						{
+							string bossName = Lang.GetNPCNameValue(myDisplayedCombat.myBossOrInvasionOrEventType);
+							title += Language.GetText(bossName);
+						}
+						else
+						{
+							title += Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoBoss")).Value;
+						}
 
-					break;
-				case DPSExtremeCombat.CombatType.Invasion:
-					DPSExtremeCombat.InvasionType invasionType;
-					if (myDisplayedCombat.myBossOrInvasionOrEventType >= (int)DPSExtremeCombat.InvasionType.ModdedInvasionsStart &&
-						myDisplayedCombat.myBossOrInvasionOrEventType < (int)DPSExtremeCombat.InvasionType.ModdedInvasionsEnd)
-					{
-						invasionType = DPSExtremeCombat.InvasionType.ModdedInvasionsStart;
-					}
-					else
-					{
-						invasionType = (DPSExtremeCombat.InvasionType)myDisplayedCombat.myBossOrInvasionOrEventType;
-					}
+						break;
+					case DPSExtremeCombat.CombatType.Invasion:
+						DPSExtremeCombat.InvasionType invasionType;
+						if (myDisplayedCombat.myBossOrInvasionOrEventType >= (int)DPSExtremeCombat.InvasionType.ModdedInvasionsStart &&
+							myDisplayedCombat.myBossOrInvasionOrEventType < (int)DPSExtremeCombat.InvasionType.ModdedInvasionsEnd)
+						{
+							invasionType = DPSExtremeCombat.InvasionType.ModdedInvasionsStart;
+						}
+						else
+						{
+							invasionType = (DPSExtremeCombat.InvasionType)myDisplayedCombat.myBossOrInvasionOrEventType;
+						}
 
-					switch (invasionType)
-					{
-						case DPSExtremeCombat.InvasionType.GoblinArmy:
-							title += Language.GetTextValue("Bestiary_Invasions.Goblins");
-							break;
-						case DPSExtremeCombat.InvasionType.SnowLegion:
-							title += Language.GetTextValue("Bestiary_Invasions.FrostLegion");
-							break;
-						case DPSExtremeCombat.InvasionType.PirateInvasion:
-							title += Language.GetTextValue("Bestiary_Invasions.Pirates");
-							break;
-						case DPSExtremeCombat.InvasionType.MartianMadness:
-							title += Language.GetTextValue("Bestiary_Invasions.Martian");
-							break;
-						case DPSExtremeCombat.InvasionType.PumpkinMoon:
-							title += Language.GetTextValue("Bestiary_Invasions.PumpkinMoon");
-							break;
-						case DPSExtremeCombat.InvasionType.FrostMoon:
-							title += Language.GetTextValue("Bestiary_Invasions.FrostMoon");
-							break;
-						case DPSExtremeCombat.InvasionType.OldOnesArmy:
-							title += Language.GetTextValue("Bestiary_Invasions.OldOnesArmy");
-							break;
-						case DPSExtremeCombat.InvasionType.ModdedInvasionsStart:
-							//TODO: Boss checklist support to fetch name?
-							title += Language.GetTextValue("Invasion");
-							break;
-						default:
-							title += Language.GetTextValue("Invasion");
-							break;
-					}
-					break;
-				case DPSExtremeCombat.CombatType.Event:
-					switch ((DPSExtremeCombat.EventType)myDisplayedCombat.myBossOrInvasionOrEventType)
-					{
-						case DPSExtremeCombat.EventType.BloodMoon:
-							title += Language.GetTextValue("Bestiary_Events.BloodMoon");
-							break;
-						case DPSExtremeCombat.EventType.Eclipse:
-							title += Language.GetTextValue("Bestiary_Events.Eclipse");
-							break;
-						case DPSExtremeCombat.EventType.SlimeRain:
-							title += Language.GetTextValue("Bestiary_Events.SlimeRain");
-							break;
-						default:
-							title += Language.GetTextValue("Event");
-							break;
-					}
-					break;
-				case DPSExtremeCombat.CombatType.Generic:
-					//Maybe display name of first npc hit?
-					title += Language.GetTextValue("Combat");
-					break;
-				default:
-					title += "Unknown combat type";
-					break;
+						switch (invasionType)
+						{
+							case DPSExtremeCombat.InvasionType.GoblinArmy:
+								title += Language.GetTextValue("Bestiary_Invasions.Goblins");
+								break;
+							case DPSExtremeCombat.InvasionType.SnowLegion:
+								title += Language.GetTextValue("Bestiary_Invasions.FrostLegion");
+								break;
+							case DPSExtremeCombat.InvasionType.PirateInvasion:
+								title += Language.GetTextValue("Bestiary_Invasions.Pirates");
+								break;
+							case DPSExtremeCombat.InvasionType.MartianMadness:
+								title += Language.GetTextValue("Bestiary_Invasions.Martian");
+								break;
+							case DPSExtremeCombat.InvasionType.PumpkinMoon:
+								title += Language.GetTextValue("Bestiary_Invasions.PumpkinMoon");
+								break;
+							case DPSExtremeCombat.InvasionType.FrostMoon:
+								title += Language.GetTextValue("Bestiary_Invasions.FrostMoon");
+								break;
+							case DPSExtremeCombat.InvasionType.OldOnesArmy:
+								title += Language.GetTextValue("Bestiary_Invasions.OldOnesArmy");
+								break;
+							case DPSExtremeCombat.InvasionType.ModdedInvasionsStart:
+								//TODO: Boss checklist support to fetch name?
+								title += Language.GetTextValue("Invasion");
+								break;
+							default:
+								title += Language.GetTextValue("Invasion");
+								break;
+						}
+						break;
+					case DPSExtremeCombat.CombatType.Event:
+						switch ((DPSExtremeCombat.EventType)myDisplayedCombat.myBossOrInvasionOrEventType)
+						{
+							case DPSExtremeCombat.EventType.BloodMoon:
+								title += Language.GetTextValue("Bestiary_Events.BloodMoon");
+								break;
+							case DPSExtremeCombat.EventType.Eclipse:
+								title += Language.GetTextValue("Bestiary_Events.Eclipse");
+								break;
+							case DPSExtremeCombat.EventType.SlimeRain:
+								title += Language.GetTextValue("Bestiary_Events.SlimeRain");
+								break;
+							default:
+								title += Language.GetTextValue("Event");
+								break;
+						}
+						break;
+					case DPSExtremeCombat.CombatType.Generic:
+						//Maybe display name of first npc hit?
+						title += Language.GetTextValue("Combat");
+						break;
+					default:
+						title += "Unknown combat type";
+						break;
+				}
 			}
 
 			myLabel.SetText(title);
