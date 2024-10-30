@@ -76,12 +76,20 @@ namespace DPSExtreme.CombatTracking
 			aDamagedNPC.GetLifeStats(out npcRemainingHealth, out npcMaxHealth);
 			npcRemainingHealth += aDamage; //damage has already been applied when we reach this point. But we're interested in the value pre-damage
 
+			//Not sure why this happens. Seems like there are multiple hits in a single frame for massive overkills
+			if (npcRemainingHealth < 0)
+				return;
+
 			int clampedDamageAmount = Math.Clamp(aDamage, 0, npcRemainingHealth); //Avoid overkill
 
-			if (!myDamageDealtPerNPCType.ContainsKey(aDamagedNPC.type))
-				myDamageDealtPerNPCType.Add(aDamagedNPC.type, new DPSExtremeInfoList<DamageDealtInfo>());
+			//Merge all penguin ids into single id etc
+			int consolidatedType = NPCID.FromLegacyName(Lang.GetNPCNameValue(aDamagedNPC.type));
+			int npcType = consolidatedType > 0 ? consolidatedType : aDamagedNPC.type;
 
-			myDamageDealtPerNPCType[aDamagedNPC.type][aDamageDealer].myDamage += clampedDamageAmount;
+			if (!myDamageDealtPerNPCType.ContainsKey(npcType))
+				myDamageDealtPerNPCType.Add(npcType, new DPSExtremeInfoList<DamageDealtInfo>());
+
+			myDamageDealtPerNPCType[npcType][aDamageDealer].myDamage += clampedDamageAmount;
 			myTotalDamageDealtList[aDamageDealer].myDamage += clampedDamageAmount;
 		}
 
