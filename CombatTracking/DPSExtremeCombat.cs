@@ -89,7 +89,7 @@ namespace DPSExtreme.CombatTracking
 			int npcType = consolidatedType > 0 ? consolidatedType : aDamagedNPC.type;
 
 			if (!myEnemyDamageTaken.ContainsKey(npcType))
-				myEnemyDamageTaken.Add(npcType, new DPSExtremeInfoList<DamageDealtInfo>());
+				myEnemyDamageTaken.Add(npcType, new DPSExtremeInfoList());
 
 			myEnemyDamageTaken[npcType][aDamageDealer] += clampedDamageAmount;
 			myDamageDoneList[aDamageDealer] += clampedDamageAmount;
