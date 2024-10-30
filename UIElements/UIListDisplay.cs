@@ -6,12 +6,20 @@ namespace DPSExtreme.UIElements
 {
 	internal class UIListDisplay : UICombatInfoDisplay
 	{
-		DPSExtremeInfoList myInfoList;
-
-		internal void SetInfo(DPSExtremeInfoList aInfo)
+		DPSExtremeInfoList myInfoList
 		{
-			myInfoList = aInfo;
+			get 
+			{
+				if (myInfoOverrideList != null)
+					return myInfoOverrideList;
+
+				return DPSExtremeUI.instance.myDisplayedCombat?.GetInfoContainer(myDisplayMode) as DPSExtremeInfoList;
+			}
 		}
+
+		internal DPSExtremeInfoList myInfoOverrideList = null;
+
+		internal UIListDisplay(ListDisplayMode aDisplayMode) : base(aDisplayMode) { }
 
 		internal override void Update()
 		{
