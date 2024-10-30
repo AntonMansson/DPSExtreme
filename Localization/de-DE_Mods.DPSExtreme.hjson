@@ -1,17 +1,16 @@
 // Keybinds.ToggleTeamDPSBossMeter.DisplayName: Toggle Team DPS/Boss Meter
-// DPS: DPS
+// DamagePerSecond: DPS
 // DamageDone: Damage done
+// EnemyDamageTaken: Enemy damage taken
 // TogglePercent: Toggle %
 // NoDPSWearDPSMeter: No DPS Stats, wear [i:DPSMeter]
 // NoBoss: No Boss
 // BossLabel: Boss - {0}
-// ClickToViewBossDamage: Click to view Boss damage taken breakdown
-// ClickToViewDPSStats: Click to view DPS stats
+// ClickToChangeDisplay: Click to change display mode
 // DamageStatsForNPC: "Damage stats for {0}: "
 // DisconnectedPlayer: Disconnected player
 // TrapsTownNPC: Traps/TownNPC
 // DamageOverTime: Debuff DOT
-// OnlyAvailableInMultiplayer: Team DPS only available in Multiplayer game.
 // ToggleTeamDPSCommandDescription: Toggle Team DPS display
 // Invasion: Invasion
 // Event: Event
