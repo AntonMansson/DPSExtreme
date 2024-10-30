@@ -6,6 +6,7 @@ using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria;
+using DPSExtreme.UIElements;
 
 namespace DPSExtreme.CombatTracking
 {
@@ -69,6 +70,22 @@ namespace DPSExtreme.CombatTracking
 			myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
 			myStartTime = DateTime.Now;
 			myLastActivityTime = myStartTime;
+		}
+
+		internal object GetInfoContainer(ListDisplayMode aDisplayMode)
+		{
+			switch (aDisplayMode)
+			{
+				case ListDisplayMode.DamageDone:
+					return myDamageDoneList;
+				case ListDisplayMode.DamagePerSecond:
+					return myDPSList;
+				case ListDisplayMode.EnemyDamageTaken:
+					return myEnemyDamageTaken;
+				case ListDisplayMode.Count:
+				default:
+					return null;
+			}
 		}
 
 		internal void AddDealtDamage(NPC aDamagedNPC, int aDamageDealer, int aDamage)

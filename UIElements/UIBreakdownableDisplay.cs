@@ -6,24 +6,12 @@ namespace DPSExtreme.UIElements
 {
 	internal class UIBreakdownableDisplay : UICombatInfoDisplay
 	{
-		internal Dictionary<int, DPSExtremeInfoList> myInfoLookup;
+		internal Dictionary<int, DPSExtremeInfoList> myInfoLookup => DPSExtremeUI.instance.myDisplayedCombat?.GetInfoContainer(myDisplayMode) as Dictionary<int, DPSExtremeInfoList>;
 		internal Func<int, string> myNameCallback;
 
 		UIListDisplay myBreakdownDisplay = null;
 
-		internal void SetInfo(Dictionary<int, DPSExtremeInfoList> aInfoLookup)
-		{
-			myInfoLookup = aInfoLookup;
-
-			Clear();
-
-			if (myBreakdownDisplay != null)
-			{
-
-				Remove(myBreakdownDisplay);
-				myBreakdownDisplay = null;
-			}
-		}
+		internal UIBreakdownableDisplay(ListDisplayMode aDisplayMode) : base(aDisplayMode) { }
 
 		internal override void Update()
 		{
@@ -111,8 +99,8 @@ namespace DPSExtreme.UIElements
 			Clear();
 			UIListDisplayEntry entry = listeningElement as UIListDisplayEntry;
 
-			myBreakdownDisplay = new UIListDisplay();
-			myBreakdownDisplay.SetInfo(myInfoLookup[entry.myBaseKey]);
+			myBreakdownDisplay = new UIListDisplay(ListDisplayMode.EnemyDamageTaken);
+			myBreakdownDisplay.myInfoOverrideList = myInfoLookup[entry.myBaseKey];
 			myBreakdownDisplay.OnRightClick += OnRightClickBreakdownDisplay;
 			Add(myBreakdownDisplay);
 

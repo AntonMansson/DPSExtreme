@@ -27,9 +27,8 @@ namespace DPSExtreme
 			{
 				_myDisplayedCombat = value;
 
-				myDamagePerSecondDisplay.SetInfo(_myDisplayedCombat.myDPSList);
-				myDamageDoneDisplay.SetInfo(_myDisplayedCombat.myDamageDoneList);
-				myEnemyDamageTakenDisplay.SetInfo(_myDisplayedCombat.myEnemyDamageTaken);
+				SetupDisplays();
+				updateNeeded = true;
 			}
 		}
 
@@ -37,9 +36,9 @@ namespace DPSExtreme
 		internal UIText myLabel;
 		internal UIText myWearDPSMeterText = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter")));
 
-		internal UIListDisplay myDamagePerSecondDisplay = new UIListDisplay();
-		internal UIListDisplay myDamageDoneDisplay = new UIListDisplay();
-		internal UIBreakdownableDisplay myEnemyDamageTakenDisplay = new UIBreakdownableDisplay();
+		internal UIListDisplay myDamagePerSecondDisplay;
+		internal UIListDisplay myDamageDoneDisplay;
+		internal UIBreakdownableDisplay myEnemyDamageTakenDisplay;
 
 		private ListDisplayMode _myDisplayMode;
 		internal ListDisplayMode myDisplayMode
@@ -135,6 +134,8 @@ namespace DPSExtreme
 			myRootPanel.MaxHeight.Set(300, 0f);
 			myRootPanel.BackgroundColor = new Color(73, 94, 171);
 
+			SetupDisplays();
+
 			myLabel = new UIText("", 0.8f);
 			//Figure out why tf this doesn't work
 			myLabel.DynamicallyScaleDownToWidth = true;
@@ -143,8 +144,6 @@ namespace DPSExtreme
 			myLabel.OnLeftClick += Label_OnClick;
 			myRootPanel.Append(myLabel);
 			myRootPanel.AddDragTarget(myLabel);
-
-			myEnemyDamageTakenDisplay.myNameCallback = (int aNpcType) => { return Lang.GetNPCNameValue(aNpcType); };
 
 			RefreshLabel();
 
@@ -156,35 +155,32 @@ namespace DPSExtreme
 			//toggleCompletedButton.Top.Pixels = spacing;
 			myRootPanel.Append(togglePercentButton);
 
-			var labelDimensions = myLabel.GetInnerDimensions();
-			int top = (int)labelDimensions.Height + 4;
+			//myRootPanel.AddDragTarget(myDamagePerSecondDisplay);
+			//myRootPanel.AddDragTarget(myDamageDoneDisplay);
+			//myRootPanel.AddDragTarget(myEnemyDamageTakenDisplay);
 
-			myRootPanel.AddDragTarget(myDamagePerSecondDisplay);
-			myRootPanel.AddDragTarget(myDamageDoneDisplay);
-			myRootPanel.AddDragTarget(myEnemyDamageTakenDisplay);
-
-			var type = Assembly.GetAssembly(typeof(Mod)).GetType("Terraria.ModLoader.UI.Elements.UIGrid");
-			FieldInfo loadModsField = type.GetField("_innerList", BindingFlags.Instance | BindingFlags.NonPublic);
-			myRootPanel.AddDragTarget((UIElement)loadModsField.GetValue(myDamagePerSecondDisplay)); // list._innerList
-			myRootPanel.AddDragTarget((UIElement)loadModsField.GetValue(myDamageDoneDisplay));
-			myRootPanel.AddDragTarget((UIElement)loadModsField.GetValue(myEnemyDamageTakenDisplay));
-
-			var scrollbar = new InvisibleFixedUIScrollbar(userInterface);
-			scrollbar.SetView(100f, 1000f);
-			scrollbar.Height.Set(0, 1f);
-			scrollbar.Left.Set(-20, 1f);
-			//myRootPanel.Append(scrollbar);
-			myDamagePerSecondDisplay.SetScrollbar(scrollbar);
-
-			scrollbar = new InvisibleFixedUIScrollbar(userInterface);
-			scrollbar.SetView(100f, 1000f);
-			scrollbar.Height.Set(0, 1f);
-			scrollbar.Left.Set(-20, 1f);
-			//myRootPanel.Append(scrollbar);
-			myDamageDoneDisplay.SetScrollbar(scrollbar);
+			//var type = Assembly.GetAssembly(typeof(Mod)).GetType("Terraria.ModLoader.UI.Elements.UIGrid");
+			//FieldInfo loadModsField = type.GetField("_innerList", BindingFlags.Instance | BindingFlags.NonPublic);
+			//myRootPanel.AddDragTarget((UIElement)loadModsField.GetValue(myDamagePerSecondDisplay)); // list._innerList
+			//myRootPanel.AddDragTarget((UIElement)loadModsField.GetValue(myDamageDoneDisplay));
+			//myRootPanel.AddDragTarget((UIElement)loadModsField.GetValue(myEnemyDamageTakenDisplay));
 
 			ShowTeamDPSPanel = true;
 			myDisplayMode = ListDisplayMode.DamageDone;
+		}
+
+		internal void SetupDisplays()
+		{
+			if (myDamageDoneDisplay != null) //Doesn't matter which one, just checking if it's first time we're setting up
+				myRootPanel.RemoveChild(myCurrentDisplay);
+
+			myDamagePerSecondDisplay = new UIListDisplay(ListDisplayMode.DamagePerSecond);
+			myDamageDoneDisplay = new UIListDisplay(ListDisplayMode.DamageDone);
+
+			myEnemyDamageTakenDisplay = new UIBreakdownableDisplay(ListDisplayMode.EnemyDamageTaken);
+			myEnemyDamageTakenDisplay.myNameCallback = Lang.GetNPCNameValue;
+
+			myRootPanel.Append(myCurrentDisplay);
 		}
 
 		internal bool updateNeeded;
