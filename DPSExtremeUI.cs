@@ -263,25 +263,25 @@ namespace DPSExtreme
 					switch (invasionType)
 					{
 						case DPSExtremeCombat.InvasionType.GoblinArmy:
-							title += Language.GetTextValue("Goblins");
+							title += Language.GetTextValue("Bestiary_Invasions.Goblins");
 							break;
 						case DPSExtremeCombat.InvasionType.SnowLegion:
-							title += Language.GetTextValue("FrostLegion");
+							title += Language.GetTextValue("Bestiary_Invasions.FrostLegion");
 							break;
 						case DPSExtremeCombat.InvasionType.PirateInvasion:
-							title += Language.GetTextValue("Pirates");
+							title += Language.GetTextValue("Bestiary_Invasions.Pirates");
 							break;
 						case DPSExtremeCombat.InvasionType.MartianMadness:
-							title += Language.GetTextValue("Martian");
+							title += Language.GetTextValue("Bestiary_Invasions.Martian");
 							break;
 						case DPSExtremeCombat.InvasionType.PumpkinMoon:
-							title += Language.GetTextValue("PumpkinMoon");
+							title += Language.GetTextValue("Bestiary_Invasions.PumpkinMoon");
 							break;
 						case DPSExtremeCombat.InvasionType.FrostMoon:
-							title += Language.GetTextValue("FrostMoon");
+							title += Language.GetTextValue("Bestiary_Invasions.FrostMoon");
 							break;
 						case DPSExtremeCombat.InvasionType.OldOnesArmy:
-							title += Language.GetTextValue("OldOnesArmy");
+							title += Language.GetTextValue("Bestiary_Invasions.OldOnesArmy");
 							break;
 						case DPSExtremeCombat.InvasionType.ModdedInvasionsStart:
 							//TODO: Boss checklist support to fetch name?
@@ -296,13 +296,13 @@ namespace DPSExtreme
 					switch ((DPSExtremeCombat.EventType)myDisplayedCombat.myBossOrInvasionOrEventType)
 					{
 						case DPSExtremeCombat.EventType.BloodMoon:
-							title += Language.GetTextValue("BloodMoon");
+							title += Language.GetTextValue("Bestiary_Events.BloodMoon");
 							break;
 						case DPSExtremeCombat.EventType.Eclipse:
-							title += Language.GetTextValue("Eclipse");
+							title += Language.GetTextValue("Bestiary_Events.Eclipse");
 							break;
 						case DPSExtremeCombat.EventType.SlimeRain:
-							title += Language.GetTextValue("SlimeRain");
+							title += Language.GetTextValue("Bestiary_Events.SlimeRain");
 							break;
 						default:
 							title += Language.GetTextValue("Event");

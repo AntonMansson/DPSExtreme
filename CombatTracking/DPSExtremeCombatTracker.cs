@@ -288,10 +288,7 @@ namespace DPSExtreme.CombatTracking
 				else if (Main.netMode == NetmodeID.Server)
 					ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(String.Format("Server upgraded combat from {0} to {1}", ((CombatType)oldHighestCombat).ToString(), aCombatType.ToString())), Color.Orange);
 
-				if (aCombatType == CombatType.Invasion || aCombatType == CombatType.BossFight)
-				{
-					myActiveCombat.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
-				}
+				myActiveCombat.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
 
 				DPSExtremeUI.instance?.OnCombatUpgraded(myActiveCombat);
 
