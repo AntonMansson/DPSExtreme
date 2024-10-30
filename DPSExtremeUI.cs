@@ -193,26 +193,26 @@ namespace DPSExtreme
 		{
 			base.Update(gameTime);
 
-			if (!updateNeeded) 
-				return;
-
-			if (!myCurrentDisplay._items.Contains(myWearDPSMeterText))
+			if (!Main.LocalPlayer.accDreamCatcher)
 			{
-				if (!Main.LocalPlayer.accDreamCatcher)
+				if (!myCurrentDisplay._items.Contains(myWearDPSMeterText))
 				{
 					myCurrentDisplay?.Add(myWearDPSMeterText);
 					myRootPanel.AddDragTarget(myWearDPSMeterText);
-
-					return;
 				}
+
+				return;
 			}
 			else
 			{
-				if (Main.LocalPlayer.accDreamCatcher)
+				if (myCurrentDisplay._items.Contains(myWearDPSMeterText))
 				{
 					myCurrentDisplay?.Remove(myWearDPSMeterText);
 				}
 			}
+
+			if (!updateNeeded)
+				return;
 
 			myCurrentDisplay?.Update();
 
