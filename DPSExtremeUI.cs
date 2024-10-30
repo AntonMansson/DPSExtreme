@@ -34,8 +34,8 @@ namespace DPSExtreme
 
 		internal UIDragablePanel myRootPanel;
 		internal UIText myLabel;
-		internal UIText myWearDPSMeterText = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter")));
 
+		internal UIListDisplay myNeedDPSAccDisplay;
 		internal UIListDisplay myDamagePerSecondDisplay;
 		internal UIListDisplay myDamageDoneDisplay;
 		internal UIBreakdownableDisplay myEnemyDamageTakenDisplay;
@@ -62,6 +62,8 @@ namespace DPSExtreme
 			{
 				switch (myDisplayMode)
 				{
+					case ListDisplayMode.NeedAccessory:
+						return myNeedDPSAccDisplay;
 					case ListDisplayMode.DamageDone:
 						return myDamageDoneDisplay;
 					case ListDisplayMode.DamagePerSecond:
@@ -174,6 +176,10 @@ namespace DPSExtreme
 			if (myDamageDoneDisplay != null) //Doesn't matter which one, just checking if it's first time we're setting up
 				myRootPanel.RemoveChild(myCurrentDisplay);
 
+			myNeedDPSAccDisplay = new UIListDisplay(ListDisplayMode.DamageDone);
+			myNeedDPSAccDisplay.myInfoOverrideList = new DPSExtremeInfoList(); //Paralyze
+			myNeedDPSAccDisplay.Add(new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter"))));
+
 			myDamagePerSecondDisplay = new UIListDisplay(ListDisplayMode.DamagePerSecond);
 			myDamageDoneDisplay = new UIListDisplay(ListDisplayMode.DamageDone);
 
@@ -184,27 +190,20 @@ namespace DPSExtreme
 		}
 
 		internal bool updateNeeded;
+		private ListDisplayMode previousDisplayMode = ListDisplayMode.DamageDone;
 
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
 
-			if (!Main.LocalPlayer.accDreamCatcher)
+			if (!Main.LocalPlayer.accDreamCatcher && myDisplayMode != ListDisplayMode.NeedAccessory)
 			{
-				if (!myCurrentDisplay._items.Contains(myWearDPSMeterText))
-				{
-					myCurrentDisplay?.Add(myWearDPSMeterText);
-					myRootPanel.AddDragTarget(myWearDPSMeterText);
-				}
-
-				return;
+				previousDisplayMode = myDisplayMode;
+				myDisplayMode = ListDisplayMode.NeedAccessory;
 			}
-			else
+			else if (Main.LocalPlayer.accDreamCatcher && myDisplayMode == ListDisplayMode.NeedAccessory)
 			{
-				if (myCurrentDisplay._items.Contains(myWearDPSMeterText))
-				{
-					myCurrentDisplay?.Remove(myWearDPSMeterText);
-				}
+				myDisplayMode = previousDisplayMode;
 			}
 
 			if (!updateNeeded)
@@ -221,7 +220,8 @@ namespace DPSExtreme
 		{
 			string title = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey(myDisplayMode.ToString()));
 
-			if (myDisplayedCombat == null)
+			if (myDisplayedCombat == null || 
+				myDisplayMode == ListDisplayMode.NeedAccessory)
 			{
 				myLabel.SetText(title);
 				myLabel.Recalculate();
@@ -323,6 +323,11 @@ namespace DPSExtreme
 
 			myLabel.SetText(title);
 			myLabel.Recalculate();
+		}
+
+		internal void OnEnterWorld()
+		{
+			myDisplayedCombat = null;
 		}
 
 		internal void OnCombatStarted(DPSExtremeCombat aCombat)

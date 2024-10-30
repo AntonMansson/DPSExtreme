@@ -52,6 +52,12 @@ namespace DPSExtreme
 			DPSExtreme.instance.packetHandler.SendProtocol(req);
 		}
 
+		public override void OnEnterWorld()
+		{
+			DPSExtreme.instance.combatTracker.OnEnterWorld();
+			DPSExtremeUI.instance.OnEnterWorld();
+		}
+
 		public override void ProcessTriggers(TriggersSet triggersSet)
 		{
 			if (DPSExtreme.instance.ToggleTeamDPSHotKey.JustPressed)
