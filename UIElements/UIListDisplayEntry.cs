@@ -25,7 +25,6 @@ namespace DPSExtreme
 			myNameText = aName;
 			myParticipantIndex = aIndex;
 
-			//TODO Make this based on index in _innerlist.Elements
 			myColor = DPSExtremeUI.chatColor[ourColorCount++ % DPSExtremeUI.chatColor.Length];
 
 			PaddingTop = 8f;
@@ -36,6 +35,8 @@ namespace DPSExtreme
 			Vector2 textSize = new Vector2(dynamicSpriteFont.MeasureString(myNameText.ToString()).X, 16f) * 1f;
 			MinWidth.Set(textSize.X + PaddingLeft + PaddingRight, 0f);
 			MinHeight.Set(textSize.Y + PaddingTop + PaddingBottom, 0f);
+
+			DPSExtremeUI.instance.myRootPanel.AddDragTarget(this);
 
 			Recalculate();
 		}

@@ -20,8 +20,6 @@ namespace DPSExtreme.UIElements
 
 		internal override void Update()
 		{
-			Clear(); //TODO: Reuse entries
-
 			RecalculateTotals();
 			UpdateValues();
 
@@ -39,6 +37,8 @@ namespace DPSExtreme.UIElements
 				return;
 
 			UIListDisplayEntry.ourColorCount = 0;
+
+			int entryIndex = 0;
 
 			for (int i = 0; i < myInfoList.Size(); i++)
 			{
@@ -59,12 +59,20 @@ namespace DPSExtreme.UIElements
 						name = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime"));
 					}
 
-					UIListDisplayEntry entry = new UIListDisplayEntry(name, i);
-					entry.SetValues(value, myHighestValue, myTotal);
-					
-					Add(entry);
+					UIListDisplayEntry entry = null;
 
-					DPSExtremeUI.instance.myRootPanel.AddDragTarget(entry);
+					if (entryIndex >= _items.Count)
+					{
+						entry = new UIListDisplayEntry(name, i);
+						Add(entry);
+					}
+					else
+					{
+						entry = _items[entryIndex] as UIListDisplayEntry;
+					}
+
+					entry.SetValues(value, myHighestValue, myTotal);
+					entryIndex++;
 				}
 			}
 		}
