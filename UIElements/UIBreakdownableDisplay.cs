@@ -55,6 +55,8 @@ namespace DPSExtreme.UIElements
 		{
 			UIListDisplayEntry.ourColorCount = 0;
 
+			int entryIndex = 0;
+
 			foreach ((int npcType, DPSExtremeInfoList damageInfo) in myInfoLookup)
 			{
 				int listMax = 0;
@@ -68,12 +70,20 @@ namespace DPSExtreme.UIElements
 					if (myNameCallback != null)
 						name = myNameCallback.Invoke(npcType);
 
-					UIListDisplayEntry entry = new UIListDisplayEntry(name);
-					entry.SetValues(listTotal, myHighestValue, myTotal);
-					
-					Add(entry);
+					UIListDisplayEntry entry = null;
 
-					DPSExtremeUI.instance.myRootPanel.AddDragTarget(entry);
+					if (entryIndex >= _items.Count)
+					{
+						entry = new UIListDisplayEntry(name);
+						Add(entry);
+					}
+					else
+					{
+						entry = _items[entryIndex] as UIListDisplayEntry;
+					}
+
+					entry.SetValues(listTotal, myHighestValue, myTotal);
+					entryIndex++;
 				}
 			}
 		}

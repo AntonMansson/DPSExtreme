@@ -35,6 +35,7 @@ namespace DPSExtreme
 
 		internal UIDragablePanel myRootPanel;
 		internal UIText myLabel;
+		internal UIText myWearDPSMeterText = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter")));
 
 		internal UIListDisplay myDamagePerSecondDisplay = new UIListDisplay();
 		internal UIListDisplay myDamageDoneDisplay = new UIListDisplay();
@@ -158,7 +159,6 @@ namespace DPSExtreme
 			var labelDimensions = myLabel.GetInnerDimensions();
 			int top = (int)labelDimensions.Height + 4;
 
-			//TODO Do in constructor
 			myRootPanel.AddDragTarget(myDamagePerSecondDisplay);
 			myRootPanel.AddDragTarget(myDamageDoneDisplay);
 			myRootPanel.AddDragTarget(myEnemyDamageTakenDisplay);
@@ -196,14 +196,22 @@ namespace DPSExtreme
 			if (!updateNeeded) 
 				return;
 
-			if (!Main.LocalPlayer.accDreamCatcher)
+			if (!myCurrentDisplay._items.Contains(myWearDPSMeterText))
 			{
-				UIText t = new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter")));
-				myCurrentDisplay?.Clear();
-				myCurrentDisplay?.Add(t);
-				myRootPanel.AddDragTarget(t);
+				if (!Main.LocalPlayer.accDreamCatcher)
+				{
+					myCurrentDisplay?.Add(myWearDPSMeterText);
+					myRootPanel.AddDragTarget(myWearDPSMeterText);
 
-				return;
+					return;
+				}
+			}
+			else
+			{
+				if (Main.LocalPlayer.accDreamCatcher)
+				{
+					myCurrentDisplay?.Remove(myWearDPSMeterText);
+				}
 			}
 
 			myCurrentDisplay?.Update();

@@ -39,12 +39,12 @@ namespace DPSExtreme.CombatTracking
 			PumpkinMoon = 1001,
 			FrostMoon = 1002,
 			OldOnesArmy = 1003,
-			Count
+			End
 		}
 
 		internal enum EventType
 		{
-			BloodMoon = InvasionType.Count,
+			BloodMoon = InvasionType.End,
 			Eclipse,
 			SlimeRain,
 			//No support for modded events
