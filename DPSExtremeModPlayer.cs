@@ -10,11 +10,13 @@ namespace DPSExtreme
 	{
 		internal static List<int> ourConnectedPlayers = new List<int>();
 
-		public override void PlayerDisconnect() {
+		public override void PlayerDisconnect()
+		{
 			if (Main.netMode != NetmodeID.Server)
 				return;
 
-			foreach (int playerIndex in ourConnectedPlayers) {
+			foreach (int playerIndex in ourConnectedPlayers)
+			{
 				if (Main.player[playerIndex].active)
 					continue;
 
@@ -25,7 +27,8 @@ namespace DPSExtreme
 			}
 		}
 
-		public override void PostUpdate() {
+		public override void PostUpdate()
+		{
 			if (Main.GameUpdateCount % DPSExtreme.UPDATEDELAY != 0)
 				return;
 
@@ -49,8 +52,10 @@ namespace DPSExtreme
 			DPSExtreme.instance.packetHandler.SendProtocol(req);
 		}
 
-		public override void ProcessTriggers(TriggersSet triggersSet) {
-			if (DPSExtreme.instance.ToggleTeamDPSHotKey.JustPressed) {
+		public override void ProcessTriggers(TriggersSet triggersSet)
+		{
+			if (DPSExtreme.instance.ToggleTeamDPSHotKey.JustPressed)
+			{
 				DPSExtremeUI.instance.ShowTeamDPSPanel = !DPSExtremeUI.instance.ShowTeamDPSPanel;
 			}
 		}

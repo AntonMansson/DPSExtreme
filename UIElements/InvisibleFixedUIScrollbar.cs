@@ -8,18 +8,21 @@ namespace DPSExtreme.UIElements
 	{
 		internal UserInterface userInterface;
 
-		public FixedUIScrollbar(UserInterface userInterface) {
+		public FixedUIScrollbar(UserInterface userInterface)
+		{
 			this.userInterface = userInterface;
 		}
 
-		protected override void DrawSelf(SpriteBatch spriteBatch) {
+		protected override void DrawSelf(SpriteBatch spriteBatch)
+		{
 			UserInterface temp = UserInterface.ActiveInstance;
 			UserInterface.ActiveInstance = userInterface;
 			base.DrawSelf(spriteBatch);
 			UserInterface.ActiveInstance = temp;
 		}
 
-		public override void LeftMouseDown(UIMouseEvent evt) {
+		public override void LeftMouseDown(UIMouseEvent evt)
+		{
 			UserInterface temp = UserInterface.ActiveInstance;
 			UserInterface.ActiveInstance = userInterface;
 			base.LeftMouseDown(evt);
@@ -29,17 +32,20 @@ namespace DPSExtreme.UIElements
 
 	internal class InvisibleFixedUIScrollbar : FixedUIScrollbar
 	{
-		public InvisibleFixedUIScrollbar(UserInterface userInterface) : base(userInterface) {
+		public InvisibleFixedUIScrollbar(UserInterface userInterface) : base(userInterface)
+		{
 		}
 
-		protected override void DrawSelf(SpriteBatch spriteBatch) {
+		protected override void DrawSelf(SpriteBatch spriteBatch)
+		{
 			UserInterface temp = UserInterface.ActiveInstance;
 			UserInterface.ActiveInstance = userInterface;
 			//base.DrawSelf(spriteBatch);
 			UserInterface.ActiveInstance = temp;
 		}
 
-		public override void LeftMouseDown(UIMouseEvent evt) {
+		public override void LeftMouseDown(UIMouseEvent evt)
+		{
 			UserInterface temp = UserInterface.ActiveInstance;
 			UserInterface.ActiveInstance = userInterface;
 			base.LeftMouseDown(evt);
