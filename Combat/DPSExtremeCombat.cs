@@ -7,8 +7,9 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria;
 using DPSExtreme.UIElements;
+using DPSExtreme.Combat.Stats;
 
-namespace DPSExtreme.CombatTracking
+namespace DPSExtreme.Combat
 {
 	internal partial class DPSExtremeCombat
 	{
@@ -58,11 +59,10 @@ namespace DPSExtreme.CombatTracking
 		internal DateTime myStartTime;
 		internal DateTime myLastActivityTime;
 
-		public Dictionary<int, DPSExtremeInfoList> myEnemyDamageTaken = new Dictionary<int, DPSExtremeInfoList>();
-
-		internal DPSExtremeInfoList myDamageDoneList = new DPSExtremeInfoList();
-		internal DPSExtremeInfoList myDPSList = new DPSExtremeInfoList();
-
+		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>>();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>>();
+		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new DPSExtremeStatList<StatValue>();
+		
 		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType)
 		{
 			myCombatTypeFlags = aCombatType;
@@ -77,9 +77,9 @@ namespace DPSExtreme.CombatTracking
 			switch (aDisplayMode)
 			{
 				case ListDisplayMode.DamageDone:
-					return myDamageDoneList;
+					return myDamageDone;
 				case ListDisplayMode.DamagePerSecond:
-					return myDPSList;
+					return myDamagePerSecond;
 				case ListDisplayMode.EnemyDamageTaken:
 					return myEnemyDamageTaken;
 				case ListDisplayMode.Count:
@@ -88,7 +88,7 @@ namespace DPSExtreme.CombatTracking
 			}
 		}
 
-		internal void AddDealtDamage(NPC aDamagedNPC, int aDamageDealer, int aDamage)
+		internal void AddDealtDamage(NPC aDamagedNPC, int aDamageDealer, int aItemOrProjectileType, int aDamage)
 		{
 			int npcRemainingHealth = 0;
 			int npcMaxHealth = 0;
@@ -105,11 +105,14 @@ namespace DPSExtreme.CombatTracking
 			int consolidatedType = NPCID.FromLegacyName(Lang.GetNPCNameValue(aDamagedNPC.type));
 			int npcType = consolidatedType > 0 ? consolidatedType : aDamagedNPC.type;
 
-			if (!myEnemyDamageTaken.ContainsKey(npcType))
-				myEnemyDamageTaken.Add(npcType, new DPSExtremeInfoList());
+			if (Main.netMode == NetmodeID.MultiplayerClient)
+			{
+
+				return;
+			}
 
 			myEnemyDamageTaken[npcType][aDamageDealer] += clampedDamageAmount;
-			myDamageDoneList[aDamageDealer] += clampedDamageAmount;
+			myDamageDone[aDamageDealer][aItemOrProjectileType] += clampedDamageAmount;
 		}
 
 		internal void OnPlayerLeft(int aPlayer)
@@ -117,7 +120,7 @@ namespace DPSExtreme.CombatTracking
 			//Move player's stats into designated part of the buffer for disconnected players
 			for (int i = (int)InfoListIndices.DisconnectedPlayersStart; i < (int)InfoListIndices.DisconnectedPlayersEnd; i++)
 			{
-				if (myDamageDoneList[i] > -1)
+				if (myDamageDone[i].HasStats())
 					continue;
 
 				ReassignStats(aPlayer, i);
@@ -127,26 +130,26 @@ namespace DPSExtreme.CombatTracking
 
 		internal void ReassignStats(int aFrom, int aTo)
 		{
-			myDamageDoneList[aTo] = myDamageDoneList[aFrom];
+			myDamageDone[aTo] = myDamageDone[aFrom];
 
-			foreach ((int npcType, DPSExtremeInfoList damageInfo) in myEnemyDamageTaken)
+			foreach ((int npcType, DPSExtremeStatList<StatValue> damageInfo) in myEnemyDamageTaken)
 			{
 				myEnemyDamageTaken[npcType][aTo] = myEnemyDamageTaken[npcType][aFrom];
 			}
 
-			myDPSList[aTo] = myDPSList[aFrom];
+			myDamagePerSecond[aTo] = myDamagePerSecond[aFrom];
 
 			ClearStatsForPlayer(aFrom);
 		}
 
 		internal void ClearStatsForPlayer(int aPlayer)
 		{
-			myDamageDoneList[aPlayer] = -1;
+			myDamageDone[aPlayer].Clear();
 
-			foreach ((int npcType, DPSExtremeInfoList damageInfo) in myEnemyDamageTaken)
+			foreach ((int npcType, DPSExtremeStatList<StatValue> damageInfo) in myEnemyDamageTaken)
 				myEnemyDamageTaken[npcType][aPlayer] = -1;
 
-			myDPSList[aPlayer] = -1;
+			myDamagePerSecond[aPlayer] = -1;
 		}
 
 		internal void SendStats()
@@ -159,7 +162,7 @@ namespace DPSExtreme.CombatTracking
 				ProtocolPushCombatStats push = new ProtocolPushCombatStats();
 				push.myCombatIsActive = true;
 				push.myEnemyDamageTaken = myEnemyDamageTaken;
-				push.myDamageDoneList = myDamageDoneList;
+				push.myDamageDone = myDamageDone;
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);
 
@@ -168,9 +171,13 @@ namespace DPSExtreme.CombatTracking
 					Dictionary<byte, int> stats = new Dictionary<byte, int>();
 					for (int i = 0; i < 256; i++)
 					{
-						if (myDamageDoneList[i] > -1)
+						if (myDamageDone[i].HasStats())
 						{
-							stats[(byte)i] = myDamageDoneList[i];
+							int max = 0;
+							int participantTotal = 0;
+							myDamageDone[i].GetMaxAndTotal(out max, out participantTotal);
+
+							stats[(byte)i] = participantTotal;
 						}
 					}
 
@@ -192,21 +199,23 @@ namespace DPSExtreme.CombatTracking
 
 			for (int i = 0; i < 256; i++)
 			{
-				int damage = myDamageDoneList[i];
+				int max = 0;
+				int participantDamage = 0;
+				myDamageDone[i].GetMaxAndTotal(out max, out participantDamage);
 
-				if (damage > 0)
+				if (participantDamage > 0)
 				{
 					if (i == (int)InfoListIndices.NPCs)
 					{
-						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC")), damage));
+						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC")), participantDamage));
 					}
 					if (i == (int)InfoListIndices.DOTs)
 					{
-						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")), damage));
+						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")), participantDamage));
 					}
 					else
 					{
-						sb.Append(string.Format("{0}: {1}, ", Main.player[i].name, damage));
+						sb.Append(string.Format("{0}: {1}, ", Main.player[i].name, participantDamage));
 					}
 				}
 			}

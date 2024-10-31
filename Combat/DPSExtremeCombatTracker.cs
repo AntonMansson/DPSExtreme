@@ -5,9 +5,9 @@ using Terraria;
 using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
-using static DPSExtreme.CombatTracking.DPSExtremeCombat;
+using static DPSExtreme.Combat.DPSExtremeCombat;
 
-namespace DPSExtreme.CombatTracking
+namespace DPSExtreme.Combat
 {
 	internal class DPSExtremeCombatTracker
 	{
@@ -253,6 +253,12 @@ namespace DPSExtreme.CombatTracking
 			ProtocolPushStartCombat push = new ProtocolPushStartCombat();
 			push.myCombatType = aCombatType;
 			push.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
+
+			if (Main.netMode == NetmodeID.Server)
+			{
+				DPSExtreme.instance.packetHandler.HandleStartCombatPush(push);
+				return;
+			}
 
 			if (Main.netMode == NetmodeID.Server)
 				DPSExtreme.instance.packetHandler.HandleStartCombatPush(push);

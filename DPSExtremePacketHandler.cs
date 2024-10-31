@@ -3,7 +3,7 @@ using System.IO;
 using Terraria.ID;
 using Terraria;
 using Terraria.ModLoader;
-using static DPSExtreme.CombatTracking.DPSExtremeCombat;
+using static DPSExtreme.Combat.DPSExtremeCombat;
 
 namespace DPSExtreme
 {
@@ -125,7 +125,7 @@ namespace DPSExtreme
 					}
 
 					DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-					DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, playerNumber, damage);
+					DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, playerNumber, -1, damage);
 
 					// TODO: Reimplement DPS with ring buffer for accurate?  !!! or send 0?
 					// TODO: Verify real life adjustment
@@ -186,7 +186,7 @@ namespace DPSExtreme
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList[aReq.myPlayer] = aReq.myDPS;
+			DPSExtreme.instance.combatTracker.myActiveCombat.myDamagePerSecond[aReq.myPlayer] = aReq.myDPS;
 		}
 
 		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush)
@@ -194,7 +194,7 @@ namespace DPSExtreme
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList = aPush.myDPSList;
+			DPSExtreme.instance.combatTracker.myActiveCombat.myDamagePerSecond = aPush.myDamagePerSecond;
 
 			DPSExtremeUI.instance.updateNeeded = true;
 		}
@@ -204,10 +204,10 @@ namespace DPSExtreme
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
-			CombatTracking.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
+			Combat.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
 
 			activeCombat.myEnemyDamageTaken = aPush.myEnemyDamageTaken;
-			activeCombat.myDamageDoneList = aPush.myDamageDoneList;
+			activeCombat.myDamageDone = aPush.myDamageDone;
 
 			//Best-effort DOT DPS approx.
 			//TODO: Fix issue with dots appearing before player dpss
@@ -221,18 +221,18 @@ namespace DPSExtreme
 				//Since the dot hook doesn't seem to work in SP, add damage here to the best of our abilities
 				if (Main.netMode == NetmodeID.SinglePlayer)
 				{
-					if (totalDotDPS > 0 && activeCombat.myDamageDoneList[(int)InfoListIndices.DOTs] < 0) //Make sure we don't start at -1
-						activeCombat.myDamageDoneList[(int)InfoListIndices.DOTs] = 0;
+					if (totalDotDPS > 0 && activeCombat.myDamageDone[(int)InfoListIndices.DOTs][-1] < 0) //Make sure we don't start at -1
+						activeCombat.myDamageDone[(int)InfoListIndices.DOTs][-1] = 0;
 
 					float ratio = DPSExtreme.UPDATEDELAY / 60f;
 					//TODO: Handle remainder
 					int dealtDamage = (int)(dotDPS * ratio);
-					activeCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, dealtDamage);
+					activeCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, -1, dealtDamage);
 				}
 			}
 
 			if (totalDotDPS > 0)
-				activeCombat.myDPSList[(int)InfoListIndices.DOTs] = totalDotDPS;
+				activeCombat.myDamagePerSecond[(int)InfoListIndices.DOTs] = totalDotDPS;
 
 			DPSExtremeUI.instance.updateNeeded = true;
 

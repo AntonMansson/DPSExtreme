@@ -1,6 +1,6 @@
-using System.Collections.Generic;
+using DPSExtreme.Combat.Stats;
 using System.IO;
-using static DPSExtreme.CombatTracking.DPSExtremeCombat;
+using static DPSExtreme.Combat.DPSExtremeCombat;
 
 namespace DPSExtreme
 {
@@ -101,50 +101,24 @@ namespace DPSExtreme
 
 			aWriter.Write(myCombatIsActive);
 
-			//<DamageDealerCount> 2
-			//<DamageDealerId> 1 : <totalDamage> 1573
-			//<DamageDealerId> 7 : <totalDamage> 213
-
-			myDamageDoneList.ToStream(aWriter);
-
-			//<DamagedNPCTypesCount> 3
-			//<NPCType> 14(Penguin) : [ <DamageDealerId> 1 : <damage> 0, <DamageDealerId> 7 : 15 ]
-			//<NPCType> 23(Slime) : [ <DamageDealerId> 1 : <damage> 35, <DamageDealerId> 7 : 5 ]
-			//<NPCType> 143(King Slime) : [ <DamageDealerId> 1 : <damage> 35, <DamageDealerId> 7 : 5 ]
-			//npc ids not accurate btw
-
-			aWriter.Write(myEnemyDamageTaken.Count);
-			foreach ((int NPCType, DPSExtremeInfoList damageInfo) in myEnemyDamageTaken)
-			{
-				aWriter.Write(NPCType);
-
-				damageInfo.ToStream(aWriter);
-			}
+			myDamageDone.ToStream(aWriter);
+			myEnemyDamageTaken.ToStream(aWriter);
 		}
 
 		public override bool FromStream(BinaryReader aReader)
 		{
 			myCombatIsActive = aReader.ReadBoolean();
 
-			myDamageDoneList.FromStream(aReader);
-
-			int myEnemyDamageTakenCount = aReader.ReadInt32();
-
-			for (int i = 0; i < myEnemyDamageTakenCount; i++)
-			{
-				int npcType = aReader.ReadInt32();
-
-				myEnemyDamageTaken[npcType] = new DPSExtremeInfoList();
-				myEnemyDamageTaken[npcType].FromStream(aReader);
-			}
+			myDamageDone.FromStream(aReader);
+			myEnemyDamageTaken.FromStream(aReader);
 
 			return true;
 		}
 
 		public bool myCombatIsActive = false;
 
-		public Dictionary<int, DPSExtremeInfoList> myEnemyDamageTaken = new Dictionary<int, DPSExtremeInfoList>();
-		public DPSExtremeInfoList myDamageDoneList = new DPSExtremeInfoList();
+		public DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>>();
+		public DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>>();
 	}
 
 	internal class ProtocolReqShareCurrentDPS : DPSExtremeProtocol
@@ -179,16 +153,16 @@ namespace DPSExtreme
 		{
 			aWriter.Write((byte)GetDelimiter());
 
-			myDPSList.ToStream(aWriter);
+			myDamagePerSecond.ToStream(aWriter);
 		}
 
 		public override bool FromStream(BinaryReader aReader)
 		{
-			myDPSList.FromStream(aReader);
+			myDamagePerSecond.FromStream(aReader);
 
 			return true;
 		}
 
-		public DPSExtremeInfoList myDPSList = new DPSExtremeInfoList();
+		public DPSExtremeStatList<StatValue> myDamagePerSecond = new DPSExtremeStatList<StatValue>();
 	}
 }

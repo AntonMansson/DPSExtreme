@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DPSExtreme.Combat.Stats;
+using System;
 using System.Collections.Generic;
 using Terraria.UI;
 
@@ -6,7 +7,7 @@ namespace DPSExtreme.UIElements
 {
 	internal class UIBreakdownableDisplay : UICombatInfoDisplay
 	{
-		internal Dictionary<int, DPSExtremeInfoList> myInfoLookup => DPSExtremeUI.instance.myDisplayedCombat?.GetInfoContainer(myDisplayMode) as Dictionary<int, DPSExtremeInfoList>;
+		internal Dictionary<int, DPSExtremeStatList<StatValue>> myInfoLookup => DPSExtremeUI.instance.myDisplayedCombat?.GetInfoContainer(myDisplayMode) as Dictionary<int, DPSExtremeStatList<StatValue>>;
 		internal Func<int, string> myNameCallback;
 
 		UIListDisplay myBreakdownDisplay = null;
@@ -39,7 +40,7 @@ namespace DPSExtreme.UIElements
 			myHighestValue = 0;
 			myTotal = 0;
 
-			foreach ((int npcType, DPSExtremeInfoList damageInfo) in myInfoLookup)
+			foreach ((int npcType, DPSExtremeStatList<StatValue> damageInfo) in myInfoLookup)
 			{
 				int listMax = 0;
 				int listTotal = 0;
@@ -60,7 +61,7 @@ namespace DPSExtreme.UIElements
 
 			int entryIndex = 0;
 
-			foreach ((int baseKey, DPSExtremeInfoList damageInfo) in myInfoLookup)
+			foreach ((int baseKey, DPSExtremeStatList<StatValue> damageInfo) in myInfoLookup)
 			{
 				int listMax = 0;
 				int listTotal = 0;

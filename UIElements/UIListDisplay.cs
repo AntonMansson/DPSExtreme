@@ -1,23 +1,24 @@
 ﻿
 using Terraria.Localization;
 using Terraria;
+using DPSExtreme.Combat.Stats;
 
 namespace DPSExtreme.UIElements
 {
 	internal class UIListDisplay : UICombatInfoDisplay
 	{
-		DPSExtremeInfoList myInfoList
+		DPSExtremeStatList<StatValue> myInfoList
 		{
 			get 
 			{
 				if (myInfoOverrideList != null)
 					return myInfoOverrideList;
 
-				return DPSExtremeUI.instance.myDisplayedCombat?.GetInfoContainer(myDisplayMode) as DPSExtremeInfoList;
+				return DPSExtremeUI.instance.myDisplayedCombat?.GetInfoContainer(myDisplayMode) as DPSExtremeStatList<StatValue>;
 			}
 		}
 
-		internal DPSExtremeInfoList myInfoOverrideList = null;
+		internal DPSExtremeStatList<StatValue> myInfoOverrideList = null;
 
 		internal UIListDisplay(ListDisplayMode aDisplayMode) : base(aDisplayMode) { }
 

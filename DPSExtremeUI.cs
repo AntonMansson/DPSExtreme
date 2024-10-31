@@ -1,17 +1,15 @@
 using Microsoft.Xna.Framework;
 using Terraria;
-using Terraria.ModLoader;
-using System;
 using Terraria.UI;
 using Terraria.GameContent.UI.Elements;
-using System.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using DPSExtreme.UIElements;
 using ReLogic.Content;
 using Terraria.Localization;
 using Terraria.ID;
-using DPSExtreme.CombatTracking;
 using Terraria.ModLoader.UI;
+using DPSExtreme.Combat;
+using DPSExtreme.Combat.Stats;
 
 namespace DPSExtreme
 {
@@ -177,7 +175,7 @@ namespace DPSExtreme
 				myRootPanel.RemoveChild(myCurrentDisplay);
 
 			myNeedDPSAccDisplay = new UIListDisplay(ListDisplayMode.DamageDone);
-			myNeedDPSAccDisplay.myInfoOverrideList = new DPSExtremeInfoList(); //Paralyze
+			myNeedDPSAccDisplay.myInfoOverrideList = new DPSExtremeStatList<StatValue>(); //Paralyze
 			myNeedDPSAccDisplay.Add(new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter"))));
 
 			myDamagePerSecondDisplay = new UIListDisplay(ListDisplayMode.DamagePerSecond);

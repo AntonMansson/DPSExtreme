@@ -1,9 +1,7 @@
 ﻿
+using DPSExtreme.Combat.Stats;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection.Emit;
-using static DPSExtreme.CombatTracking.DPSExtremeCombat;
 
 namespace DPSExtreme
 {
@@ -19,21 +17,22 @@ namespace DPSExtreme
 		NPCs = 255
 	}
 
-	internal class DPSExtremeInfoList
+	internal class DPSExtremeStatList<T> : IStat
+		where T : IStat, new()
 	{
-		internal int[] myValues;
+		internal T[] myValues;
 
-		public DPSExtremeInfoList()
+		public DPSExtremeStatList()
 		{
-			myValues = new int[Size()];
+			myValues = new T[Size()];
 
 			for (int i = 0; i < Size(); i++)
 			{
-				myValues[i] = new int();
+				myValues[i] = new T();
 			}
 		}
 
-		public ref int this[int i]
+		public ref T this[int i]
 		{
 			get { return ref myValues[i]; }
 		}
@@ -53,15 +52,31 @@ namespace DPSExtreme
 			aMax = 0;
 			aTotal = 0;
 
+			int subMax = 0;
+			int subTotal = 0;
+
 			for (int i = 0; i < Size(); i++)
 			{
-				int value = myValues[i];
-				if (value > 0)
+				IStat stat = myValues[i];
+				if (stat.HasStats())
 				{
-					aMax = Math.Max(aMax, value);
-					aTotal += value;
+					stat.GetMaxAndTotal(out subMax, out subTotal);
+
+					aMax = Math.Max(aMax, subMax);
+					aTotal += subTotal;
 				}
 			}
+		}
+
+		public bool HasStats()
+		{
+			for (int i = 0; i < Size(); i++)
+			{
+				if (myValues[i].HasStats())
+					return true;
+			}
+
+			return false;
 		}
 
 		public void ToStream(BinaryWriter aWriter)
@@ -73,11 +88,11 @@ namespace DPSExtreme
 			byte count = 0;
 			for (int i = 0; i < Size(); i++)
 			{
-				if (myValues[i] <= 0)
+				if (myValues[i].HasStats())
 					continue;
 
 				aWriter.Write((byte)i);
-				aWriter.Write(myValues[i]);
+				myValues[i].ToStream(aWriter);
 				count++;
 			}
 
@@ -95,7 +110,7 @@ namespace DPSExtreme
 			for (int i = 0; i < count; i++)
 			{
 				byte index = aReader.ReadByte();
-				myValues[index] = aReader.ReadInt32();
+				myValues[index].FromStream(aReader);
 			}
 		}
 	}
