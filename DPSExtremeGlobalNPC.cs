@@ -116,6 +116,9 @@ namespace DPSExtreme
 				if (Main.netMode == NetmodeID.MultiplayerClient)
 					return;
 
+				if (npc.friendly)
+					return;
+
 				//System.Console.WriteLine("OnHitByItem " + player.whoAmI);
 
 				NPC damagedNPC = npc;
@@ -136,6 +139,9 @@ namespace DPSExtreme
 			//TODO, owner could be -1?
 			try {
 				if (Main.netMode == NetmodeID.MultiplayerClient)
+					return;
+
+				if (npc.friendly)
 					return;
 
 				//System.Console.WriteLine("OnHitByProjectile " + projectile.owner);
