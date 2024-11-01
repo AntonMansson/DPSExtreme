@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DPSExtreme.Combat.Stats;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -17,6 +18,8 @@ namespace DPSExtreme.Combat
 		private int myCurrentHistoryIndex = 0;
 		private DPSExtremeCombat[] myCombatHistory = new DPSExtremeCombat[ourHistorySize];
 		internal DPSExtremeCombat myActiveCombat = null;
+
+		internal DPSExtremeStatsHandler myStatsHandler = new DPSExtremeStatsHandler();
 
 		internal int myLastFrameInvasionType = InvasionID.None;
 		internal int myLastFrameEventType = 0;
@@ -254,7 +257,7 @@ namespace DPSExtreme.Combat
 			push.myCombatType = aCombatType;
 			push.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
 
-			if (Main.netMode == NetmodeID.Server)
+			if (Main.netMode == NetmodeID.MultiplayerClient)
 			{
 				DPSExtreme.instance.packetHandler.HandleStartCombatPush(push);
 				return;
@@ -283,6 +286,7 @@ namespace DPSExtreme.Combat
 
 			myActiveCombat = new DPSExtremeCombat(aCombatType, aBossOrInvasionOrEventType);
 
+			myStatsHandler.OnStartCombat();
 			DPSExtremeUI.instance?.OnCombatStarted(myActiveCombat);
 		}
 

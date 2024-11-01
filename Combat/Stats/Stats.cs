@@ -15,7 +15,9 @@ namespace DPSExtreme.Combat.Stats
 
 	internal struct StatValue : IStat
 	{
-		internal int myValue = -1;
+		internal int myValue = 0;
+
+		public bool IsStatValue = true;
 
 		public StatValue()
 		{

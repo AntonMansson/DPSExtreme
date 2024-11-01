@@ -22,6 +22,8 @@ namespace DPSExtreme
 	{
 		internal T[] myValues;
 
+		public bool IsStatValue = false;
+
 		public DPSExtremeStatList()
 		{
 			myValues = new T[Size()];
@@ -88,7 +90,7 @@ namespace DPSExtreme
 			byte count = 0;
 			for (int i = 0; i < Size(); i++)
 			{
-				if (myValues[i].HasStats())
+				if (!myValues[i].HasStats())
 					continue;
 
 				aWriter.Write((byte)i);

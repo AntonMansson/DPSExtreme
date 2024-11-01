@@ -52,7 +52,7 @@ namespace DPSExtreme
 				NPC npc = Main.npc[whoAmI];
 				//TODO Verify that damage has already been applied when we reach this point (otherwise overkill calculation is incorrect)
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, dotType, damage);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, (int)InfoListIndices.DOTs, dotType, damage);
 
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
 			});
@@ -80,7 +80,7 @@ namespace DPSExtreme
 				NPC npc = Main.npc[whoAmI];
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, dotType, damage);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, (int)InfoListIndices.DOTs, dotType, damage);
 
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
 			});
@@ -141,7 +141,7 @@ namespace DPSExtreme
 				}
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, player.whoAmI, item.type, damageDone);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(damagedNPC, player.whoAmI, item.type, damageDone);
 			}
 			catch (Exception)
 			{
@@ -176,7 +176,7 @@ namespace DPSExtreme
 					projectileOwner = (int)InfoListIndices.NPCs;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, projectileOwner, projectile.type + 1000, damageDone);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(damagedNPC, projectileOwner, projectile.type + 20000, damageDone);
 			}
 			catch (Exception)
 			{

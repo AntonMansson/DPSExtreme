@@ -2,37 +2,72 @@
 using Terraria.Localization;
 using Terraria;
 using DPSExtreme.Combat.Stats;
+using System.Reflection;
 
 namespace DPSExtreme.UIElements
 {
-	internal class UIListDisplay : UICombatInfoDisplay
+	internal class UIListDisplay<T> : UICombatInfoDisplay
+		where T : IStat, new()
 	{
-		DPSExtremeStatList<StatValue> myInfoList
+		internal DPSExtremeStatList<T> myInfoList
 		{
 			get 
 			{
-				if (myInfoOverrideList != null)
-					return myInfoOverrideList;
+				try
+				{
+					if (myParentDisplay != null)
+					{
+						UIStatDictionaryDisplay<DPSExtremeStatList<T>> parent = myParentDisplay as UIStatDictionaryDisplay<DPSExtremeStatList<T>>;
+						if (parent != null)
+							return parent.myInfoLookup[myParentDisplay.myBreakdownAccessor];
+					}
 
-				return DPSExtremeUI.instance.myDisplayedCombat?.GetInfoContainer(myDisplayMode) as DPSExtremeStatList<StatValue>;
+					return DPSExtremeUI.instance.myDisplayedCombat?.GetInfoContainer(myDisplayMode) as DPSExtremeStatList<T>;
+				}
+				catch (System.Exception)
+				{
+
+					throw;
+				}
 			}
 		}
 
-		internal DPSExtremeStatList<StatValue> myInfoOverrideList = null;
-
-		internal UIListDisplay(ListDisplayMode aDisplayMode) : base(aDisplayMode) { }
-
-		public override void OnActivate()
+		private string GetName(int aParticipantIndex)
 		{
+			if (aParticipantIndex < 0)
+				return string.Format("Invalid index: {0}", aParticipantIndex);
+
+			if (aParticipantIndex < (int)InfoListIndices.SupportedPlayerCount)
+			{
+				return Main.player[aParticipantIndex].name;
+			}
+			else if (aParticipantIndex >= (int)InfoListIndices.DisconnectedPlayersStart && aParticipantIndex <= (int)InfoListIndices.DisconnectedPlayersEnd)
+			{
+				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DisconnectedPlayer"));
+			}
+			else if (aParticipantIndex == (int)InfoListIndices.NPCs || aParticipantIndex == (int)InfoListIndices.Traps)
+			{
+				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC"));
+			}
+			else if (aParticipantIndex == (int)InfoListIndices.DOTs)
+			{
+				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime"));
+			}
+
+			return string.Format("Invalid index: {0}", aParticipantIndex);
 		}
 
-		public override void OnDeactivate()
+		internal UIListDisplay(ListDisplayMode aDisplayMode) 
+			: base(aDisplayMode, typeof(T).GetTypeInfo()) 
 		{
-			DPSExtremeUI.instance.myRootPanel.RemoveChild(this);
+			myNameCallback = GetName;
 		}
 
 		internal override void Update()
 		{
+			if (myInfoList == null)
+				return;
+
 			RecalculateTotals();
 			UpdateValues();
 
@@ -41,40 +76,50 @@ namespace DPSExtreme.UIElements
 
 		internal override void RecalculateTotals()
 		{
+			if (myIsInBreakdown)
+			{
+				myBreakdownDisplay.RecalculateTotals();
+				return;
+			}
+
 			myInfoList?.GetMaxAndTotal(out myHighestValue, out myTotal);
 		}
 
 		internal override void UpdateValues()
 		{
-			if (myInfoList == null)
+			if (myIsInBreakdown)
+			{
+				myBreakdownDisplay.UpdateValues();
 				return;
+			}
+
+			if (!myInfoList.HasStats())
+			{
+				Clear();
+				return;
+			}
 
 			int entryIndex = 0;
 
 			for (int i = 0; i < myInfoList.Size(); i++)
 			{
-				int value = myInfoList[i];
-				if (value > 0)
+				T value = myInfoList[i];
+				if (value.HasStats())
 				{
-					string name = Main.player[i].name;
-					if (i >= (int)InfoListIndices.DisconnectedPlayersStart && i <= (int)InfoListIndices.DisconnectedPlayersEnd)
-					{
-						name = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DisconnectedPlayer"));
-					}
-					else if (i == (int)InfoListIndices.NPCs || i == (int)InfoListIndices.Traps)
-					{
-						name = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC"));
-					}
-					else if (i == (int)InfoListIndices.DOTs)
-					{
-						name = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime"));
-					}
+					int max = 0;
+					int total = 0;
+					value.GetMaxAndTotal(out max, out total);
+
+					string name = "Missing name callback";
+					if (myNameCallback != null)
+						name = myNameCallback.Invoke(i);
 
 					UIListDisplayEntry entry = null;
 
 					if (entryIndex >= _items.Count)
 					{
-						entry = new UIListDisplayEntry(i);
+						entry = new UIListDisplayEntry();
+						entry.OnLeftClick += OnClickBaseEntry;
 						Add(entry);
 					}
 					else
@@ -85,7 +130,7 @@ namespace DPSExtreme.UIElements
 					entry.myParticipantIndex = i;
 					entry.myColor = DPSExtremeUI.chatColor[i % DPSExtremeUI.chatColor.Length];
 					entry.myNameText = name;
-					entry.SetValues(value, myHighestValue, myTotal);
+					entry.SetValues(total, myHighestValue, myTotal);
 					entryIndex++;
 				}
 			}

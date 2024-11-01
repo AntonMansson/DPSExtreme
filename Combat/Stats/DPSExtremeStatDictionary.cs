@@ -9,6 +9,8 @@ namespace DPSExtreme.Combat.Stats
 	internal class DPSExtremeStatDictionary<Key, Value> : Dictionary<int, Value>, IStat 
 		where Value : IStat, new()
 	{
+		public bool IsStatValue = false;
+
 		public /*new*/ Value this[int aKey]
 		{
 			get

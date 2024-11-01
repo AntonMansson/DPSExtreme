@@ -33,10 +33,8 @@ namespace DPSExtreme
 		internal int myBaseKey = -1;
 		internal Color myColor;
 
-		public UIListDisplayEntry(int aIndex = -1)
+		public UIListDisplayEntry()
 		{
-			myParticipantIndex = aIndex;
-
 			PaddingTop = 8f;
 			Width.Percent = 1f;
 			Height.Pixels = 25f;

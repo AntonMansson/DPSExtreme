@@ -3,6 +3,7 @@ using System.IO;
 using Terraria.ID;
 using Terraria;
 using Terraria.ModLoader;
+using DPSExtreme.Combat;
 using static DPSExtreme.Combat.DPSExtremeCombat;
 
 namespace DPSExtreme
@@ -91,7 +92,9 @@ namespace DPSExtreme
 				DPSExtreme.instance.Logger.Warn("DPSExtreme: null protocol for message type: " + delimiter.ToString());
 			}
 			else
+			{
 				HandleProtocol(delimiter, protocol);
+			}
 
 			return true;
 		}
@@ -125,7 +128,7 @@ namespace DPSExtreme
 					}
 
 					DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-					DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, playerNumber, -1, damage);
+					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(damagedNPC, playerNumber, -1, damage);
 
 					// TODO: Reimplement DPS with ring buffer for accurate?  !!! or send 0?
 					// TODO: Verify real life adjustment
@@ -183,10 +186,12 @@ namespace DPSExtreme
 
 		public void HandleInformServerDPSReq(ProtocolReqShareCurrentDPS aReq)
 		{
-			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+			DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
+			if (activeCombat == null)
 				return;
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDamagePerSecond[aReq.myPlayer] = aReq.myDPS;
+			activeCombat.myDamagePerSecond[aReq.myPlayer] = aReq.myDPS;
+			activeCombat.myDamageDone[aReq.myPlayer] = aReq.myDamageDoneBreakdown;
 		}
 
 		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush)
@@ -195,7 +200,7 @@ namespace DPSExtreme
 				return;
 
 			DPSExtreme.instance.combatTracker.myActiveCombat.myDamagePerSecond = aPush.myDamagePerSecond;
-
+			
 			DPSExtremeUI.instance.updateNeeded = true;
 		}
 
@@ -227,7 +232,7 @@ namespace DPSExtreme
 					float ratio = DPSExtreme.UPDATEDELAY / 60f;
 					//TODO: Handle remainder
 					int dealtDamage = (int)(dotDPS * ratio);
-					activeCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, -1, dealtDamage);
+					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, (int)InfoListIndices.DOTs, -1, dealtDamage);
 				}
 			}
 

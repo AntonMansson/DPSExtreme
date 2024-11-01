@@ -33,10 +33,10 @@ namespace DPSExtreme
 		internal UIDragablePanel myRootPanel;
 		internal UIText myLabel;
 
-		internal UIListDisplay myNeedDPSAccDisplay;
-		internal UIListDisplay myDamagePerSecondDisplay;
-		internal UIListDisplay myDamageDoneDisplay;
-		internal UIBreakdownableDisplay myEnemyDamageTakenDisplay;
+		internal UIListDisplay<StatValue> myNeedDPSAccDisplay;
+		internal UIListDisplay<StatValue> myDamagePerSecondDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myDamageDoneDisplay;
+		internal UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>> myEnemyDamageTakenDisplay;
 
 		private ListDisplayMode _myDisplayMode;
 		internal ListDisplayMode myDisplayMode
@@ -174,15 +174,22 @@ namespace DPSExtreme
 			if (myDamageDoneDisplay != null) //Doesn't matter which one, just checking if it's first time we're setting up
 				myRootPanel.RemoveChild(myCurrentDisplay);
 
-			myNeedDPSAccDisplay = new UIListDisplay(ListDisplayMode.DamageDone);
-			myNeedDPSAccDisplay.myInfoOverrideList = new DPSExtremeStatList<StatValue>(); //Paralyze
+			myNeedDPSAccDisplay = new UIListDisplay<StatValue>(ListDisplayMode.NeedAccessory);
 			myNeedDPSAccDisplay.Add(new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter"))));
 
-			myDamagePerSecondDisplay = new UIListDisplay(ListDisplayMode.DamagePerSecond);
-			myDamageDoneDisplay = new UIListDisplay(ListDisplayMode.DamageDone);
+			myDamagePerSecondDisplay = new UIListDisplay<StatValue>(ListDisplayMode.DamagePerSecond);
 
-			myEnemyDamageTakenDisplay = new UIBreakdownableDisplay(ListDisplayMode.EnemyDamageTaken);
-			myEnemyDamageTakenDisplay.myNameCallback = Lang.GetNPCNameValue;
+			myDamageDoneDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DamageDone);
+			myDamageDoneDisplay.AddBreakdown(new UIStatDictionaryDisplay<StatValue>(ListDisplayMode.DamageDone, (int anAccessor ) => 
+			{
+				if (anAccessor > 20000)
+					return Lang.GetProjectileName(anAccessor - 20000).Value;
+				else
+					return Lang.GetItemNameValue(anAccessor);
+			}));
+
+			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken, Lang.GetNPCNameValue);
+			myEnemyDamageTakenDisplay.AddBreakdown(new UIListDisplay<StatValue>(ListDisplayMode.EnemyDamageTaken));
 
 			myRootPanel.Append(myCurrentDisplay);
 		}
@@ -399,6 +406,9 @@ namespace DPSExtreme
 		private void Label_OnClick(UIMouseEvent evt, UIElement listeningElement)
 		{
 			myDisplayMode = (ListDisplayMode)(((int)myDisplayMode + 1) % (int)ListDisplayMode.Count);
+
+			if (myDisplayMode == ListDisplayMode.NeedAccessory)
+				myDisplayMode = (ListDisplayMode)(((int)myDisplayMode + 1) % (int)ListDisplayMode.Count);
 		}
 	}
 }
