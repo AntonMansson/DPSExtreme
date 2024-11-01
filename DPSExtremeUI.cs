@@ -141,7 +141,8 @@ namespace DPSExtreme
 			myLabel.DynamicallyScaleDownToWidth = true;
 			myLabel.MaxWidth.Set(50, 0);
 
-			myLabel.OnLeftClick += Label_OnClick;
+			myLabel.OnLeftClick += Label_OnLeftClick;
+			myLabel.OnRightClick += Label_OnRightClick;
 			myRootPanel.Append(myLabel);
 			myRootPanel.AddDragTarget(myLabel);
 
@@ -403,12 +404,22 @@ namespace DPSExtreme
 			}
 		}
 
-		private void Label_OnClick(UIMouseEvent evt, UIElement listeningElement)
+		private void Label_OnLeftClick(UIMouseEvent evt, UIElement listeningElement)
 		{
 			myDisplayMode = (ListDisplayMode)(((int)myDisplayMode + 1) % (int)ListDisplayMode.Count);
 
 			if (myDisplayMode == ListDisplayMode.NeedAccessory)
 				myDisplayMode = (ListDisplayMode)(((int)myDisplayMode + 1) % (int)ListDisplayMode.Count);
+		}
+
+		private void Label_OnRightClick(UIMouseEvent evt, UIElement listeningElement)
+		{
+			int next = ((int)myDisplayMode - 1);
+
+			if (next < 1) //1 to skip NeedAccessory too
+				next = (int)ListDisplayMode.Count - 1;
+
+			myDisplayMode = (ListDisplayMode)next;
 		}
 	}
 }
