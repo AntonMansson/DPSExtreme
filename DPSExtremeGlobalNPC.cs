@@ -126,22 +126,11 @@ namespace DPSExtreme
 		{
 			try
 			{
-				if (Main.netMode == NetmodeID.MultiplayerClient)
-					return;
-
 				if (npc.friendly)
 					return;
 
-				//System.Console.WriteLine("OnHitByItem " + player.whoAmI);
-
-				NPC damagedNPC = npc;
-				if (npc.realLife >= 0)
-				{
-					damagedNPC = Main.npc[damagedNPC.realLife];
-				}
-
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(damagedNPC, player.whoAmI, item.type, damageDone);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, player.whoAmI, item.type, damageDone);
 			}
 			catch (Exception)
 			{
@@ -155,18 +144,8 @@ namespace DPSExtreme
 			//TODO, owner could be -1?
 			try
 			{
-				if (Main.netMode == NetmodeID.MultiplayerClient)
-					return;
-
 				if (npc.friendly)
 					return;
-
-				//System.Console.WriteLine("OnHitByProjectile " + projectile.owner);
-				NPC damagedNPC = npc;
-				if (npc.realLife >= 0)
-				{
-					damagedNPC = Main.npc[damagedNPC.realLife];
-				}
 
 				int projectileOwner = projectile.owner;
 
@@ -176,7 +155,7 @@ namespace DPSExtreme
 					projectileOwner = (int)InfoListIndices.NPCs;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(damagedNPC, projectileOwner, projectile.type + 20000, damageDone);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, projectileOwner, projectile.type + 20000, damageDone);
 			}
 			catch (Exception)
 			{

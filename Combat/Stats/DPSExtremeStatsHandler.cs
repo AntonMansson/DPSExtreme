@@ -20,9 +20,13 @@ namespace DPSExtreme.Combat.Stats
 
 		internal void AddDealtDamage(NPC aDamagedNPC, int aDamageDealer, int aItemOrProjectileType, int aDamage)
 		{
+			NPC realDamagedNPC = aDamagedNPC;
+			if (aDamagedNPC.realLife >= 0)
+				realDamagedNPC = Main.npc[aDamagedNPC.realLife];
+
 			int npcRemainingHealth = 0;
 			int npcMaxHealth = 0;
-			aDamagedNPC.GetLifeStats(out npcRemainingHealth, out npcMaxHealth);
+			realDamagedNPC.GetLifeStats(out npcRemainingHealth, out npcMaxHealth);
 			npcRemainingHealth += aDamage; //damage has already been applied when we reach this point. But we're interested in the value pre-damage
 
 			//Not sure why this happens. Seems like there are multiple hits in a single frame for massive overkills
@@ -32,8 +36,8 @@ namespace DPSExtreme.Combat.Stats
 			int clampedDamageAmount = Math.Clamp(aDamage, 0, npcRemainingHealth); //Avoid overkill
 
 			//Merge all penguin ids into single id etc
-			int consolidatedType = NPCID.FromLegacyName(Lang.GetNPCNameValue(aDamagedNPC.type));
-			int npcType = consolidatedType > 0 ? consolidatedType : aDamagedNPC.type;
+			int consolidatedType = NPCID.FromLegacyName(Lang.GetNPCNameValue(realDamagedNPC.type));
+			int npcType = consolidatedType > 0 ? consolidatedType : realDamagedNPC.type;
 
 			if (Main.netMode == NetmodeID.MultiplayerClient)
 			{
