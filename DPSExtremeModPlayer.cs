@@ -47,7 +47,7 @@ namespace DPSExtreme
 			ProtocolReqShareCurrentDPS req = new ProtocolReqShareCurrentDPS();
 			req.myPlayer = Player.whoAmI;
 			req.myDPS = dps;
-			req.myDamageDoneBreakdown = DPSExtreme.instance.combatTracker.myStatsHandler.myDamageDoneBuffer;
+			req.myDamageDoneBreakdown = DPSExtreme.instance.combatTracker.myActiveCombat.myDamageDone[Player.whoAmI];
 
 			DPSExtreme.instance.packetHandler.SendProtocol(req);
 		}

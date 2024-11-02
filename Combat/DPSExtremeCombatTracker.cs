@@ -258,7 +258,7 @@ namespace DPSExtreme.Combat
 			push.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
 
 			if (Main.netMode == NetmodeID.MultiplayerClient)
-			{
+			{ 
 				DPSExtreme.instance.packetHandler.HandleStartCombatPush(push);
 				return;
 			}
@@ -286,7 +286,6 @@ namespace DPSExtreme.Combat
 
 			myActiveCombat = new DPSExtremeCombat(aCombatType, aBossOrInvasionOrEventType);
 
-			myStatsHandler.OnStartCombat();
 			DPSExtremeUI.instance?.OnCombatStarted(myActiveCombat);
 		}
 

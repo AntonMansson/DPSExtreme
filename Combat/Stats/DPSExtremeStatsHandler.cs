@@ -10,14 +10,6 @@ namespace DPSExtreme.Combat.Stats
 {
 	internal class DPSExtremeStatsHandler
 	{
-		//For MP clients to store their damage breakdown in before they pass it to server
-		internal DPSExtremeStatDictionary<int, StatValue> myDamageDoneBuffer = new DPSExtremeStatDictionary<int, StatValue>();
-
-		internal void OnStartCombat()
-		{
-			myDamageDoneBuffer = new DPSExtremeStatDictionary<int, StatValue>();
-		}
-
 		internal void AddDealtDamage(NPC aDamagedNPC, int aDamageDealer, int aItemOrProjectileType, int aDamage)
 		{
 			NPC realDamagedNPC = aDamagedNPC;
@@ -27,7 +19,9 @@ namespace DPSExtreme.Combat.Stats
 			int npcRemainingHealth = 0;
 			int npcMaxHealth = 0;
 			realDamagedNPC.GetLifeStats(out npcRemainingHealth, out npcMaxHealth);
-			npcRemainingHealth += aDamage; //damage has already been applied when we reach this point. But we're interested in the value pre-damage
+
+			if (Main.netMode != NetmodeID.Server) //Damage has not been applied yet on server
+				npcRemainingHealth += aDamage; //damage has already been applied when we reach this point. But we're interested in the value pre-damage
 
 			//Not sure why this happens. Seems like there are multiple hits in a single frame for massive overkills
 			if (npcRemainingHealth < 0)
@@ -39,13 +33,6 @@ namespace DPSExtreme.Combat.Stats
 			int consolidatedType = NPCID.FromLegacyName(Lang.GetNPCNameValue(realDamagedNPC.type));
 			int npcType = consolidatedType > 0 ? consolidatedType : realDamagedNPC.type;
 
-			if (Main.netMode == NetmodeID.MultiplayerClient)
-			{
-				//Buffered because MP clients send their local DamageDone to server to broadcast since only clients can get info about items/projectiles
-				myDamageDoneBuffer[aItemOrProjectileType] += clampedDamageAmount;
-				return;
-			}
-			
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 			{
 				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding damage without active combat");
@@ -54,15 +41,9 @@ namespace DPSExtreme.Combat.Stats
 			}
 
 			DPSExtreme.instance.combatTracker.myActiveCombat.myEnemyDamageTaken[npcType][aDamageDealer] += clampedDamageAmount;
-			if (Main.netMode == NetmodeID.SinglePlayer)
-			{
-				//Buffered to mimic MP client flow
-				//If this pattern grows too big consider maybe some solution with BufferedStats<T>
-				myDamageDoneBuffer[aItemOrProjectileType] += clampedDamageAmount;
-				return;
-			}
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDamageDone[aDamageDealer][aItemOrProjectileType] += clampedDamageAmount;
+			if (Main.netMode != NetmodeID.Server) //MP clients sync their local damage so that we can include item/proj type
+				DPSExtreme.instance.combatTracker.myActiveCombat.myDamageDone[aDamageDealer][aItemOrProjectileType] += clampedDamageAmount;
 		}
 	}
 }

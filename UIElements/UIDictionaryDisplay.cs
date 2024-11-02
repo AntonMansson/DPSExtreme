@@ -99,7 +99,7 @@ namespace DPSExtreme.UIElements
 					string name = "Missing name callback";
 					if (myNameCallback != null)
 					{
-						name = myNameCallback.Invoke(baseKey);
+							name = myNameCallback.Invoke(baseKey);
 					}
 
 					UIListDisplayEntry entry = null;
@@ -115,7 +115,7 @@ namespace DPSExtreme.UIElements
 						entry = _items[entryIndex] as UIListDisplayEntry;
 					}
 
-					entry.myColor = DPSExtremeUI.chatColor[baseKey % DPSExtremeUI.chatColor.Length];
+					entry.myColor = DPSExtremeUI.chatColor[Math.Abs(baseKey) % DPSExtremeUI.chatColor.Length];
 					entry.myNameText = name;
 					entry.myBaseKey = baseKey;
 					entry.SetValues(listTotal, myHighestValue, myTotal);

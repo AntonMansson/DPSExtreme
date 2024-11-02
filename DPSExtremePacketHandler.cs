@@ -212,7 +212,11 @@ namespace DPSExtreme
 			Combat.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
 
 			activeCombat.myEnemyDamageTaken = aPush.myEnemyDamageTaken;
+
+			//Sync remote player damage, but don't overwrite local
+			var myPrevLocalDamage = activeCombat.myDamageDone[Main.LocalPlayer.whoAmI];
 			activeCombat.myDamageDone = aPush.myDamageDone;
+			activeCombat.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
 
 			//Best-effort DOT DPS approx.
 			//TODO: Fix issue with dots appearing before player dpss
