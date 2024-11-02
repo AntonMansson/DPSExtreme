@@ -295,7 +295,7 @@ namespace DPSExtreme.Combat
 			myActiveCombat.myHighestCombatType = (CombatType)Math.Max((int)myActiveCombat.myHighestCombatType, (int)aCombatType);
 			myActiveCombat.myCombatTypeFlags |= aCombatType;
 
-			if ((int)myActiveCombat.myHighestCombatType < oldHighestCombat)
+			if ((int)myActiveCombat.myHighestCombatType <= oldHighestCombat)
 				return;
 
 			if (Main.netMode == NetmodeID.SinglePlayer || Main.netMode == NetmodeID.MultiplayerClient)
