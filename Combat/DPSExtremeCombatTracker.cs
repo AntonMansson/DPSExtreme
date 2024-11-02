@@ -275,7 +275,6 @@ namespace DPSExtreme.Combat
 			if (myActiveCombat != null)
 			{
 				UpgradeCombat(aCombatType, aBossOrInvasionOrEventType);
-				Main.NewText("Upgrade through StartCombat. Should probably never happen");
 				return;
 			}
 
@@ -296,25 +295,25 @@ namespace DPSExtreme.Combat
 			myActiveCombat.myHighestCombatType = (CombatType)Math.Max((int)myActiveCombat.myHighestCombatType, (int)aCombatType);
 			myActiveCombat.myCombatTypeFlags |= aCombatType;
 
-			if ((int)myActiveCombat.myHighestCombatType > oldHighestCombat)
+			if ((int)myActiveCombat.myHighestCombatType < oldHighestCombat)
+				return;
+
+			if (Main.netMode == NetmodeID.SinglePlayer || Main.netMode == NetmodeID.MultiplayerClient)
+				Main.NewText(String.Format("Upgraded combat from {0} to {1}", ((CombatType)oldHighestCombat).ToString(), aCombatType.ToString()));
+			else if (Main.netMode == NetmodeID.Server)
+				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(String.Format("Server upgraded combat from {0} to {1}", ((CombatType)oldHighestCombat).ToString(), aCombatType.ToString())), Color.Orange);
+
+			myActiveCombat.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
+
+			DPSExtremeUI.instance?.OnCombatUpgraded(myActiveCombat);
+
+			if (Main.netMode == NetmodeID.Server)
 			{
-				if (Main.netMode == NetmodeID.SinglePlayer || Main.netMode == NetmodeID.MultiplayerClient)
-					Main.NewText(String.Format("Upgraded combat from {0} to {1}", ((CombatType)oldHighestCombat).ToString(), aCombatType.ToString()));
-				else if (Main.netMode == NetmodeID.Server)
-					ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(String.Format("Server upgraded combat from {0} to {1}", ((CombatType)oldHighestCombat).ToString(), aCombatType.ToString())), Color.Orange);
+				ProtocolPushUpgradeCombat push = new ProtocolPushUpgradeCombat();
+				push.myCombatType = myActiveCombat.myHighestCombatType;
+				push.myBossOrInvasionOrEventType = myActiveCombat.myBossOrInvasionOrEventType;
 
-				myActiveCombat.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
-
-				DPSExtremeUI.instance?.OnCombatUpgraded(myActiveCombat);
-
-				if (Main.netMode == NetmodeID.Server)
-				{
-					ProtocolPushUpgradeCombat push = new ProtocolPushUpgradeCombat();
-					push.myCombatType = myActiveCombat.myHighestCombatType;
-					push.myBossOrInvasionOrEventType = myActiveCombat.myBossOrInvasionOrEventType;
-
-					DPSExtreme.instance.packetHandler.SendProtocol(push);
-				}
+				DPSExtreme.instance.packetHandler.SendProtocol(push);
 			}
 		}
 
