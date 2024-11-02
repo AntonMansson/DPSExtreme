@@ -4,7 +4,7 @@ using Terraria;
 using DPSExtreme.Combat.Stats;
 using System.Reflection;
 
-namespace DPSExtreme.UIElements
+namespace DPSExtreme.UIElements.Displays
 {
 	internal class UIListDisplay<T> : UICombatInfoDisplay
 		where T : IStatContainer, new()

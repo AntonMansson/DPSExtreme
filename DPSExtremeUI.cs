@@ -10,6 +10,7 @@ using Terraria.ID;
 using Terraria.ModLoader.UI;
 using DPSExtreme.Combat;
 using DPSExtreme.Combat.Stats;
+using DPSExtreme.UIElements.Displays;
 
 namespace DPSExtreme
 {

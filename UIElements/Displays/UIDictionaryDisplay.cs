@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Terraria.UI;
 
-namespace DPSExtreme.UIElements
+namespace DPSExtreme.UIElements.Displays
 {
 	internal class UIStatDictionaryDisplay<T> : UICombatInfoDisplay
 		where T : IStatContainer, new()

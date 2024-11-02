@@ -6,8 +6,8 @@ using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria;
-using DPSExtreme.UIElements;
 using DPSExtreme.Combat.Stats;
+using DPSExtreme.UIElements.Displays;
 
 namespace DPSExtreme.Combat
 {

@@ -3,7 +3,7 @@ using System.Reflection;
 using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 
-namespace DPSExtreme.UIElements
+namespace DPSExtreme.UIElements.Displays
 {
 	internal enum ListDisplayMode
 	{

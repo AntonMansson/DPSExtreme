@@ -6,7 +6,7 @@ using Terraria.UI;
 using ReLogic.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DPSExtreme
+namespace DPSExtreme.UIElements.Displays
 {
 	internal class UIListDisplayEntry : UIElement
 	{
