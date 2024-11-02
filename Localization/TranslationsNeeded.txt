@@ -3,7 +3,7 @@ de-DE, 0/17, 0%, missing 17
 it-IT, 0/17, 0%, missing 17
 fr-FR, 0/17, 0%, missing 17
 es-ES, 0/17, 0%, missing 17
-ru-RU, 13/17, 76%, missing 4
-zh-Hans, 13/17, 76%, missing 4
+ru-RU, 9/17, 53%, missing 8
+zh-Hans, 9/17, 53%, missing 8
 pt-BR, 0/17, 0%, missing 17
 pl-PL, 0/17, 0%, missing 17

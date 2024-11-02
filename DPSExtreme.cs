@@ -7,7 +7,7 @@ using System;
 using Terraria.UI;
 using DPSExtreme.UIElements;
 using Microsoft.Xna.Framework;
-using DPSExtreme.CombatTracking;
+using DPSExtreme.Combat;
 
 // TODO, mod to share fog of war 
 // TODO: Death counter for each boss

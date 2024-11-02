@@ -3,9 +3,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using System;
 using MonoMod.Cil;
-using DPSExtreme.CombatTracking;
 using Terraria.DataStructures;
-using static DPSExtreme.CombatTracking.DPSExtremeCombat;
+using static DPSExtreme.Combat.DPSExtremeCombat;
 
 namespace DPSExtreme
 {
@@ -49,10 +48,11 @@ namespace DPSExtreme
 
 				// whoAmI already accounts for realLife
 
+				int dotType = -1;
 				NPC npc = Main.npc[whoAmI];
 				//TODO Verify that damage has already been applied when we reach this point (otherwise overkill calculation is incorrect)
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, damage);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, (int)InfoListIndices.DOTs, dotType, damage);
 
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
 			});
@@ -76,10 +76,11 @@ namespace DPSExtreme
 					return;
 
 				// whoAmI already accounts for realLife
+				int dotType = -1;
 				NPC npc = Main.npc[whoAmI];
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, damage);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, (int)InfoListIndices.DOTs, dotType, damage);
 
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
 			});
@@ -125,22 +126,11 @@ namespace DPSExtreme
 		{
 			try
 			{
-				if (Main.netMode == NetmodeID.MultiplayerClient)
-					return;
-
 				if (npc.friendly)
 					return;
 
-				//System.Console.WriteLine("OnHitByItem " + player.whoAmI);
-
-				NPC damagedNPC = npc;
-				if (npc.realLife >= 0)
-				{
-					damagedNPC = Main.npc[damagedNPC.realLife];
-				}
-
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, player.whoAmI, damageDone);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, player.whoAmI, item.type, damageDone);
 			}
 			catch (Exception)
 			{
@@ -154,18 +144,8 @@ namespace DPSExtreme
 			//TODO, owner could be -1?
 			try
 			{
-				if (Main.netMode == NetmodeID.MultiplayerClient)
-					return;
-
 				if (npc.friendly)
 					return;
-
-				//System.Console.WriteLine("OnHitByProjectile " + projectile.owner);
-				NPC damagedNPC = npc;
-				if (npc.realLife >= 0)
-				{
-					damagedNPC = Main.npc[damagedNPC.realLife];
-				}
 
 				int projectileOwner = projectile.owner;
 
@@ -175,7 +155,7 @@ namespace DPSExtreme
 					projectileOwner = (int)InfoListIndices.NPCs;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, projectileOwner, damageDone);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, projectileOwner, projectile.type + 20000, damageDone);
 			}
 			catch (Exception)
 			{

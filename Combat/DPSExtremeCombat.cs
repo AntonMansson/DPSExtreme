@@ -6,8 +6,10 @@ using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria;
+using DPSExtreme.UIElements;
+using DPSExtreme.Combat.Stats;
 
-namespace DPSExtreme.CombatTracking
+namespace DPSExtreme.Combat
 {
 	internal partial class DPSExtremeCombat
 	{
@@ -39,12 +41,12 @@ namespace DPSExtreme.CombatTracking
 			PumpkinMoon = 1001,
 			FrostMoon = 1002,
 			OldOnesArmy = 1003,
-			Count
+			End
 		}
 
 		internal enum EventType
 		{
-			BloodMoon = InvasionType.Count,
+			BloodMoon = InvasionType.End,
 			Eclipse,
 			SlimeRain,
 			//No support for modded events
@@ -57,11 +59,10 @@ namespace DPSExtreme.CombatTracking
 		internal DateTime myStartTime;
 		internal DateTime myLastActivityTime;
 
-		public Dictionary<int, DPSExtremeInfoList<DamageDealtInfo>> myDamageDealtPerNPCType = new Dictionary<int, DPSExtremeInfoList<DamageDealtInfo>>();
-
-		internal DPSExtremeInfoList<DamageDealtInfo> myTotalDamageDealtList = new DPSExtremeInfoList<DamageDealtInfo>();
-		internal DPSExtremeInfoList<DamageDealtInfo> myDPSList = new DPSExtremeInfoList<DamageDealtInfo>();
-
+		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>>();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>>();
+		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new DPSExtremeStatList<StatValue>();
+		
 		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType)
 		{
 			myCombatTypeFlags = aCombatType;
@@ -71,28 +72,20 @@ namespace DPSExtreme.CombatTracking
 			myLastActivityTime = myStartTime;
 		}
 
-		internal void AddDealtDamage(NPC aDamagedNPC, int aDamageDealer, int aDamage)
+		internal object GetInfoContainer(ListDisplayMode aDisplayMode)
 		{
-			int npcRemainingHealth = 0;
-			int npcMaxHealth = 0;
-			aDamagedNPC.GetLifeStats(out npcRemainingHealth, out npcMaxHealth);
-			npcRemainingHealth += aDamage; //damage has already been applied when we reach this point. But we're interested in the value pre-damage
-
-			//Not sure why this happens. Seems like there are multiple hits in a single frame for massive overkills
-			if (npcRemainingHealth < 0)
-				return;
-
-			int clampedDamageAmount = Math.Clamp(aDamage, 0, npcRemainingHealth); //Avoid overkill
-
-			//Merge all penguin ids into single id etc
-			int consolidatedType = NPCID.FromLegacyName(Lang.GetNPCNameValue(aDamagedNPC.type));
-			int npcType = consolidatedType > 0 ? consolidatedType : aDamagedNPC.type;
-
-			if (!myDamageDealtPerNPCType.ContainsKey(npcType))
-				myDamageDealtPerNPCType.Add(npcType, new DPSExtremeInfoList<DamageDealtInfo>());
-
-			myDamageDealtPerNPCType[npcType][aDamageDealer].myDamage += clampedDamageAmount;
-			myTotalDamageDealtList[aDamageDealer].myDamage += clampedDamageAmount;
+			switch (aDisplayMode)
+			{
+				case ListDisplayMode.DamageDone:
+					return myDamageDone;
+				case ListDisplayMode.DamagePerSecond:
+					return myDamagePerSecond;
+				case ListDisplayMode.EnemyDamageTaken:
+					return myEnemyDamageTaken;
+				case ListDisplayMode.Count:
+				default:
+					return null;
+			}
 		}
 
 		internal void OnPlayerLeft(int aPlayer)
@@ -100,7 +93,7 @@ namespace DPSExtreme.CombatTracking
 			//Move player's stats into designated part of the buffer for disconnected players
 			for (int i = (int)InfoListIndices.DisconnectedPlayersStart; i < (int)InfoListIndices.DisconnectedPlayersEnd; i++)
 			{
-				if (myTotalDamageDealtList[i].myDamage > -1)
+				if (myDamageDone[i].HasStats())
 					continue;
 
 				ReassignStats(aPlayer, i);
@@ -110,26 +103,26 @@ namespace DPSExtreme.CombatTracking
 
 		internal void ReassignStats(int aFrom, int aTo)
 		{
-			myTotalDamageDealtList[aTo] = myTotalDamageDealtList[aFrom];
+			myDamageDone[aTo] = myDamageDone[aFrom];
 
-			foreach ((int npcType, DPSExtremeInfoList<DamageDealtInfo> damageInfo) in myDamageDealtPerNPCType)
+			foreach ((int npcType, DPSExtremeStatList<StatValue> damageInfo) in myEnemyDamageTaken)
 			{
-				myDamageDealtPerNPCType[npcType][aTo] = myDamageDealtPerNPCType[npcType][aFrom];
+				myEnemyDamageTaken[npcType][aTo] = myEnemyDamageTaken[npcType][aFrom];
 			}
 
-			myDPSList[aTo] = myDPSList[aFrom];
+			myDamagePerSecond[aTo] = myDamagePerSecond[aFrom];
 
 			ClearStatsForPlayer(aFrom);
 		}
 
 		internal void ClearStatsForPlayer(int aPlayer)
 		{
-			myTotalDamageDealtList[aPlayer] = new DamageDealtInfo();
+			myDamageDone[aPlayer].Clear();
 
-			foreach ((int npcType, DPSExtremeInfoList<DamageDealtInfo> damageInfo) in myDamageDealtPerNPCType)
-				myDamageDealtPerNPCType[npcType][aPlayer] = new DamageDealtInfo();
+			foreach ((int npcType, DPSExtremeStatList<StatValue> damageInfo) in myEnemyDamageTaken)
+				myEnemyDamageTaken[npcType][aPlayer] = -1;
 
-			myDPSList[aPlayer] = new DamageDealtInfo();
+			myDamagePerSecond[aPlayer] = -1;
 		}
 
 		internal void SendStats()
@@ -141,8 +134,8 @@ namespace DPSExtreme.CombatTracking
 
 				ProtocolPushCombatStats push = new ProtocolPushCombatStats();
 				push.myCombatIsActive = true;
-				push.myDamageDealtPerNPCType = myDamageDealtPerNPCType;
-				push.myTotalDamageDealtList = myTotalDamageDealtList;
+				push.myEnemyDamageTaken = myEnemyDamageTaken;
+				push.myDamageDone = myDamageDone;
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);
 
@@ -151,9 +144,13 @@ namespace DPSExtreme.CombatTracking
 					Dictionary<byte, int> stats = new Dictionary<byte, int>();
 					for (int i = 0; i < 256; i++)
 					{
-						if (myTotalDamageDealtList[i].myDamage > -1)
+						if (myDamageDone[i].HasStats())
 						{
-							stats[(byte)i] = myTotalDamageDealtList[i].myDamage;
+							int max = 0;
+							int participantTotal = 0;
+							myDamageDone[i].GetMaxAndTotal(out max, out participantTotal);
+
+							stats[(byte)i] = participantTotal;
 						}
 					}
 
@@ -175,21 +172,23 @@ namespace DPSExtreme.CombatTracking
 
 			for (int i = 0; i < 256; i++)
 			{
-				DamageDealtInfo damageInfo = myTotalDamageDealtList[i];
+				int max = 0;
+				int participantDamage = 0;
+				myDamageDone[i].GetMaxAndTotal(out max, out participantDamage);
 
-				if (damageInfo.myDamage > 0)
+				if (participantDamage > 0)
 				{
 					if (i == (int)InfoListIndices.NPCs)
 					{
-						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC")), damageInfo.myDamage));
+						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC")), participantDamage));
 					}
 					if (i == (int)InfoListIndices.DOTs)
 					{
-						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")), damageInfo.myDamage));
+						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")), participantDamage));
 					}
 					else
 					{
-						sb.Append(string.Format("{0}: {1}, ", Main.player[i].name, damageInfo.myDamage));
+						sb.Append(string.Format("{0}: {1}, ", Main.player[i].name, participantDamage));
 					}
 				}
 			}

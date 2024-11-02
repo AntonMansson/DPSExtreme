@@ -24,7 +24,7 @@ namespace DPSExtreme
 			if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.SinglePlayer)
 			{
 				ProtocolPushClientDPSs push = new ProtocolPushClientDPSs();
-				push.myDPSList = DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList;
+				push.myDamagePerSecond = DPSExtreme.instance.combatTracker.myActiveCombat.myDamagePerSecond;
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);
 				DPSExtreme.instance.combatTracker.myActiveCombat.SendStats();

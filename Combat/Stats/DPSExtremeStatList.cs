@@ -1,9 +1,7 @@
 ﻿
+using DPSExtreme.Combat.Stats;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection.Emit;
-using static DPSExtreme.CombatTracking.DPSExtremeCombat;
 
 namespace DPSExtreme
 {
@@ -19,23 +17,24 @@ namespace DPSExtreme
 		NPCs = 255
 	}
 
-	internal class DPSExtremeInfoList<T> where T : IDPSExtremeCombatInfo, new()
+	internal class DPSExtremeStatList<T> : IStatContainer
+		where T : IStatContainer, new()
 	{
-		internal T[] myInfos;
+		internal T[] myValues;
 
-		public DPSExtremeInfoList()
+		public DPSExtremeStatList()
 		{
-			myInfos = new T[Size()];
+			myValues = new T[Size()];
 
 			for (int i = 0; i < Size(); i++)
 			{
-				myInfos[i] = new T();
+				myValues[i] = new T();
 			}
 		}
 
 		public ref T this[int i]
 		{
-			get { return ref myInfos[i]; }
+			get { return ref myValues[i]; }
 		}
 
 		public int Size() { return 256; }
@@ -44,8 +43,40 @@ namespace DPSExtreme
 		{
 			for (int i = 0; i < Size(); i++)
 			{
-				myInfos[i] = default;
+				myValues[i] = default;
 			}
+		}
+
+		public void GetMaxAndTotal(out int aMax, out int aTotal)
+		{
+			aMax = 0;
+			aTotal = 0;
+
+			int subMax = 0;
+			int subTotal = 0;
+
+			for (int i = 0; i < Size(); i++)
+			{
+				IStatContainer stat = myValues[i];
+				if (stat.HasStats())
+				{
+					stat.GetMaxAndTotal(out subMax, out subTotal);
+
+					aMax = Math.Max(aMax, subMax);
+					aTotal += subTotal;
+				}
+			}
+		}
+
+		public bool HasStats()
+		{
+			for (int i = 0; i < Size(); i++)
+			{
+				if (myValues[i].HasStats())
+					return true;
+			}
+
+			return false;
 		}
 
 		public void ToStream(BinaryWriter aWriter)
@@ -57,11 +88,11 @@ namespace DPSExtreme
 			byte count = 0;
 			for (int i = 0; i < Size(); i++)
 			{
-				if (!myInfos[i].HasData())
+				if (!myValues[i].HasStats())
 					continue;
 
 				aWriter.Write((byte)i);
-				myInfos[i].ToStream(aWriter);
+				myValues[i].ToStream(aWriter);
 				count++;
 			}
 
@@ -78,8 +109,8 @@ namespace DPSExtreme
 
 			for (int i = 0; i < count; i++)
 			{
-				byte damageDealerIndex = aReader.ReadByte();
-				myInfos[damageDealerIndex].FromStream(aReader);
+				byte index = aReader.ReadByte();
+				myValues[index].FromStream(aReader);
 			}
 		}
 	}

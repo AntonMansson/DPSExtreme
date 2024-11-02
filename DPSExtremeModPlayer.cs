@@ -9,7 +9,6 @@ namespace DPSExtreme
 	internal class DPSExtremeModPlayer : ModPlayer
 	{
 		internal static List<int> ourConnectedPlayers = new List<int>();
-
 		public override void PlayerDisconnect()
 		{
 			if (Main.netMode != NetmodeID.Server)
@@ -48,8 +47,15 @@ namespace DPSExtreme
 			ProtocolReqShareCurrentDPS req = new ProtocolReqShareCurrentDPS();
 			req.myPlayer = Player.whoAmI;
 			req.myDPS = dps;
+			req.myDamageDoneBreakdown = DPSExtreme.instance.combatTracker.myActiveCombat.myDamageDone[Player.whoAmI];
 
 			DPSExtreme.instance.packetHandler.SendProtocol(req);
+		}
+
+		public override void OnEnterWorld()
+		{
+			DPSExtreme.instance.combatTracker.OnEnterWorld();
+			DPSExtremeUI.instance.OnEnterWorld();
 		}
 
 		public override void ProcessTriggers(TriggersSet triggersSet)
