@@ -218,31 +218,6 @@ namespace DPSExtreme
 			activeCombat.myDamageDone = aPush.myDamageDone;
 			activeCombat.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
 
-			//Best-effort DOT DPS approx.
-			//TODO: Fix issue with dots appearing before player dpss
-			int totalDotDPS = 0;
-
-			foreach (NPC npc in Main.ActiveNPCs)
-			{
-				int dotDPS = -1 * npc.lifeRegen / 2;
-				totalDotDPS += dotDPS;
-
-				//Since the dot hook doesn't seem to work in SP, add damage here to the best of our abilities
-				if (Main.netMode == NetmodeID.SinglePlayer)
-				{
-					if (totalDotDPS > 0 && activeCombat.myDamageDone[(int)InfoListIndices.DOTs][-1] < 0) //Make sure we don't start at -1
-						activeCombat.myDamageDone[(int)InfoListIndices.DOTs][-1] = 0;
-
-					float ratio = DPSExtreme.UPDATEDELAY / 60f;
-					//TODO: Handle remainder
-					int dealtDamage = (int)(dotDPS * ratio);
-					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, (int)InfoListIndices.DOTs, -1, dealtDamage);
-				}
-			}
-
-			if (totalDotDPS > 0)
-				activeCombat.myDamagePerSecond[(int)InfoListIndices.DOTs] = totalDotDPS;
-
 			DPSExtremeUI.instance.updateNeeded = true;
 
 			//if (!aPush.myCombatIsActive)
