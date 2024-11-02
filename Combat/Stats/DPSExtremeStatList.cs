@@ -17,12 +17,10 @@ namespace DPSExtreme
 		NPCs = 255
 	}
 
-	internal class DPSExtremeStatList<T> : IStat
-		where T : IStat, new()
+	internal class DPSExtremeStatList<T> : IStatContainer
+		where T : IStatContainer, new()
 	{
 		internal T[] myValues;
-
-		public bool IsStatValue = false;
 
 		public DPSExtremeStatList()
 		{
@@ -59,7 +57,7 @@ namespace DPSExtreme
 
 			for (int i = 0; i < Size(); i++)
 			{
-				IStat stat = myValues[i];
+				IStatContainer stat = myValues[i];
 				if (stat.HasStats())
 				{
 					stat.GetMaxAndTotal(out subMax, out subTotal);

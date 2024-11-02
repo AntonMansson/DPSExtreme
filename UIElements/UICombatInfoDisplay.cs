@@ -30,7 +30,7 @@ namespace DPSExtreme.UIElements
 
 		protected ListDisplayMode myDisplayMode;
 		internal string myLabelOverride = null;
-		protected Func<int, string> myNameCallback;
+		internal Func<int, string> myNameCallback;
 
 		internal UICombatInfoDisplay(ListDisplayMode aDisplayMode, TypeInfo aStatInfo)
 		{
@@ -68,15 +68,15 @@ namespace DPSExtreme.UIElements
 			if (myBreakdownDisplay == null)
 				return;
 
-			Clear();
-			Add(myBreakdownDisplay);
-
 			UIListDisplayEntry entry = listeningElement as UIListDisplayEntry;
+
 			if (entry.myBaseKey != -1)
 				myBreakdownAccessor = entry.myBaseKey;
-
-			if (entry.myParticipantIndex != -1)
+			else if (entry.myParticipantIndex != -1)
 				myBreakdownAccessor = entry.myParticipantIndex;
+
+			Clear();
+			Add(myBreakdownDisplay);
 
 			if (myNameCallback != null)
 				myLabelOverride = myNameCallback(myBreakdownAccessor);
@@ -87,6 +87,7 @@ namespace DPSExtreme.UIElements
 
 		protected void OnRightClickBreakdownDisplay(UIMouseEvent evt, UIElement listeningElement)
 		{
+			myBreakdownDisplay.Clear();
 			Remove(myBreakdownDisplay);
 			
 			myLabelOverride = null;

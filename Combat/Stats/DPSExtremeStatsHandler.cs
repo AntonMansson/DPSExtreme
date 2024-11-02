@@ -42,8 +42,13 @@ namespace DPSExtreme.Combat.Stats
 
 			DPSExtreme.instance.combatTracker.myActiveCombat.myEnemyDamageTaken[npcType][aDamageDealer] += clampedDamageAmount;
 
-			if (Main.netMode != NetmodeID.Server) //MP clients sync their local damage so that we can include item/proj type
-				DPSExtreme.instance.combatTracker.myActiveCombat.myDamageDone[aDamageDealer][aItemOrProjectileType] += clampedDamageAmount;
+			if (Main.netMode == NetmodeID.Server &&
+				aDamageDealer < (int)InfoListIndices.SupportedPlayerCount) //MP clients sync their local damage so that we can include item/proj type
+			{
+				return;
+			}
+
+			DPSExtreme.instance.combatTracker.myActiveCombat.myDamageDone[aDamageDealer][aItemOrProjectileType] += clampedDamageAmount;
 		}
 	}
 }

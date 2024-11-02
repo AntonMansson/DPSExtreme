@@ -7,7 +7,7 @@ using System.Reflection;
 namespace DPSExtreme.UIElements
 {
 	internal class UIListDisplay<T> : UICombatInfoDisplay
-		where T : IStat, new()
+		where T : IStatContainer, new()
 	{
 		internal DPSExtremeStatList<T> myInfoList
 		{

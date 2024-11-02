@@ -1,17 +1,14 @@
 ﻿
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace DPSExtreme.Combat.Stats
 {
-	internal class DPSExtremeStatDictionary<Key, Value> : Dictionary<int, Value>, IStat 
-		where Value : IStat, new()
+	internal class DPSExtremeStatDictionary<Key, Value> : Dictionary<int, Value>, IStatContainer 
+		where Value : IStatContainer, new()
 	{
-		public bool IsStatValue = false;
-
-		public /*new*/ Value this[int aKey]
+		public new Value this[int aKey]
 		{
 			get
 			{

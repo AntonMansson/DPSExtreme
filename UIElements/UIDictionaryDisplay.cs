@@ -7,7 +7,7 @@ using Terraria.UI;
 namespace DPSExtreme.UIElements
 {
 	internal class UIStatDictionaryDisplay<T> : UICombatInfoDisplay
-		where T : IStat, new()
+		where T : IStatContainer, new()
 	{
 		internal DPSExtremeStatDictionary<int, T> myInfoLookup
 		{
@@ -97,9 +97,13 @@ namespace DPSExtreme.UIElements
 				if (listTotal > 0)
 				{
 					string name = "Missing name callback";
-					if (myNameCallback != null)
+					if (baseKey == -1 && myParentDisplay != null) //not breakdownable. Show same name as parent entry
 					{
-							name = myNameCallback.Invoke(baseKey);
+						name = myParentDisplay.myNameCallback.Invoke(myParentDisplay.myBreakdownAccessor);
+					}
+					else if (myNameCallback != null)
+					{
+						name = myNameCallback.Invoke(baseKey);
 					}
 
 					UIListDisplayEntry entry = null;

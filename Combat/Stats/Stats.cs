@@ -4,7 +4,7 @@ using System.IO;
 
 namespace DPSExtreme.Combat.Stats
 {
-	internal interface IStat
+	internal interface IStatContainer
 	{
 		public abstract bool HasStats();
 		public abstract void GetMaxAndTotal(out int aMax, out int aTotal);
@@ -13,11 +13,9 @@ namespace DPSExtreme.Combat.Stats
 		public abstract void FromStream(BinaryReader aReader);
 	}
 
-	internal struct StatValue : IStat
+	internal class StatValue : IStatContainer
 	{
 		internal int myValue = 0;
-
-		public bool IsStatValue = true;
 
 		public StatValue()
 		{
