@@ -35,9 +35,13 @@ namespace DPSExtreme
 		internal UIText myLabel;
 
 		internal UIListDisplay<StatValue> myNeedDPSAccDisplay;
+		internal UISelectionDisplay mySelectDisplayModeDisplay;
+
 		internal UIListDisplay<StatValue> myDamagePerSecondDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myDamageDoneDisplay;
 		internal UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>> myEnemyDamageTakenDisplay;
+
+		internal ListDisplayMode myPreviousDisplayMode = ListDisplayMode.DamageDone;
 
 		private ListDisplayMode _myDisplayMode;
 		internal ListDisplayMode myDisplayMode
@@ -47,6 +51,7 @@ namespace DPSExtreme
 			{
 				myRootPanel.RemoveChild(myCurrentDisplay);
 
+				myPreviousDisplayMode = _myDisplayMode;
 				_myDisplayMode = value;
 
 				myRootPanel.Append(myCurrentDisplay);
@@ -55,7 +60,7 @@ namespace DPSExtreme
 			}
 		}
 
-		UICombatInfoDisplay myCurrentDisplay
+		UIDisplay myCurrentDisplay
 		{
 			get 
 			{
@@ -63,13 +68,16 @@ namespace DPSExtreme
 				{
 					case ListDisplayMode.NeedAccessory:
 						return myNeedDPSAccDisplay;
+					case ListDisplayMode.DisplayModeSelect:
+						return mySelectDisplayModeDisplay;
+					case ListDisplayMode.StatDisplaysStart:
+					case ListDisplayMode.StatDisplaysEnd:
 					case ListDisplayMode.DamageDone:
 						return myDamageDoneDisplay;
 					case ListDisplayMode.DamagePerSecond:
 						return myDamagePerSecondDisplay;
 					case ListDisplayMode.EnemyDamageTaken:
 						return myEnemyDamageTakenDisplay;
-					case ListDisplayMode.Count:
 					default:
 						return null;
 				}
@@ -142,6 +150,7 @@ namespace DPSExtreme
 			myLabel.DynamicallyScaleDownToWidth = true;
 			myLabel.MaxWidth.Set(50, 0);
 
+			myLabel.Left.Pixels = 18;
 			myLabel.OnLeftClick += Label_OnLeftClick;
 			myLabel.OnRightClick += Label_OnRightClick;
 			myRootPanel.Append(myLabel);
@@ -149,23 +158,20 @@ namespace DPSExtreme
 
 			RefreshLabel();
 
-			//var togglePercentButton = new UIHoverImageButton(Main.itemTexture[ItemID.SuspiciousLookingEye], "Toggle %");
+
+			var chooseDisplayModeButton = new UIHoverImageButton(DPSExtreme.instance.Assets.Request<Texture2D>("DisplayModeButton", AssetRequestMode.ImmediateLoad), Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("ClickToChangeDisplay")));
+			chooseDisplayModeButton.OnLeftClick += (a, b) => myDisplayMode = ListDisplayMode.DisplayModeSelect;
+			chooseDisplayModeButton.Left.Set(0, 0);
+			chooseDisplayModeButton.Top.Pixels = -1;
+			chooseDisplayModeButton.Recalculate();
+			myRootPanel.Append(chooseDisplayModeButton);
+
 			var togglePercentButton = new UIHoverImageButton(DPSExtreme.instance.Assets.Request<Texture2D>("PercentButton", AssetRequestMode.ImmediateLoad), Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TogglePercent")));
 			togglePercentButton.OnLeftClick += (a, b) => myShowPercent = !myShowPercent;
 			togglePercentButton.Left.Set(-24, 1f);
-			togglePercentButton.Top.Pixels = -4;
-			//toggleCompletedButton.Top.Pixels = spacing;
+			togglePercentButton.Top.Pixels = -2;
+			togglePercentButton.Recalculate();
 			myRootPanel.Append(togglePercentButton);
-
-			//myRootPanel.AddDragTarget(myDamagePerSecondDisplay);
-			//myRootPanel.AddDragTarget(myDamageDoneDisplay);
-			//myRootPanel.AddDragTarget(myEnemyDamageTakenDisplay);
-
-			//var type = Assembly.GetAssembly(typeof(Mod)).GetType("Terraria.ModLoader.UI.Elements.UIGrid");
-			//FieldInfo loadModsField = type.GetField("_innerList", BindingFlags.Instance | BindingFlags.NonPublic);
-			//myRootPanel.AddDragTarget((UIElement)loadModsField.GetValue(myDamagePerSecondDisplay)); // list._innerList
-			//myRootPanel.AddDragTarget((UIElement)loadModsField.GetValue(myDamageDoneDisplay));
-			//myRootPanel.AddDragTarget((UIElement)loadModsField.GetValue(myEnemyDamageTakenDisplay));
 
 			ShowTeamDPSPanel = true;
 			myDisplayMode = ListDisplayMode.DamageDone;
@@ -178,6 +184,16 @@ namespace DPSExtreme
 
 			myNeedDPSAccDisplay = new UIListDisplay<StatValue>(ListDisplayMode.NeedAccessory);
 			myNeedDPSAccDisplay.Add(new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter"))));
+
+			mySelectDisplayModeDisplay = new UISelectionDisplay(ListDisplayMode.DisplayModeSelect,
+				(int aEntryIndex) =>
+				{
+					return ((ListDisplayMode)aEntryIndex).ToString();
+				},
+				(int aSelectedIndex) =>
+				{
+					myDisplayMode = (ListDisplayMode)(aSelectedIndex);
+				});
 
 			myDamagePerSecondDisplay = new UIListDisplay<StatValue>(ListDisplayMode.DamagePerSecond);
 
@@ -197,7 +213,6 @@ namespace DPSExtreme
 		}
 
 		internal bool updateNeeded;
-		private ListDisplayMode previousDisplayMode = ListDisplayMode.DamageDone;
 
 		public override void Update(GameTime gameTime)
 		{
@@ -205,12 +220,12 @@ namespace DPSExtreme
 
 			if (!Main.LocalPlayer.accDreamCatcher && myDisplayMode != ListDisplayMode.NeedAccessory)
 			{
-				previousDisplayMode = myDisplayMode;
 				myDisplayMode = ListDisplayMode.NeedAccessory;
 			}
 			else if (Main.LocalPlayer.accDreamCatcher && myDisplayMode == ListDisplayMode.NeedAccessory)
 			{
-				myDisplayMode = previousDisplayMode;
+				myDisplayMode = myPreviousDisplayMode;
+				myPreviousDisplayMode = ListDisplayMode.DamageDone; //Just in case
 			}
 
 			if (!updateNeeded)
@@ -407,18 +422,21 @@ namespace DPSExtreme
 
 		private void Label_OnLeftClick(UIMouseEvent evt, UIElement listeningElement)
 		{
-			myDisplayMode = (ListDisplayMode)(((int)myDisplayMode + 1) % (int)ListDisplayMode.Count);
+			myDisplayMode = (ListDisplayMode)(((int)myDisplayMode + 1) % (int)ListDisplayMode.StatDisplaysEnd);
 
-			if (myDisplayMode == ListDisplayMode.NeedAccessory)
-				myDisplayMode = (ListDisplayMode)(((int)myDisplayMode + 1) % (int)ListDisplayMode.Count);
+			if (myDisplayMode <= ListDisplayMode.StatDisplaysStart)
+				myDisplayMode = ListDisplayMode.StatDisplaysStart + 1;
 		}
 
 		private void Label_OnRightClick(UIMouseEvent evt, UIElement listeningElement)
 		{
+			if (myDisplayMode < ListDisplayMode.StatDisplaysStart || myDisplayMode > ListDisplayMode.StatDisplaysEnd)
+				return;
+
 			int next = ((int)myDisplayMode - 1);
 
-			if (next < 1) //1 to skip NeedAccessory too
-				next = (int)ListDisplayMode.Count - 1;
+			if (next <= (int)ListDisplayMode.StatDisplaysStart)
+				next = (int)ListDisplayMode.StatDisplaysEnd - 1;
 
 			myDisplayMode = (ListDisplayMode)next;
 		}

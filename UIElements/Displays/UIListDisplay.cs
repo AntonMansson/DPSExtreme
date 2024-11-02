@@ -58,7 +58,7 @@ namespace DPSExtreme.UIElements.Displays
 		}
 
 		internal UIListDisplay(ListDisplayMode aDisplayMode) 
-			: base(aDisplayMode, typeof(T).GetTypeInfo()) 
+			: base(aDisplayMode) 
 		{
 			myNameCallback = GetName;
 		}
@@ -114,19 +114,7 @@ namespace DPSExtreme.UIElements.Displays
 					if (myNameCallback != null)
 						name = myNameCallback.Invoke(i);
 
-					UIListDisplayEntry entry = null;
-
-					if (entryIndex >= _items.Count)
-					{
-						entry = new UIListDisplayEntry();
-						entry.OnLeftClick += OnClickBaseEntry;
-						Add(entry);
-					}
-					else
-					{
-						entry = _items[entryIndex] as UIListDisplayEntry;
-					}
-
+					UIListDisplayEntry entry = CreateEntry(entryIndex) as UIListDisplayEntry;
 					entry.myParticipantIndex = i;
 					entry.myColor = DPSExtremeUI.chatColor[i % DPSExtremeUI.chatColor.Length];
 					entry.myNameText = name;

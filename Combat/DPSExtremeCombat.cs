@@ -82,7 +82,6 @@ namespace DPSExtreme.Combat
 					return myDamagePerSecond;
 				case ListDisplayMode.EnemyDamageTaken:
 					return myEnemyDamageTaken;
-				case ListDisplayMode.Count:
 				default:
 					return null;
 			}
