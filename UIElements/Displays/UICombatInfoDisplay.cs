@@ -1,20 +1,10 @@
-﻿using System;
-using System.Reflection;
-using Terraria.ModLoader.UI.Elements;
-using Terraria.UI;
+﻿using Terraria.UI;
 
-namespace DPSExtreme.UIElements
+namespace DPSExtreme.UIElements.Displays
 {
-	internal enum ListDisplayMode
-	{
-		NeedAccessory,
-		DamageDone,
-		DamagePerSecond,
-		EnemyDamageTaken,
-		Count
-	}
+	
 
-	internal abstract class UICombatInfoDisplay : UIGrid
+	internal abstract class UICombatInfoDisplay : UIDisplay
 	{
 		internal int myHighestValue = -1;
 		internal int myTotal = 0;
@@ -28,29 +18,13 @@ namespace DPSExtreme.UIElements
 
 		protected UICombatInfoDisplay myParentDisplay = null;
 
-		protected ListDisplayMode myDisplayMode;
-		internal string myLabelOverride = null;
-		internal Func<int, string> myNameCallback;
-
-		internal UICombatInfoDisplay(ListDisplayMode aDisplayMode, TypeInfo aStatInfo)
+		internal UICombatInfoDisplay(ListDisplayMode aDisplayMode)
+			: base(aDisplayMode)
 		{
-			myDisplayMode = aDisplayMode;
-
-			Width.Percent = 1f;
-			Height.Set(-20, 1f);
-			Top.Pixels = 20;
-			ListPadding = 0f;
-
-			InvisibleFixedUIScrollbar scrollbar = new InvisibleFixedUIScrollbar(DPSExtremeUI.instance.userInterface);
-			scrollbar.SetView(100f, 1000f);
-			scrollbar.Height.Set(0, 1f);
-			scrollbar.Left.Set(-20, 1f);
-			SetScrollbar(scrollbar);
-
-			OnScrollWheel += OnScroll;
+			myClickEntryCallback += OnClickBaseEntry;
+			myEntryCreator = () => { return new UIListDisplayEntry(); };
 		}
 
-		internal abstract void Update();
 		internal abstract void RecalculateTotals();
 		internal abstract void UpdateValues();
 
@@ -94,11 +68,6 @@ namespace DPSExtreme.UIElements
 			myBreakdownAccessor = -1;
 
 			DPSExtremeUI.instance.RefreshLabel();
-			DPSExtremeUI.instance.updateNeeded = true;
-		}
-
-		protected void OnScroll(UIMouseEvent evt, UIElement listeningElement)
-		{
 			DPSExtremeUI.instance.updateNeeded = true;
 		}
 	}

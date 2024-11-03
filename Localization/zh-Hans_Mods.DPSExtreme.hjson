@@ -1,5 +1,7 @@
 Keybinds.ToggleTeamDPSBossMeter.DisplayName: 开关队伍成员伤害/对Boss伤害统计
 // NeedAccessory: Missing accessory
+// DisplayModeSelect: Select mode:
+// CombatHistory: Combat history:
 // DamagePerSecond: DPS
 // DamageDone: Damage done
 // EnemyDamageTaken: Enemy damage taken
@@ -8,6 +10,7 @@ NoDPSWearDPSMeter: 需要[i:DPSMeter]
 NoBoss: 当前无Boss存活
 BossLabel: Boss - {0}
 // ClickToChangeDisplay: Click to change display mode
+// ShowCombatHistory: Click to show combat history
 DamageStatsForNPC: "{0} 伤害: "
 // DisconnectedPlayer: Disconnected player
 TrapsTownNPC: 陷阱/城镇NPC

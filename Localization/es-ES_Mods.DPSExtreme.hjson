@@ -1,5 +1,7 @@
 // Keybinds.ToggleTeamDPSBossMeter.DisplayName: Toggle Team DPS/Boss Meter
 // NeedAccessory: Missing accessory
+// DisplayModeSelect: Select mode:
+// CombatHistory: Combat history:
 // DamagePerSecond: DPS
 // DamageDone: Damage done
 // EnemyDamageTaken: Enemy damage taken
@@ -8,6 +10,7 @@
 // NoBoss: No Boss
 // BossLabel: Boss - {0}
 // ClickToChangeDisplay: Click to change display mode
+// ShowCombatHistory: Click to show combat history
 // DamageStatsForNPC: "Damage stats for {0}: "
 // DisconnectedPlayer: Disconnected player
 // TrapsTownNPC: Traps/TownNPC

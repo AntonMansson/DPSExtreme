@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Terraria.UI;
 
-namespace DPSExtreme.UIElements
+namespace DPSExtreme.UIElements.Displays
 {
 	internal class UIStatDictionaryDisplay<T> : UICombatInfoDisplay
 		where T : IStatContainer, new()
@@ -33,7 +33,7 @@ namespace DPSExtreme.UIElements
 		}
 
 		internal UIStatDictionaryDisplay(ListDisplayMode aDisplayMode, Func<int, string> aNameCallback) 
-			: base(aDisplayMode, typeof(T).GetTypeInfo()) 
+			: base(aDisplayMode) 
 		{ 
 			myNameCallback = aNameCallback;
 		}
@@ -106,19 +106,7 @@ namespace DPSExtreme.UIElements
 						name = myNameCallback.Invoke(baseKey);
 					}
 
-					UIListDisplayEntry entry = null;
-
-					if (entryIndex >= _items.Count)
-					{
-						entry = new UIListDisplayEntry();
-						entry.OnLeftClick += OnClickBaseEntry;
-						Add(entry);
-					}
-					else
-					{
-						entry = _items[entryIndex] as UIListDisplayEntry;
-					}
-
+					UIListDisplayEntry entry = CreateEntry(entryIndex) as UIListDisplayEntry;
 					entry.myColor = DPSExtremeUI.chatColor[Math.Abs(baseKey) % DPSExtremeUI.chatColor.Length];
 					entry.myNameText = name;
 					entry.myBaseKey = baseKey;

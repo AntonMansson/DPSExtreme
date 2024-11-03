@@ -4,7 +4,7 @@ using Terraria;
 using DPSExtreme.Combat.Stats;
 using System.Reflection;
 
-namespace DPSExtreme.UIElements
+namespace DPSExtreme.UIElements.Displays
 {
 	internal class UIListDisplay<T> : UICombatInfoDisplay
 		where T : IStatContainer, new()
@@ -58,7 +58,7 @@ namespace DPSExtreme.UIElements
 		}
 
 		internal UIListDisplay(ListDisplayMode aDisplayMode) 
-			: base(aDisplayMode, typeof(T).GetTypeInfo()) 
+			: base(aDisplayMode) 
 		{
 			myNameCallback = GetName;
 		}
@@ -114,19 +114,7 @@ namespace DPSExtreme.UIElements
 					if (myNameCallback != null)
 						name = myNameCallback.Invoke(i);
 
-					UIListDisplayEntry entry = null;
-
-					if (entryIndex >= _items.Count)
-					{
-						entry = new UIListDisplayEntry();
-						entry.OnLeftClick += OnClickBaseEntry;
-						Add(entry);
-					}
-					else
-					{
-						entry = _items[entryIndex] as UIListDisplayEntry;
-					}
-
+					UIListDisplayEntry entry = CreateEntry(entryIndex) as UIListDisplayEntry;
 					entry.myParticipantIndex = i;
 					entry.myColor = DPSExtremeUI.chatColor[i % DPSExtremeUI.chatColor.Length];
 					entry.myNameText = name;

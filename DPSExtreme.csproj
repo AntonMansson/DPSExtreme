@@ -4,4 +4,10 @@
     <AssemblyName>DPSExtreme</AssemblyName>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Remove="UIElements\Display\**" />
+    <Compile Remove="UIElements\Display\**" />
+    <EmbeddedResource Remove="UIElements\Display\**" />
+    <None Remove="UIElements\Display\**" />
+  </ItemGroup>
 </Project>

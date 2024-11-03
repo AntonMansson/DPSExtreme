@@ -1,5 +1,7 @@
 Keybinds.ToggleTeamDPSBossMeter.DisplayName: Отобразить статистику DPS/Босс-инфо
 // NeedAccessory: Missing accessory
+// DisplayModeSelect: Select mode:
+// CombatHistory: Combat history:
 // DamagePerSecond: DPS
 // DamageDone: Damage done
 // EnemyDamageTaken: Enemy damage taken
@@ -8,6 +10,7 @@ NoDPSWearDPSMeter: Нет инфо об DPS, возьмите [i:DPSMeter]
 NoBoss: Нет босса
 BossLabel: Босс - {0}
 // ClickToChangeDisplay: Click to change display mode
+// ShowCombatHistory: Click to show combat history
 DamageStatsForNPC: "Статистика урона для {0}: "
 // DisconnectedPlayer: Disconnected player
 TrapsTownNPC: Ловушки/NPC
