@@ -58,6 +58,20 @@ namespace DPSExtreme.Combat
 
 		internal DateTime myStartTime;
 		internal DateTime myLastActivityTime;
+		internal DateTime myEndTime = DateTime.MinValue;
+
+		internal TimeSpan myDuration
+		{
+			get
+			{
+				if (myEndTime == DateTime.MinValue)
+					return DateTime.Now - myStartTime;
+
+				return myEndTime - myStartTime;
+			}
+		}
+
+		internal string myFormattedDuration => String.Format("{0:D2}:{1:D2}", (int)Math.Floor(myDuration.TotalMinutes), myDuration.Seconds);
 
 		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>>();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>>();

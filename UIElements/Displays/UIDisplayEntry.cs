@@ -24,6 +24,9 @@ namespace DPSExtreme.UIElements.Displays
 			}
 
 		}
+
+		internal string myRightText = string.Empty;
+
 		internal Color myColor;
 
 		public UIDisplayEntry()
@@ -47,8 +50,16 @@ namespace DPSExtreme.UIElements.Displays
 			Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, hitbox, myColor/** 0.6f*/);
 			hitbox = GetInnerDimensions().ToRectangle();
 
-			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, FontAssets.MouseText.Value, myNameText, hitbox.TopLeft() + new Vector2(4, 3), Color.White, 0f,
-				new Vector2(0, 0), new Vector2(.9f), -1f, 1.5f);
+			DynamicSpriteFont fontMouseText = FontAssets.MouseText.Value;
+
+			float textScale = .9f;
+
+			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, myNameText, hitbox.TopLeft() + new Vector2(4, 3), Color.White, 0f,
+				new Vector2(0, 0), new Vector2(textScale), -1f, 1.5f);
+
+			Vector2 rightTextBounds = fontMouseText.MeasureString(myRightText);
+			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, myRightText, GetOuterDimensions().ToRectangle().TopRight() + new Vector2(-4, 2), Color.White, 0f,
+				new Vector2(1f, 0) * rightTextBounds, new Vector2(textScale), -1f, 1.5f);
 		}
 	}
 }

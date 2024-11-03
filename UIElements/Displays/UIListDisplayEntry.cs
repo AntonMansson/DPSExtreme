@@ -23,17 +23,11 @@ namespace DPSExtreme.UIElements.Displays
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
-			DrawSelfBase(spriteBatch);
-
-			string rightText = myValue.ToString();
+			myRightText = myValue.ToString();
 			if (DPSExtremeUI.instance.myShowPercent && myTotal > 0)
-				rightText = $"{myValue} ({String.Format("{0:P0}", (float)myValue / myTotal)})";
+				myRightText = $"{myValue} ({String.Format("{0:P0}", (float)myValue / myTotal)})";
 
-			DynamicSpriteFont fontMouseText = FontAssets.MouseText.Value;
-			
-			Vector2 textBounds = fontMouseText.MeasureString(rightText);
-			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, rightText, GetOuterDimensions().ToRectangle().TopRight() + new Vector2(-2, 2), Color.White, 0f,
-				new Vector2(1f, 0) * textBounds, new Vector2(1f), -1f, 1.5f);
+			DrawSelfBase(spriteBatch);
 
 			if (IsMouseHovering && myParticipantIndex >= 0)
 			{

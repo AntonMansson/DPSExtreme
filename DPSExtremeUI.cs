@@ -183,7 +183,7 @@ namespace DPSExtreme
 				else
 					myDisplayMode = myPreviousDisplayMode;
 			};
-			combatHistoryButton.Left.Set(-48, 1f);
+			combatHistoryButton.Left.Set(-44, 1f);
 			combatHistoryButton.Top.Pixels = -1;
 			combatHistoryButton.Recalculate();
 			myRootPanel.Append(combatHistoryButton);
@@ -243,6 +243,8 @@ namespace DPSExtreme
 				myPreviousDisplayMode = ListDisplayMode.DamageDone; //Just in case
 			}
 
+			RefreshLabel(); //Every frame for timer
+
 			if (!updateNeeded)
 				return;
 
@@ -257,8 +259,9 @@ namespace DPSExtreme
 		{
 			string title = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey(myDisplayMode.ToString()));
 
+
 			if (myDisplayedCombat == null || 
-				myDisplayMode == ListDisplayMode.NeedAccessory)
+				myDisplayMode < ListDisplayMode.StatDisplaysStart)
 			{
 				myLabel.SetText(title);
 				myLabel.Recalculate();
@@ -274,6 +277,7 @@ namespace DPSExtreme
 			else
 			{
 				title += myDisplayedCombat.GetTitle();
+				title += " " + myDisplayedCombat.myFormattedDuration;
 			}
 
 			myLabel.SetText(title);

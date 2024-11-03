@@ -36,6 +36,7 @@ namespace DPSExtreme.UIElements.Displays
 				UISelectionDisplayEntry entry = CreateEntry(entryIndex) as UISelectionDisplayEntry;
 				entry.myColor = DPSExtremeUI.chatColor[Math.Abs(i) % DPSExtremeUI.chatColor.Length];
 				entry.myNameText = myNameCallback != null ? myNameCallback(i) : "No name callback";
+				entry.myRightText = combat.myFormattedDuration;
 				entry.myIndex = i;
 				entryIndex++;
 			}

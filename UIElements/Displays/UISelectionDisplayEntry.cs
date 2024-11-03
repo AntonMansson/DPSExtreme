@@ -1,5 +1,7 @@
 ﻿
+using DPSExtreme.Combat;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using Terraria.UI;
 
 namespace DPSExtreme.UIElements.Displays
@@ -11,6 +13,30 @@ namespace DPSExtreme.UIElements.Displays
 		internal UISelectionDisplayEntry()
 		{
 			OnRightClick += OnRightClickDisplay;
+		}
+
+		protected override int GetEntryWidth()
+		{
+			if (DPSExtremeUI.instance.myDisplayMode == ListDisplayMode.CombatHistory)
+			{
+				int longestCombatInSeconds = 0;
+
+				for (int i = 0; i < DPSExtremeCombatTracker.ourHistorySize; i++)
+				{
+					var combat = DPSExtreme.instance.combatTracker.GetCombatHistory(i);
+
+					if (combat == null)
+						continue;
+
+					longestCombatInSeconds = Math.Max(longestCombatInSeconds, (int)combat.myDuration.TotalSeconds);
+				}
+
+				int combatDuration = (int)DPSExtreme.instance.combatTracker.GetCombatHistory(myIndex).myDuration.TotalSeconds;
+
+				return (int)(GetOuterDimensions().Width * (combatDuration / (float)longestCombatInSeconds));
+			}
+
+			return (int)GetOuterDimensions().Width;
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)

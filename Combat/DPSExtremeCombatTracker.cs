@@ -332,7 +332,7 @@ namespace DPSExtreme.Combat
 			if (Main.netMode == NetmodeID.SinglePlayer)
 				Main.NewText(String.Format("Ended combat"));
 			else if (Main.netMode == NetmodeID.Server)
-				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Ended combat"), Color.White);
+				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Server ended combat"), Color.Orange);
 
 			int historyCount = 0;
 			for (int i = 0;	i < ourHistorySize; i++)
@@ -344,6 +344,7 @@ namespace DPSExtreme.Combat
 			}
 
 			myCombatHistory[(historyCount + myHistoryBufferZeroIndex) % ourHistorySize] = myActiveCombat;
+			myActiveCombat.myEndTime = DateTime.Now;
 
 			if (historyCount >= ourHistorySize)
 				myHistoryBufferZeroIndex++;
