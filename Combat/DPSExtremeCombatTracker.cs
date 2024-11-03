@@ -12,23 +12,24 @@ namespace DPSExtreme.Combat
 {
 	internal class DPSExtremeCombatTracker
 	{
-		const int ourHistorySize = 5;
+		internal const int ourHistorySize = 5;
 		const int ourGenericCombatTimeout = 5;
 
-		private int myCurrentHistoryIndex = 0;
+		private int myHistoryBufferZeroIndex = 0; //Ring buffer shit
 		private DPSExtremeCombat[] myCombatHistory = new DPSExtremeCombat[ourHistorySize];
+
 		internal DPSExtremeCombat myActiveCombat = null;
 
 		internal DPSExtremeStatsHandler myStatsHandler = new DPSExtremeStatsHandler();
 
 		internal int myLastFrameInvasionType = InvasionID.None;
 		internal int myLastFrameEventType = 0;
-
+		
 		public List<int> myJoiningPlayers = new List<int>();
 
 		internal DPSExtremeCombat GetCombatHistory(int aIndex)
 		{
-			return myCombatHistory[(aIndex + myCurrentHistoryIndex) % ourHistorySize];
+			return myCombatHistory[(aIndex + myHistoryBufferZeroIndex) % ourHistorySize];
 		}
 
 		internal void Update()
@@ -333,7 +334,19 @@ namespace DPSExtreme.Combat
 			else if (Main.netMode == NetmodeID.Server)
 				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Ended combat"), Color.White);
 
-			myCurrentHistoryIndex++;
+			int historyCount = 0;
+			for (int i = 0;	i < ourHistorySize; i++)
+			{
+				if (myCombatHistory[i] == null)
+					continue;
+
+				historyCount++;
+			}
+
+			myCombatHistory[(historyCount + myHistoryBufferZeroIndex) % ourHistorySize] = myActiveCombat;
+
+			if (historyCount >= ourHistorySize)
+				myHistoryBufferZeroIndex++;
 
 			myActiveCombat.SendStats();
 			myActiveCombat.PrintStats();

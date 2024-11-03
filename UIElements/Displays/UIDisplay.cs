@@ -8,11 +8,14 @@ namespace DPSExtreme.UIElements.Displays
 	{
 		NeedAccessory,
 		DisplayModeSelect,
+		CombatHistory,
+
 		StatDisplaysStart,
 		DamageDone,
 		DamagePerSecond,
 		EnemyDamageTaken,
 		StatDisplaysEnd,
+
 		StatDisplaysCount = StatDisplaysEnd - StatDisplaysStart
 	}
 

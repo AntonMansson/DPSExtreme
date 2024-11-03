@@ -35,7 +35,8 @@ namespace DPSExtreme
 		internal UIText myLabel;
 
 		internal UIListDisplay<StatValue> myNeedDPSAccDisplay;
-		internal UISelectionDisplay mySelectDisplayModeDisplay;
+		internal UISelectDisplayModeDisplay mySelectDisplayModeDisplay;
+		internal UICombatHistoryDisplay myCombatHistoryDisplay;
 
 		internal UIListDisplay<StatValue> myDamagePerSecondDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myDamageDoneDisplay;
@@ -70,6 +71,8 @@ namespace DPSExtreme
 						return myNeedDPSAccDisplay;
 					case ListDisplayMode.DisplayModeSelect:
 						return mySelectDisplayModeDisplay;
+					case ListDisplayMode.CombatHistory:
+						return myCombatHistoryDisplay;
 					case ListDisplayMode.StatDisplaysStart:
 					case ListDisplayMode.StatDisplaysEnd:
 					case ListDisplayMode.DamageDone:
@@ -160,11 +163,30 @@ namespace DPSExtreme
 
 
 			var chooseDisplayModeButton = new UIHoverImageButton(DPSExtreme.instance.Assets.Request<Texture2D>("DisplayModeButton", AssetRequestMode.ImmediateLoad), Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("ClickToChangeDisplay")));
-			chooseDisplayModeButton.OnLeftClick += (a, b) => myDisplayMode = ListDisplayMode.DisplayModeSelect;
+			chooseDisplayModeButton.OnLeftClick += (a, b) => 
+			{
+				if (myDisplayMode != ListDisplayMode.DisplayModeSelect)
+					myDisplayMode = ListDisplayMode.DisplayModeSelect;
+				else
+					myDisplayMode = myPreviousDisplayMode;
+			};
 			chooseDisplayModeButton.Left.Set(0, 0);
 			chooseDisplayModeButton.Top.Pixels = -1;
 			chooseDisplayModeButton.Recalculate();
 			myRootPanel.Append(chooseDisplayModeButton);
+
+			var combatHistoryButton = new UIHoverImageButton(DPSExtreme.instance.Assets.Request<Texture2D>("HistoryButton", AssetRequestMode.ImmediateLoad), Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("ShowCombatHistory")));
+			combatHistoryButton.OnLeftClick += (a, b) =>
+			{
+				if (myDisplayMode != ListDisplayMode.CombatHistory)
+					myDisplayMode = ListDisplayMode.CombatHistory;
+				else
+					myDisplayMode = myPreviousDisplayMode;
+			};
+			combatHistoryButton.Left.Set(-48, 1f);
+			combatHistoryButton.Top.Pixels = -1;
+			combatHistoryButton.Recalculate();
+			myRootPanel.Append(combatHistoryButton);
 
 			var togglePercentButton = new UIHoverImageButton(DPSExtreme.instance.Assets.Request<Texture2D>("PercentButton", AssetRequestMode.ImmediateLoad), Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TogglePercent")));
 			togglePercentButton.OnLeftClick += (a, b) => myShowPercent = !myShowPercent;
@@ -185,15 +207,8 @@ namespace DPSExtreme
 			myNeedDPSAccDisplay = new UIListDisplay<StatValue>(ListDisplayMode.NeedAccessory);
 			myNeedDPSAccDisplay.Add(new UIText(Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoDPSWearDPSMeter"))));
 
-			mySelectDisplayModeDisplay = new UISelectionDisplay(ListDisplayMode.DisplayModeSelect,
-				(int aEntryIndex) =>
-				{
-					return ((ListDisplayMode)aEntryIndex).ToString();
-				},
-				(int aSelectedIndex) =>
-				{
-					myDisplayMode = (ListDisplayMode)(aSelectedIndex);
-				});
+			mySelectDisplayModeDisplay = new UISelectDisplayModeDisplay();
+			myCombatHistoryDisplay = new UICombatHistoryDisplay();
 
 			myDamagePerSecondDisplay = new UIListDisplay<StatValue>(ListDisplayMode.DamagePerSecond);
 
@@ -258,89 +273,7 @@ namespace DPSExtreme
 			}
 			else
 			{
-				switch (myDisplayedCombat.myHighestCombatType)
-				{
-					case DPSExtremeCombat.CombatType.BossFight:
-						if (myDisplayedCombat.myBossOrInvasionOrEventType > -1)
-						{
-							string bossName = Lang.GetNPCNameValue(myDisplayedCombat.myBossOrInvasionOrEventType);
-							title += Language.GetText(bossName);
-						}
-						else
-						{
-							title += Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoBoss")).Value;
-						}
-
-						break;
-					case DPSExtremeCombat.CombatType.Invasion:
-						DPSExtremeCombat.InvasionType invasionType;
-						if (myDisplayedCombat.myBossOrInvasionOrEventType >= (int)DPSExtremeCombat.InvasionType.ModdedInvasionsStart &&
-							myDisplayedCombat.myBossOrInvasionOrEventType < (int)DPSExtremeCombat.InvasionType.ModdedInvasionsEnd)
-						{
-							invasionType = DPSExtremeCombat.InvasionType.ModdedInvasionsStart;
-						}
-						else
-						{
-							invasionType = (DPSExtremeCombat.InvasionType)myDisplayedCombat.myBossOrInvasionOrEventType;
-						}
-
-						switch (invasionType)
-						{
-							case DPSExtremeCombat.InvasionType.GoblinArmy:
-								title += Language.GetTextValue("Bestiary_Invasions.Goblins");
-								break;
-							case DPSExtremeCombat.InvasionType.SnowLegion:
-								title += Language.GetTextValue("Bestiary_Invasions.FrostLegion");
-								break;
-							case DPSExtremeCombat.InvasionType.PirateInvasion:
-								title += Language.GetTextValue("Bestiary_Invasions.Pirates");
-								break;
-							case DPSExtremeCombat.InvasionType.MartianMadness:
-								title += Language.GetTextValue("Bestiary_Invasions.Martian");
-								break;
-							case DPSExtremeCombat.InvasionType.PumpkinMoon:
-								title += Language.GetTextValue("Bestiary_Invasions.PumpkinMoon");
-								break;
-							case DPSExtremeCombat.InvasionType.FrostMoon:
-								title += Language.GetTextValue("Bestiary_Invasions.FrostMoon");
-								break;
-							case DPSExtremeCombat.InvasionType.OldOnesArmy:
-								title += Language.GetTextValue("Bestiary_Invasions.OldOnesArmy");
-								break;
-							case DPSExtremeCombat.InvasionType.ModdedInvasionsStart:
-								//TODO: Boss checklist support to fetch name?
-								title += Language.GetTextValue("Invasion");
-								break;
-							default:
-								title += Language.GetTextValue("Invasion");
-								break;
-						}
-						break;
-					case DPSExtremeCombat.CombatType.Event:
-						switch ((DPSExtremeCombat.EventType)myDisplayedCombat.myBossOrInvasionOrEventType)
-						{
-							case DPSExtremeCombat.EventType.BloodMoon:
-								title += Language.GetTextValue("Bestiary_Events.BloodMoon");
-								break;
-							case DPSExtremeCombat.EventType.Eclipse:
-								title += Language.GetTextValue("Bestiary_Events.Eclipse");
-								break;
-							case DPSExtremeCombat.EventType.SlimeRain:
-								title += Language.GetTextValue("Bestiary_Events.SlimeRain");
-								break;
-							default:
-								title += Language.GetTextValue("Event");
-								break;
-						}
-						break;
-					case DPSExtremeCombat.CombatType.Generic:
-						//Maybe display name of first npc hit?
-						title += Language.GetTextValue("Combat");
-						break;
-					default:
-						title += "Unknown combat type";
-						break;
-				}
+				title += myDisplayedCombat.GetTitle();
 			}
 
 			myLabel.SetText(title);
@@ -367,6 +300,7 @@ namespace DPSExtreme
 		{
 			//Should we change combat view here?
 			//RefreshLabel();
+			updateNeeded = true;
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)

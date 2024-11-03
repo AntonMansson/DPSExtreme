@@ -206,5 +206,73 @@ namespace DPSExtreme.Combat
 				Main.NewText(sb.ToString(), messageColor);
 			}
 		}
+
+		internal string GetTitle()
+		{
+			switch (myHighestCombatType)
+			{
+				case CombatType.BossFight:
+					if (myBossOrInvasionOrEventType > -1)
+					{
+						string bossName = Lang.GetNPCNameValue(myBossOrInvasionOrEventType);
+						return Language.GetText(bossName).Value;
+					}
+					else
+					{
+						return Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoBoss")).Value;
+					}
+				case CombatType.Invasion:
+					InvasionType invasionType;
+					if (myBossOrInvasionOrEventType >= (int)InvasionType.ModdedInvasionsStart &&
+						myBossOrInvasionOrEventType < (int)InvasionType.ModdedInvasionsEnd)
+					{
+						invasionType = InvasionType.ModdedInvasionsStart;
+					}
+					else
+					{
+						invasionType = (InvasionType)myBossOrInvasionOrEventType;
+					}
+
+					switch (invasionType)
+					{
+						case InvasionType.GoblinArmy:
+							return Language.GetTextValue("Bestiary_Invasions.Goblins");
+						case InvasionType.SnowLegion:
+							return Language.GetTextValue("Bestiary_Invasions.FrostLegion");
+						case InvasionType.PirateInvasion:
+							return Language.GetTextValue("Bestiary_Invasions.Pirates");
+						case InvasionType.MartianMadness:
+							return Language.GetTextValue("Bestiary_Invasions.Martian");
+						case InvasionType.PumpkinMoon:
+							return Language.GetTextValue("Bestiary_Invasions.PumpkinMoon");
+						case InvasionType.FrostMoon:
+							return Language.GetTextValue("Bestiary_Invasions.FrostMoon");
+						case InvasionType.OldOnesArmy:
+							return Language.GetTextValue("Bestiary_Invasions.OldOnesArmy");
+						case InvasionType.ModdedInvasionsStart:
+							//TODO: Boss checklist support to fetch name?
+							return Language.GetTextValue("Invasion");
+						default:
+							return Language.GetTextValue("Invasion");
+					}
+				case CombatType.Event:
+					switch ((EventType)myBossOrInvasionOrEventType)
+					{
+						case EventType.BloodMoon:
+							return Language.GetTextValue("Bestiary_Events.BloodMoon");
+						case EventType.Eclipse:
+							return Language.GetTextValue("Bestiary_Events.Eclipse");
+						case EventType.SlimeRain:
+							return Language.GetTextValue("Bestiary_Events.SlimeRain");
+						default:
+							return Language.GetTextValue("Event");
+					}
+				case CombatType.Generic:
+					//Maybe display name of first npc hit?
+					return Language.GetTextValue("Combat");
+				default:
+					return "Unknown combat type";
+			}
+		}
 	}
 }
