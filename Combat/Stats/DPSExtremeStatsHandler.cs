@@ -50,5 +50,22 @@ namespace DPSExtreme.Combat.Stats
 
 			DPSExtreme.instance.combatTracker.myActiveCombat.myDamageDone[aDamageDealer][aItemOrProjectileType] += clampedDamageAmount;
 		}
+
+		internal void AddDamageTaken(Player aDamagedPlayer, int aDamage)
+		{
+			if (aDamagedPlayer.statLife <= 0)
+				return;
+
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+			{
+				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding damage without active combat");
+				Main.NewText("DPSExtreme: Adding damage taken without active combat");
+				return;
+			}
+
+			int clampedDamageAmount = Math.Clamp(aDamage, 0, aDamagedPlayer.statLife); //Avoid overkill
+
+			DPSExtreme.instance.combatTracker.myActiveCombat.myDamageTaken[aDamagedPlayer.whoAmI] += clampedDamageAmount;
+		}
 	}
 }

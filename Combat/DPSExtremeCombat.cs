@@ -74,7 +74,9 @@ namespace DPSExtreme.Combat
 		internal string myFormattedDuration => String.Format("{0:D2}:{1:D2}", (int)Math.Floor(myDuration.TotalMinutes), myDuration.Seconds);
 
 		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>>();
+
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>>();
+		internal DPSExtremeStatList<StatValue> myDamageTaken = new DPSExtremeStatList<StatValue>();
 		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new DPSExtremeStatList<StatValue>();
 		
 		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType)
@@ -90,10 +92,12 @@ namespace DPSExtreme.Combat
 		{
 			switch (aDisplayMode)
 			{
-				case ListDisplayMode.DamageDone:
-					return myDamageDone;
 				case ListDisplayMode.DamagePerSecond:
 					return myDamagePerSecond;
+				case ListDisplayMode.DamageDone:
+					return myDamageDone;
+				case ListDisplayMode.DamageTaken:
+					return myDamageTaken;
 				case ListDisplayMode.EnemyDamageTaken:
 					return myEnemyDamageTaken;
 				default:
@@ -149,6 +153,7 @@ namespace DPSExtreme.Combat
 				push.myCombatIsActive = true;
 				push.myEnemyDamageTaken = myEnemyDamageTaken;
 				push.myDamageDone = myDamageDone;
+				push.myDamageTaken = myDamageTaken;
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);
 

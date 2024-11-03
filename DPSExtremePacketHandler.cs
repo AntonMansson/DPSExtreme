@@ -218,6 +218,8 @@ namespace DPSExtreme
 			activeCombat.myDamageDone = aPush.myDamageDone;
 			activeCombat.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
 
+			activeCombat.myDamageTaken = aPush.myDamageTaken;
+
 			DPSExtremeUI.instance.updateNeeded = true;
 
 			//if (!aPush.myCombatIsActive)

@@ -3,6 +3,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameInput;
 using System.Collections.Generic;
+using static DPSExtreme.Combat.DPSExtremeCombat;
 
 namespace DPSExtreme
 {
@@ -56,6 +57,15 @@ namespace DPSExtreme
 		{
 			DPSExtreme.instance.combatTracker.OnEnterWorld();
 			DPSExtremeUI.instance.OnEnterWorld();
+		}
+
+		public override void OnHurt(Player.HurtInfo aHurtInfo)
+		{
+			if (Main.netMode == NetmodeID.MultiplayerClient)
+				return;
+
+			DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
+			DPSExtreme.instance.combatTracker.myStatsHandler.AddDamageTaken(Player, aHurtInfo.Damage);
 		}
 
 		public override void ProcessTriggers(TriggersSet triggersSet)

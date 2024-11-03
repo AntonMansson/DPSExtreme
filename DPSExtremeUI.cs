@@ -40,6 +40,7 @@ namespace DPSExtreme
 
 		internal UIListDisplay<StatValue> myDamagePerSecondDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myDamageDoneDisplay;
+		internal UIListDisplay<StatValue> myDamageTakenDisplay;
 		internal UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>> myEnemyDamageTakenDisplay;
 
 		internal ListDisplayMode myPreviousDisplayMode = ListDisplayMode.DamageDone;
@@ -75,10 +76,12 @@ namespace DPSExtreme
 						return myCombatHistoryDisplay;
 					case ListDisplayMode.StatDisplaysStart:
 					case ListDisplayMode.StatDisplaysEnd:
-					case ListDisplayMode.DamageDone:
-						return myDamageDoneDisplay;
 					case ListDisplayMode.DamagePerSecond:
 						return myDamagePerSecondDisplay;
+					case ListDisplayMode.DamageDone:
+						return myDamageDoneDisplay;
+					case ListDisplayMode.DamageTaken:
+						return myDamageTakenDisplay;
 					case ListDisplayMode.EnemyDamageTaken:
 						return myEnemyDamageTakenDisplay;
 					default:
@@ -220,6 +223,8 @@ namespace DPSExtreme
 				else
 					return Lang.GetItemNameValue(anAccessor);
 			}));
+
+			myDamageTakenDisplay = new UIListDisplay<StatValue>(ListDisplayMode.DamageTaken);
 
 			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken, Lang.GetNPCNameValue);
 			myEnemyDamageTakenDisplay.AddBreakdown(new UIListDisplay<StatValue>(ListDisplayMode.EnemyDamageTaken));

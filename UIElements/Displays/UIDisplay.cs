@@ -11,8 +11,9 @@ namespace DPSExtreme.UIElements.Displays
 		CombatHistory,
 
 		StatDisplaysStart,
-		DamageDone,
 		DamagePerSecond,
+		DamageDone,
+		DamageTaken,
 		EnemyDamageTaken,
 		StatDisplaysEnd,
 

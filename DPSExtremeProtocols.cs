@@ -118,7 +118,9 @@ namespace DPSExtreme
 		public bool myCombatIsActive = false;
 
 		public DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>>();
+
 		public DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>>();
+		public DPSExtremeStatList<StatValue> myDamageTaken = new DPSExtremeStatList<StatValue>();
 	}
 
 	internal class ProtocolReqShareCurrentDPS : DPSExtremeProtocol
