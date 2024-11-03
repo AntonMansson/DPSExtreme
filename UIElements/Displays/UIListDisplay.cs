@@ -114,7 +114,7 @@ namespace DPSExtreme.UIElements.Displays
 					if (myNameCallback != null)
 						name = myNameCallback.Invoke(i);
 
-					UIListDisplayEntry entry = CreateEntry(entryIndex) as UIListDisplayEntry;
+					UIStatDisplayEntry entry = CreateEntry(entryIndex) as UIStatDisplayEntry;
 					entry.myParticipantIndex = i;
 					entry.myColor = DPSExtremeUI.chatColor[i % DPSExtremeUI.chatColor.Length];
 					entry.myNameText = name;

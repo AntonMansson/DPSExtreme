@@ -22,7 +22,7 @@ namespace DPSExtreme.UIElements.Displays
 			: base(aDisplayMode)
 		{
 			myClickEntryCallback += OnClickBaseEntry;
-			myEntryCreator = () => { return new UIListDisplayEntry(); };
+			myEntryCreator = () => { return new UIStatDisplayEntry(); };
 		}
 
 		internal abstract void RecalculateTotals();
@@ -42,7 +42,7 @@ namespace DPSExtreme.UIElements.Displays
 			if (myBreakdownDisplay == null)
 				return;
 
-			UIListDisplayEntry entry = listeningElement as UIListDisplayEntry;
+			UIStatDisplayEntry entry = listeningElement as UIStatDisplayEntry;
 
 			if (entry.myBaseKey != -1)
 				myBreakdownAccessor = entry.myBaseKey;

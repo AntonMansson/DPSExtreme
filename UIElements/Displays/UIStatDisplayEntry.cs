@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DPSExtreme.UIElements.Displays
 {
-	internal class UIListDisplayEntry : UIDisplayEntry
+	internal class UIStatDisplayEntry : UIDisplayEntry
 	{
 		internal float myMax = 100000f;
 		internal int myTotal = -1;
@@ -45,7 +45,7 @@ namespace DPSExtreme.UIElements.Displays
 
 		public override int CompareTo(object obj)
 		{
-			UIListDisplayEntry other = obj as UIListDisplayEntry;
+			UIStatDisplayEntry other = obj as UIStatDisplayEntry;
 			return -myValue.CompareTo(other.myValue);
 		}
 	}

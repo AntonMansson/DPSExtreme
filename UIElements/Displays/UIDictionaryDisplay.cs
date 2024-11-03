@@ -106,7 +106,7 @@ namespace DPSExtreme.UIElements.Displays
 						name = myNameCallback.Invoke(baseKey);
 					}
 
-					UIListDisplayEntry entry = CreateEntry(entryIndex) as UIListDisplayEntry;
+					UIStatDisplayEntry entry = CreateEntry(entryIndex) as UIStatDisplayEntry;
 					entry.myColor = DPSExtremeUI.chatColor[Math.Abs(baseKey) % DPSExtremeUI.chatColor.Length];
 					entry.myNameText = name;
 					entry.myBaseKey = baseKey;
