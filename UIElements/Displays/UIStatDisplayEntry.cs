@@ -37,7 +37,8 @@ namespace DPSExtreme.UIElements.Displays
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
-			myRightText = myValue.ToString();
+			myRightText = FormatStatNumber(myValue);
+
 			if (DPSExtremeUI.instance.myShowPercent && myTotal > 0)
 				myRightText = $"{FormatStatNumber(myValue)} ({String.Format("{0:P0}", (float)myValue / myTotal)})";
 

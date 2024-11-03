@@ -3,7 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
+using System.Collections.Generic;
 
 namespace DPSExtreme.UIElements.Displays
 {
@@ -54,7 +56,25 @@ namespace DPSExtreme.UIElements.Displays
 
 			float textScale = .9f;
 
-			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, myNameText, hitbox.TopLeft() + new Vector2(4, 3), Color.White, 0f,
+			//Parent.Children does NOT get sorted with UpdateOrder. So access the outer _items list which DOES get sorted
+			List<UIElement> sortedList = (Parent.Parent as UIGrid)._items;
+
+			int entryIndex = -1;
+			int index = 0;
+			for (int i = 0; i < sortedList.Count; i++)
+            {
+				if (sortedList[i] != this)
+				{
+					index++;
+					continue;
+				}
+
+				entryIndex = index;
+				break;
+            }
+
+            string leftText = (entryIndex + 1).ToString() + ". " + myNameText;
+			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, leftText, hitbox.TopLeft() + new Vector2(4, 3), Color.White, 0f,
 				new Vector2(0, 0), new Vector2(textScale), -1f, 1.5f);
 
 			Vector2 rightTextBounds = fontMouseText.MeasureString(myRightText);

@@ -1,8 +1,5 @@
 ﻿using DPSExtreme.Combat.Stats;
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using Terraria.UI;
 
 namespace DPSExtreme.UIElements.Displays
 {
@@ -84,7 +81,7 @@ namespace DPSExtreme.UIElements.Displays
 				Clear();
 				return;
 			}
-
+			
 			int entryIndex = 0;
 
 			foreach ((int baseKey, T damageInfo) in myInfoLookup)
@@ -117,6 +114,6 @@ namespace DPSExtreme.UIElements.Displays
 
 			//In case no new entries were added but they need to be re-sorted
 			UpdateOrder();
-		}
+        }
 	}
 }
