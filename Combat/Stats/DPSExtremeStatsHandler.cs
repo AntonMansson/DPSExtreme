@@ -203,5 +203,17 @@ namespace DPSExtreme.Combat.Stats
 
 			DPSExtreme.instance.combatTracker.myActiveCombat.myKills[aKiller][aKilledNPC.type] += 1;
 		}
+
+		internal void AddConsumedMana(Player aPlayer, Item aUsedItem, int aManaAmount)
+		{
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+			{
+				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding mana used without active combat");
+				Main.NewText("DPSExtreme: Adding mana used without active combat");
+				return;
+			}
+
+			DPSExtreme.instance.combatTracker.myActiveCombat.myManaUsed[aPlayer.whoAmI][aUsedItem.type + (int)DamageSource.SourceType.Item] += aManaAmount;
+		}
 	}
 }

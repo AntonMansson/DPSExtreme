@@ -5,6 +5,7 @@ Keybinds.ToggleTeamDPSBossMeter.DisplayName: 开关队伍成员伤害/对Boss伤
 // DamagePerSecond: DPS
 // DamageDone: Damage done
 // DamageTaken: Damage taken
+// ManaUsed: Mana used
 // EnemyDamageTaken: Enemy damage taken
 // Deaths: Deaths
 // Kills: Kills

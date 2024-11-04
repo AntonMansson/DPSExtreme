@@ -124,6 +124,15 @@ namespace DPSExtreme
 			DPSExtreme.instance.combatTracker.myStatsHandler.AddDeath(Player);
 		}
 
+		public override void OnConsumeMana(Item item, int manaConsumed)
+		{
+			if (Main.netMode == NetmodeID.MultiplayerClient)
+				return;
+
+			DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
+			DPSExtreme.instance.combatTracker.myStatsHandler.AddConsumedMana(Player, item, manaConsumed);
+		}
+
 		public override void ProcessTriggers(TriggersSet triggersSet)
 		{
 			if (DPSExtreme.instance.ToggleTeamDPSHotKey.JustPressed)

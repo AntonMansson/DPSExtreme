@@ -81,6 +81,7 @@ namespace DPSExtreme.Combat
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTaken = new();
 		internal DPSExtremeStatList<StatValue> myDeaths = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myManaUsed = new();
 
 		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new();
 		
@@ -109,6 +110,8 @@ namespace DPSExtreme.Combat
 					return myDeaths;
 				case ListDisplayMode.Kills:
 					return myKills;
+				case ListDisplayMode.ManaUsed:
+					return myManaUsed;
 				default:
 					return null;
 			}
@@ -165,6 +168,7 @@ namespace DPSExtreme.Combat
 				push.myDamageTaken = myDamageTaken;
 				push.myDeaths = myDeaths;
 				push.myKills = myKills;
+				push.myManaUsed = myManaUsed;
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);
 

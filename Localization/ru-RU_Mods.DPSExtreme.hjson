@@ -5,6 +5,7 @@ Keybinds.ToggleTeamDPSBossMeter.DisplayName: Отобразить статист
 // DamagePerSecond: DPS
 // DamageDone: Damage done
 // DamageTaken: Damage taken
+// ManaUsed: Mana used
 // EnemyDamageTaken: Enemy damage taken
 // Deaths: Deaths
 // Kills: Kills
