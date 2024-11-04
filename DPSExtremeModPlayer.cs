@@ -5,6 +5,9 @@ using Terraria.GameInput;
 using System.Collections.Generic;
 using static DPSExtreme.Combat.DPSExtremeCombat;
 using DPSExtreme.Combat.Stats;
+using Terraria.Chat;
+using Terraria.Localization;
+using Microsoft.Xna.Framework;
 
 namespace DPSExtreme
 {
@@ -84,6 +87,12 @@ namespace DPSExtreme
 
 				Projectile projectile = Main.projectile[aHurtInfo.DamageSource.SourceProjectileLocalIndex];
 				int owner = projectile.GetGlobalProjectile<DPSExtremeModProjectile>().whoIsMyParent;
+
+				if (owner == -1)
+				{
+					ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral($"No owner found for projectile of type: {projectile.type} and local index {aHurtInfo.DamageSource.SourceProjectileLocalIndex}"), Color.Orange);
+					return;
+				}
 
 				//TODO: Handle
 				if (owner == (int)InfoListIndices.Traps)

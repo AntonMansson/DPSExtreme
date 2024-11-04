@@ -19,7 +19,10 @@ namespace DPSExtreme
 			{
 				if (parentSource.Entity is NPC parentNPC)
 				{
-					whoIsMyParent = parentNPC.whoAmI;
+					if (projectile.friendly)
+						whoIsMyParent = (int)InfoListIndices.NPCs;
+					else
+						whoIsMyParent = parentNPC.whoAmI;
 				}
 				else if (parentSource.Entity is Player parentplayer)
 				{
