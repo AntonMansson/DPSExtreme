@@ -1,4 +1,6 @@
-﻿using Terraria.UI;
+﻿using DPSExtreme.Combat.Stats;
+using System;
+using Terraria.UI;
 
 namespace DPSExtreme.UIElements.Displays
 {
@@ -26,11 +28,28 @@ namespace DPSExtreme.UIElements.Displays
 
 		protected UICombatInfoDisplay myParentDisplay = null;
 
-		internal UICombatInfoDisplay(ListDisplayMode aDisplayMode)
+		internal UICombatInfoDisplay(ListDisplayMode aDisplayMode, System.Type aContainerType)
 			: base(aDisplayMode)
 		{
 			myClickEntryCallback += OnClickBaseEntry;
 			myEntryCreator = () => { return new UIStatDisplayEntry(); };
+
+			if (aContainerType != typeof(StatValue))
+			{
+				System.Type[] typeArguments = aContainerType.GetGenericArguments();
+				System.Type nextContainerType = typeArguments[typeArguments.Length - 1];
+
+				if (aContainerType.GetGenericTypeDefinition() == typeof(DPSExtremeStatDictionary<,>))
+				{
+					Type nextDisplayType = typeof(UIStatDictionaryDisplay<>).MakeGenericType(nextContainerType);
+					AddBreakdown((UICombatInfoDisplay)Activator.CreateInstance(nextDisplayType, myDisplayMode));
+				}
+				else if (aContainerType.GetGenericTypeDefinition() == typeof(DPSExtremeStatList<>))
+				{
+					Type nextDisplayType = typeof(UIListDisplay<>).MakeGenericType(nextContainerType);
+					AddBreakdown((UICombatInfoDisplay)Activator.CreateInstance(nextDisplayType, myDisplayMode));
+				}
+			}
 		}
 
 		internal abstract void RecalculateTotals();

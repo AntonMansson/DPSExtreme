@@ -214,23 +214,9 @@ namespace DPSExtreme
 			myCombatHistoryDisplay = new UICombatHistoryDisplay();
 
 			myDamagePerSecondDisplay = new UIListDisplay<StatValue>(ListDisplayMode.DamagePerSecond);
-
-			//Who dealt damage?
 			myDamageDoneDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DamageDone);
-			//What ability dealt damage?
-			myDamageDoneDisplay.AddBreakdown(new UIStatDictionaryDisplay<StatValue>(ListDisplayMode.DamageDone));
-
-			//Who took damage?
 			myDamageTakenDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>>(ListDisplayMode.DamageTaken);
-			//Who dealt the damage?
-			myDamageTakenDisplay.AddBreakdown(new UIStatDictionaryDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DamageTaken));
-			//What ability dealt the damage?
-			myDamageTakenDisplay.AddBreakdown(new UIStatDictionaryDisplay<StatValue>(ListDisplayMode.DamageTaken));
-
-			//What npc took damage?
 			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken);
-			//Who dealt the damage?
-			myEnemyDamageTakenDisplay.AddBreakdown(new UIListDisplay<StatValue>(ListDisplayMode.EnemyDamageTaken));
 
 			myRootPanel.Append(myCurrentDisplay);
 		}

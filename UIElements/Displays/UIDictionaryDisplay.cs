@@ -40,8 +40,8 @@ namespace DPSExtreme.UIElements.Displays
 			}
 		}
 
-		internal UIStatDictionaryDisplay(ListDisplayMode aDisplayMode) 
-			: base(aDisplayMode) 
+		public UIStatDictionaryDisplay(ListDisplayMode aDisplayMode) 
+			: base(aDisplayMode, typeof(T)) 
 		{ 
 			myNameCallback = DamageSource.GetAbilityName;
 		}

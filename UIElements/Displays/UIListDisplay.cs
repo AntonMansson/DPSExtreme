@@ -59,8 +59,8 @@ namespace DPSExtreme.UIElements.Displays
 			return string.Format("Invalid index: {0}", aParticipantIndex);
 		}
 
-		internal UIListDisplay(ListDisplayMode aDisplayMode) 
-			: base(aDisplayMode) 
+		public UIListDisplay(ListDisplayMode aDisplayMode) 
+			: base(aDisplayMode, typeof(T)) 
 		{
 			myNameCallback = GetName;
 		}
