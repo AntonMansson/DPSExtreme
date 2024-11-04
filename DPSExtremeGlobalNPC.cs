@@ -52,8 +52,13 @@ namespace DPSExtreme
 				int dotType = -1;
 				NPC npc = Main.npc[whoAmI];
 				//TODO Verify that damage has already been applied when we reach this point (otherwise overkill calculation is incorrect)
+
+				DamageSource damageSource = new DamageSource(DamageSource.SourceType.DOT);
+				damageSource.myDamageCauserAbility = dotType;
+				damageSource.myDamageCauserId = (int)InfoListIndices.DOTs;
+
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, (int)InfoListIndices.DOTs, dotType, damage);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource, damage);
 
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
 			});
@@ -80,8 +85,12 @@ namespace DPSExtreme
 				int dotType = -1;
 				NPC npc = Main.npc[whoAmI];
 
+				DamageSource damageSource = new DamageSource(DamageSource.SourceType.DOT);
+				damageSource.myDamageCauserAbility = dotType;
+				damageSource.myDamageCauserId = (int)InfoListIndices.DOTs;
+
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, (int)InfoListIndices.DOTs, dotType, damage);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource, damage);
 
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
 			});
@@ -130,8 +139,12 @@ namespace DPSExtreme
 				if (npc.friendly)
 					return;
 
+				DamageSource damageSource = new DamageSource(DamageSource.SourceType.Item);
+				damageSource.myDamageCauserAbility = item.type;
+				damageSource.myDamageCauserId = player.whoAmI;
+
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, player.whoAmI, item.type, damageDone);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource, damageDone);
 			}
 			catch (Exception)
 			{
@@ -152,11 +165,23 @@ namespace DPSExtreme
 
 				/*Temp hack to assign npc projectiles to npc table. Necessary for them to appear in list on SP clients
 				whoIsMyParent could be used to diffirentiate between individual npcs in the future. And could also seperate other damage sources like traps apart from npcs*/
-				if (projectile.GetGlobalProjectile<DPSExtremeModProjectile>().whoIsMyParent != -1)
+				DPSExtremeModProjectile dpsProjectile = projectile.GetGlobalProjectile<DPSExtremeModProjectile>();
+
+				if (dpsProjectile.whoIsMyParent == (int)InfoListIndices.NPCs)
 					projectileOwner = (int)InfoListIndices.NPCs;
+				else if (dpsProjectile.whoIsMyParent == (int)InfoListIndices.Traps)
+					projectileOwner = (int)InfoListIndices.Traps;
+
+				DamageSource damageSource = new DamageSource(DamageSource.SourceType.Projectile);
+
+				if (dpsProjectile.myParentItemType != -1)
+					damageSource.mySourceType = DamageSource.SourceType.Item;
+
+				damageSource.myDamageCauserAbility = dpsProjectile.myParentItemType != -1 ? dpsProjectile.myParentItemType : projectile.type;
+				damageSource.myDamageCauserId = projectileOwner;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, projectileOwner, projectile.type + (int)DamageSource.SourceType.Projectile, damageDone);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource, damageDone);
 			}
 			catch (Exception)
 			{

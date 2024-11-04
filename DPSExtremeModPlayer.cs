@@ -69,13 +69,13 @@ namespace DPSExtreme
 			if (aHurtInfo.DamageSource.SourceOtherIndex != -1)
 			{
 				damageSource.mySourceType = DamageSource.SourceType.Other;
-				damageSource.myDamageCauserType = (int)DamageSource.SourceType.Other;
+				damageSource.myDamageCauserId = (int)DamageSource.SourceType.Other;
 				damageSource.myDamageCauserAbility = ProjectileID.None;
 			}
 			else if (aHurtInfo.DamageSource.SourceNPCIndex != -1)
 			{
 				damageSource.mySourceType = DamageSource.SourceType.NPC;
-				damageSource.myDamageCauserType = Main.npc[aHurtInfo.DamageSource.SourceNPCIndex].type;
+				damageSource.myDamageCauserId = Main.npc[aHurtInfo.DamageSource.SourceNPCIndex].type;
 				damageSource.myDamageCauserAbility = ProjectileID.None;
 			}
 			else if (aHurtInfo.DamageSource.SourceProjectileType != -1)
@@ -97,7 +97,7 @@ namespace DPSExtreme
 					return;
 				}
 
-				damageSource.myDamageCauserType = parentNPC.type;
+				damageSource.myDamageCauserId = parentNPC.type;
 				damageSource.myDamageCauserAbility = projectile.type;
 			}
 

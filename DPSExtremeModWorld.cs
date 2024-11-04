@@ -1,9 +1,7 @@
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
-using MonoMod.Utils;
-using System.IO;
-using System.Collections.Generic;
+using DPSExtreme.Combat.Stats;
 
 namespace DPSExtreme
 {
@@ -56,7 +54,12 @@ namespace DPSExtreme
 					float ratio = DPSExtreme.UPDATEDELAY / 60f;
 					//TODO: Handle remainder
 					int dealtDamage = (int)(dotDPS * ratio);
-					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, (int)InfoListIndices.DOTs, -1, dealtDamage);
+
+					DamageSource damageSource = new DamageSource(DamageSource.SourceType.DOT);
+					damageSource.myDamageCauserId = (int)InfoListIndices.DOTs;
+					damageSource.myDamageCauserAbility = -1; //Unknown what dots it is
+
+					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource, dealtDamage);
 				}
 			}
 

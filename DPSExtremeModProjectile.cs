@@ -11,14 +11,25 @@ namespace DPSExtreme
 		public override bool InstancePerEntity => true;
 
 		public int whoIsMyParent = -1;
+		public int myParentItemType = -1;
 
 		public override void OnSpawn(Projectile projectile, IEntitySource source)
 		{
-			if (source is EntitySource_Parent parent)
+			if (source is EntitySource_Parent parentSource)
 			{
-				if (parent.Entity is NPC)
+				if (parentSource.Entity is NPC parentNPC)
 				{
-					whoIsMyParent = parent.Entity.whoAmI;
+					whoIsMyParent = parentNPC.whoAmI;
+				}
+				else if (parentSource.Entity is Player parentplayer)
+				{
+					if (parentSource is EntitySource_ItemUse itemSource)
+						myParentItemType = itemSource.Item.type;
+				}
+				else if (parentSource.Entity is Projectile parentProj)
+				{
+					myParentItemType = parentProj.GetGlobalProjectile<DPSExtremeModProjectile>().myParentItemType;
+					whoIsMyParent = parentProj.whoAmI;
 				}
 			}
 

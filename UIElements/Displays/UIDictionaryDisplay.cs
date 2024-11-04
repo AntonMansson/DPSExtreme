@@ -40,10 +40,10 @@ namespace DPSExtreme.UIElements.Displays
 			}
 		}
 
-		internal UIStatDictionaryDisplay(ListDisplayMode aDisplayMode, Func<int, string> aNameCallback) 
+		internal UIStatDictionaryDisplay(ListDisplayMode aDisplayMode) 
 			: base(aDisplayMode) 
 		{ 
-			myNameCallback = aNameCallback;
+			myNameCallback = DamageSource.GetAbilityName;
 		}
 
 		internal override void Update()
@@ -113,6 +113,9 @@ namespace DPSExtreme.UIElements.Displays
 					{
 						name = myNameCallback.Invoke(baseKey);
 					}
+
+					if (name.Length == 0)
+						name = $"Error - id: {baseKey}";
 
 					UIStatDisplayEntry entry = CreateEntry(entryIndex) as UIStatDisplayEntry;
 					entry.myColor = DPSExtremeUI.chatColor[Math.Abs(baseKey) % DPSExtremeUI.chatColor.Length];

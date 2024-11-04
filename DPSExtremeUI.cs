@@ -215,34 +215,21 @@ namespace DPSExtreme
 
 			myDamagePerSecondDisplay = new UIListDisplay<StatValue>(ListDisplayMode.DamagePerSecond);
 
+			//Who dealt damage?
 			myDamageDoneDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DamageDone);
-			myDamageDoneDisplay.AddBreakdown(new UIStatDictionaryDisplay<StatValue>(ListDisplayMode.DamageDone, (int anAccessor ) => 
-			{
-				if (anAccessor > 20000)
-					return Lang.GetProjectileName(anAccessor - 20000).Value;
-				else
-					return Lang.GetItemNameValue(anAccessor);
-			}));
+			//What ability dealt damage?
+			myDamageDoneDisplay.AddBreakdown(new UIStatDictionaryDisplay<StatValue>(ListDisplayMode.DamageDone));
 
+			//Who took damage?
 			myDamageTakenDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>>(ListDisplayMode.DamageTaken);
-			myDamageTakenDisplay.AddBreakdown(new UIStatDictionaryDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DamageTaken, (int anAccessor) =>
-			{
-				if (anAccessor == (int)DamageSource.SourceType.Other)
-					return Language.GetTextValue("Other");
+			//Who dealt the damage?
+			myDamageTakenDisplay.AddBreakdown(new UIStatDictionaryDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DamageTaken));
+			//What ability dealt the damage?
+			myDamageTakenDisplay.AddBreakdown(new UIStatDictionaryDisplay<StatValue>(ListDisplayMode.DamageTaken));
 
-				return Lang.GetNPCNameValue(anAccessor);
-			}));
-			myDamageTakenDisplay.AddBreakdown(new UIStatDictionaryDisplay<StatValue>(ListDisplayMode.DamageTaken, (int anAccessor) =>
-			{
-				if (anAccessor == (int)DamageSource.SourceType.Other)
-					return Language.GetTextValue("Other");
-				else if (anAccessor >= (int)DamageSource.SourceType.Projectile)
-					return Lang.GetProjectileName(anAccessor - (int)DamageSource.SourceType.Projectile).Value;
-				else
-					return Language.GetTextValue("Melee");
-			}));
-
-			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken, Lang.GetNPCNameValue);
+			//What npc took damage?
+			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken);
+			//Who dealt the damage?
 			myEnemyDamageTakenDisplay.AddBreakdown(new UIListDisplay<StatValue>(ListDisplayMode.EnemyDamageTaken));
 
 			myRootPanel.Append(myCurrentDisplay);

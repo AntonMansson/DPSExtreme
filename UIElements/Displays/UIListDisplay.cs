@@ -116,6 +116,9 @@ namespace DPSExtreme.UIElements.Displays
 					if (myNameCallback != null)
 						name = myNameCallback.Invoke(i);
 
+					if (name.Length == 0)
+						name = $"Error - id: {i}";
+
 					UIStatDisplayEntry entry = CreateEntry(entryIndex) as UIStatDisplayEntry;
 					entry.myParticipantIndex = i;
 					entry.myColor = DPSExtremeUI.chatColor[i % DPSExtremeUI.chatColor.Length];
