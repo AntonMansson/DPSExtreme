@@ -8,6 +8,7 @@ using DPSExtreme.Combat.Stats;
 using Terraria.Chat;
 using Terraria.Localization;
 using Microsoft.Xna.Framework;
+using Terraria.DataStructures;
 
 namespace DPSExtreme
 {
@@ -112,6 +113,15 @@ namespace DPSExtreme
 
 			DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
 			DPSExtreme.instance.combatTracker.myStatsHandler.AddDamageTaken(Player, damageSource, aHurtInfo.Damage);
+		}
+
+		public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
+		{
+			if (Main.netMode == NetmodeID.MultiplayerClient)
+				return;
+
+			DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
+			DPSExtreme.instance.combatTracker.myStatsHandler.AddDeath(Player);
 		}
 
 		public override void ProcessTriggers(TriggersSet triggersSet)

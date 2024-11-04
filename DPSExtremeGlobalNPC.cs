@@ -96,21 +96,6 @@ namespace DPSExtreme
 			});
 		}
 
-		//public override GlobalNPC Clone()
-		//{
-		//	try
-		//	{
-		//		DPSExtremeGlobalNPC clone = (DPSExtremeGlobalNPC)base.Clone();
-		//		clone.damageDone = new int[256];
-		//		return clone;
-		//	}
-		//	catch (Exception e)
-		//	{
-		//		//ErrorLogger.Log("Clone" + e.Message);
-		//	}
-		//	return null;
-		//}
-
 		public override void OnSpawn(NPC npc, IEntitySource source)
 		{
 			if (npc.boss)
@@ -123,7 +108,12 @@ namespace DPSExtreme
 		{
 			try
 			{
+				if (Main.netMode == NetmodeID.MultiplayerClient)
+					return;
 
+
+				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddKill(npc, npc.lastInteraction);
 			}
 			catch (Exception)
 			{

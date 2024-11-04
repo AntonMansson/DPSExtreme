@@ -41,6 +41,9 @@ namespace DPSExtreme
 		internal UIListDisplay<StatValue> myDamagePerSecondDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myDamageDoneDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTakenDisplay;
+		internal UIListDisplay<StatValue> myDeathsDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myKillsDisplay;
+
 		internal UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>> myEnemyDamageTakenDisplay;
 
 		internal ListDisplayMode myPreviousDisplayMode = ListDisplayMode.DamageDone;
@@ -84,6 +87,10 @@ namespace DPSExtreme
 						return myDamageTakenDisplay;
 					case ListDisplayMode.EnemyDamageTaken:
 						return myEnemyDamageTakenDisplay;
+					case ListDisplayMode.Deaths:
+						return myDeathsDisplay;
+					case ListDisplayMode.Kills:
+						return myKillsDisplay;
 					default:
 						return null;
 				}
@@ -218,6 +225,9 @@ namespace DPSExtreme
 			myDamageTakenDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>>(ListDisplayMode.DamageTaken);
 
 			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken);
+
+			myDeathsDisplay = new UIListDisplay<StatValue>(ListDisplayMode.Deaths);
+			myKillsDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.Kills);
 
 			myRootPanel.Append(myCurrentDisplay);
 		}

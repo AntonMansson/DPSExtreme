@@ -6,6 +6,8 @@ Keybinds.ToggleTeamDPSBossMeter.DisplayName: 开关队伍成员伤害/对Boss伤
 // DamageDone: Damage done
 // DamageTaken: Damage taken
 // EnemyDamageTaken: Enemy damage taken
+// Deaths: Deaths
+// Kills: Kills
 TogglePercent: 显示 %
 NoDPSWearDPSMeter: 需要[i:DPSMeter]
 NoBoss: 当前无Boss存活

@@ -6,6 +6,8 @@
 // DamageDone: Damage done
 // DamageTaken: Damage taken
 // EnemyDamageTaken: Enemy damage taken
+// Deaths: Deaths
+// Kills: Kills
 // TogglePercent: Toggle %
 // NoDPSWearDPSMeter: No DPS Stats, wear [i:DPSMeter]
 // NoBoss: No Boss

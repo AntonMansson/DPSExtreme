@@ -79,6 +79,8 @@ namespace DPSExtreme.Combat
 
 		//Index : Npc id : projectileId (0 for melee)
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTaken = new();
+		internal DPSExtremeStatList<StatValue> myDeaths = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
 
 		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new();
 		
@@ -103,6 +105,10 @@ namespace DPSExtreme.Combat
 					return myDamageTaken;
 				case ListDisplayMode.EnemyDamageTaken:
 					return myEnemyDamageTaken;
+				case ListDisplayMode.Deaths:
+					return myDeaths;
+				case ListDisplayMode.Kills:
+					return myKills;
 				default:
 					return null;
 			}
@@ -157,6 +163,8 @@ namespace DPSExtreme.Combat
 				push.myEnemyDamageTaken = myEnemyDamageTaken;
 				push.myDamageDone = myDamageDone;
 				push.myDamageTaken = myDamageTaken;
+				push.myDeaths = myDeaths;
+				push.myKills = myKills;
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);
 

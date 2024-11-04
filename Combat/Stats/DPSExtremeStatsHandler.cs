@@ -170,7 +170,7 @@ namespace DPSExtreme.Combat.Stats
 
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 			{
-				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding damage without active combat");
+				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding damage taken without active combat");
 				Main.NewText("DPSExtreme: Adding damage taken without active combat");
 				return;
 			}
@@ -178,6 +178,30 @@ namespace DPSExtreme.Combat.Stats
 			int clampedDamageAmount = Math.Clamp(aDamage, 0, aDamagedPlayer.statLife); //Avoid overkill
 
 			DPSExtreme.instance.combatTracker.myActiveCombat.myDamageTaken[aDamagedPlayer.whoAmI][aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility] += clampedDamageAmount;
+		}
+
+		internal void AddDeath(Player aKilledPlayer)
+		{
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+			{
+				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding death without active combat");
+				Main.NewText("DPSExtreme: Adding death without active combat");
+				return;
+			}
+
+			DPSExtreme.instance.combatTracker.myActiveCombat.myDeaths[aKilledPlayer.whoAmI] += 1;
+		}
+
+		internal void AddKill(NPC aKilledNPC, int aKiller)
+		{
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+			{
+				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding kill without active combat");
+				Main.NewText("DPSExtreme: Adding kill without active combat");
+				return;
+			}
+
+			DPSExtreme.instance.combatTracker.myActiveCombat.myKills[aKiller][aKilledNPC.type] += 1;
 		}
 	}
 }

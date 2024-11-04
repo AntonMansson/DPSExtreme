@@ -14,6 +14,8 @@ namespace DPSExtreme.UIElements.Displays
 		DamagePerSecond,
 		DamageDone,
 		DamageTaken,
+		Deaths,
+		Kills,
 		EnemyDamageTaken,
 		StatDisplaysEnd,
 
