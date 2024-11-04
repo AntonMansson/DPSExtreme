@@ -75,9 +75,12 @@ namespace DPSExtreme.Combat
 
 		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>>();
 
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>>();
-		internal DPSExtremeStatList<StatValue> myDamageTaken = new DPSExtremeStatList<StatValue>();
-		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new DPSExtremeStatList<StatValue>();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new();
+
+		//Index : Npc id : projectileId (0 for melee)
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTaken = new();
+
+		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new();
 		
 		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType)
 		{

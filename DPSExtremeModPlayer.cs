@@ -4,6 +4,7 @@ using Terraria.ModLoader;
 using Terraria.GameInput;
 using System.Collections.Generic;
 using static DPSExtreme.Combat.DPSExtremeCombat;
+using DPSExtreme.Combat.Stats;
 
 namespace DPSExtreme
 {
@@ -64,8 +65,44 @@ namespace DPSExtreme
 			if (Main.netMode == NetmodeID.MultiplayerClient)
 				return;
 
+			DamageSource damageSource = new DamageSource();
+			if (aHurtInfo.DamageSource.SourceOtherIndex != -1)
+			{
+				damageSource.mySourceType = DamageSource.SourceType.Other;
+				damageSource.myDamageCauserType = (int)DamageSource.SourceType.Other;
+				damageSource.myDamageCauserAbility = ProjectileID.None;
+			}
+			else if (aHurtInfo.DamageSource.SourceNPCIndex != -1)
+			{
+				damageSource.mySourceType = DamageSource.SourceType.NPC;
+				damageSource.myDamageCauserType = Main.npc[aHurtInfo.DamageSource.SourceNPCIndex].type;
+				damageSource.myDamageCauserAbility = ProjectileID.None;
+			}
+			else if (aHurtInfo.DamageSource.SourceProjectileType != -1)
+			{
+				damageSource.mySourceType = DamageSource.SourceType.Projectile;
+
+				Projectile projectile = Main.projectile[aHurtInfo.DamageSource.SourceProjectileLocalIndex];
+				int owner = projectile.GetGlobalProjectile<DPSExtremeModProjectile>().whoIsMyParent;
+
+				//TODO: Handle
+				if (owner == (int)InfoListIndices.Traps)
+					return;
+
+				NPC parentNPC = Main.npc[owner];
+
+				if (parentNPC == null)
+				{
+					Main.NewText("owner was not npc");
+					return;
+				}
+
+				damageSource.myDamageCauserType = parentNPC.type;
+				damageSource.myDamageCauserAbility = projectile.type;
+			}
+
 			DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-			DPSExtreme.instance.combatTracker.myStatsHandler.AddDamageTaken(Player, aHurtInfo.Damage);
+			DPSExtreme.instance.combatTracker.myStatsHandler.AddDamageTaken(Player, damageSource, aHurtInfo.Damage);
 		}
 
 		public override void ProcessTriggers(TriggersSet triggersSet)

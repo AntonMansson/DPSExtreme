@@ -4,6 +4,7 @@ Keybinds.ToggleTeamDPSBossMeter.DisplayName: Отобразить статист
 // CombatHistory: Combat history:
 // DamagePerSecond: DPS
 // DamageDone: Damage done
+// DamageTaken: Damage taken
 // EnemyDamageTaken: Enemy damage taken
 TogglePercent: Вкл/откл %
 NoDPSWearDPSMeter: Нет инфо об DPS, возьмите [i:DPSMeter]
@@ -18,3 +19,5 @@ DamageOverTime: DOT Дебафф
 ToggleTeamDPSCommandDescription: Переключить отображение командного DPS
 // Invasion: Invasion
 // Event: Event
+// Other: Other
+// Melee: Melee

@@ -2,10 +2,16 @@
 
 namespace DPSExtreme.UIElements.Displays
 {
-	
+
 
 	internal abstract class UICombatInfoDisplay : UIDisplay
 	{
+		internal enum DisplayContainerType
+		{
+			Dictionary,
+			List
+		}
+
 		internal int myHighestValue = -1;
 		internal int myTotal = 0;
 
@@ -15,6 +21,8 @@ namespace DPSExtreme.UIElements.Displays
 		{
 			get { return myBreakdownAccessor != -1; }
 		}
+
+		internal abstract DisplayContainerType myContainerType { get; }
 
 		protected UICombatInfoDisplay myParentDisplay = null;
 
@@ -30,6 +38,12 @@ namespace DPSExtreme.UIElements.Displays
 
 		internal UICombatInfoDisplay AddBreakdown(UICombatInfoDisplay aDisplay)
 		{
+			if (myBreakdownDisplay != null)
+			{
+				myBreakdownDisplay.AddBreakdown(aDisplay);
+				return aDisplay;
+			}
+
 			aDisplay.myParentDisplay = this;
 			myBreakdownDisplay = aDisplay;
 			myBreakdownDisplay.OnRightClick += OnRightClickBreakdownDisplay;

@@ -8,6 +8,60 @@ using Terraria;
 
 namespace DPSExtreme.Combat.Stats
 {
+	internal struct DamageSource
+	{
+		internal enum SourceType
+		{
+			Unknown,
+			NPC = 0,
+			Projectile = 20000,
+			Other = 25000,
+		}
+
+		internal SourceType mySourceType = SourceType.Unknown;
+		internal int myDamageCauserType = -1; //NPC id etc
+
+		private int _myDamageCauserAbility = -1;
+		internal int myDamageCauserAbility //NPC id etc
+		{
+			get 
+			{
+				switch (mySourceType)
+				{
+					case SourceType.NPC:
+					case SourceType.Projectile:
+					case SourceType.Other:
+						return _myDamageCauserAbility;
+					default:
+						return -1;
+				}
+			}
+			set 
+			{
+				switch (mySourceType)
+				{
+					case SourceType.NPC:
+						_myDamageCauserAbility = value + (int)SourceType.NPC;
+						break;
+					case SourceType.Projectile:
+						_myDamageCauserAbility = value + (int)SourceType.Projectile;
+						break;
+					case SourceType.Other:
+						_myDamageCauserAbility = (int)SourceType.Other;
+						break;
+					default:
+						_myDamageCauserAbility = -1;
+						Main.NewText("Invalid source");
+						break;
+				}
+			}
+		}
+
+		public DamageSource()
+		{
+		}
+	}
+
 	internal class DPSExtremeStatsHandler
 	{
 		internal void AddDealtDamage(NPC aDamagedNPC, int aDamageDealer, int aItemOrProjectileType, int aDamage)
@@ -51,7 +105,7 @@ namespace DPSExtreme.Combat.Stats
 			DPSExtreme.instance.combatTracker.myActiveCombat.myDamageDone[aDamageDealer][aItemOrProjectileType] += clampedDamageAmount;
 		}
 
-		internal void AddDamageTaken(Player aDamagedPlayer, int aDamage)
+		internal void AddDamageTaken(Player aDamagedPlayer, DamageSource aDamageSource, int aDamage)
 		{
 			if (aDamagedPlayer.statLife <= 0)
 				return;
@@ -65,7 +119,7 @@ namespace DPSExtreme.Combat.Stats
 
 			int clampedDamageAmount = Math.Clamp(aDamage, 0, aDamagedPlayer.statLife); //Avoid overkill
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDamageTaken[aDamagedPlayer.whoAmI] += clampedDamageAmount;
+			DPSExtreme.instance.combatTracker.myActiveCombat.myDamageTaken[aDamagedPlayer.whoAmI][aDamageSource.myDamageCauserType][aDamageSource.myDamageCauserAbility] += clampedDamageAmount;
 		}
 	}
 }

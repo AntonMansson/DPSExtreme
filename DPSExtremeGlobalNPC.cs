@@ -5,6 +5,7 @@ using System;
 using MonoMod.Cil;
 using Terraria.DataStructures;
 using static DPSExtreme.Combat.DPSExtremeCombat;
+using DPSExtreme.Combat.Stats;
 
 namespace DPSExtreme
 {
@@ -155,7 +156,7 @@ namespace DPSExtreme
 					projectileOwner = (int)InfoListIndices.NPCs;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, projectileOwner, projectile.type + 20000, damageDone);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, projectileOwner, projectile.type + (int)DamageSource.SourceType.Projectile, damageDone);
 			}
 			catch (Exception)
 			{

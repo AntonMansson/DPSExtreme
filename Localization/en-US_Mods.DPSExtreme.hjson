@@ -4,6 +4,7 @@ DisplayModeSelect: Select mode:
 CombatHistory: Combat history:
 DamagePerSecond: DPS
 DamageDone: Damage done
+DamageTaken: Damage taken
 EnemyDamageTaken: Enemy damage taken
 TogglePercent: Toggle %
 NoDPSWearDPSMeter: No DPS Stats, wear [i:DPSMeter]
@@ -18,3 +19,5 @@ DamageOverTime: Debuff DOT
 ToggleTeamDPSCommandDescription: Toggle Team DPS display
 Invasion: Invasion
 Event: Event
+Other: Other
+Melee: Melee

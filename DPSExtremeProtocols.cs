@@ -101,26 +101,28 @@ namespace DPSExtreme
 
 			aWriter.Write(myCombatIsActive);
 
-			myDamageDone.ToStream(aWriter);
 			myEnemyDamageTaken.ToStream(aWriter);
+			myDamageDone.ToStream(aWriter);
+			myDamageTaken.ToStream(aWriter);
 		}
 
 		public override bool FromStream(BinaryReader aReader)
 		{
 			myCombatIsActive = aReader.ReadBoolean();
 
-			myDamageDone.FromStream(aReader);
 			myEnemyDamageTaken.FromStream(aReader);
+			myDamageDone.FromStream(aReader);
+			myDamageTaken.FromStream(aReader);
 
 			return true;
 		}
 
 		public bool myCombatIsActive = false;
 
-		public DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>>();
+		public DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new();
 
-		public DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>>();
-		public DPSExtremeStatList<StatValue> myDamageTaken = new DPSExtremeStatList<StatValue>();
+		public DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new();
+		public DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTaken = new();
 	}
 
 	internal class ProtocolReqShareCurrentDPS : DPSExtremeProtocol

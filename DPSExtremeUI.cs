@@ -40,7 +40,7 @@ namespace DPSExtreme
 
 		internal UIListDisplay<StatValue> myDamagePerSecondDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myDamageDoneDisplay;
-		internal UIListDisplay<StatValue> myDamageTakenDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTakenDisplay;
 		internal UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>> myEnemyDamageTakenDisplay;
 
 		internal ListDisplayMode myPreviousDisplayMode = ListDisplayMode.DamageDone;
@@ -224,7 +224,23 @@ namespace DPSExtreme
 					return Lang.GetItemNameValue(anAccessor);
 			}));
 
-			myDamageTakenDisplay = new UIListDisplay<StatValue>(ListDisplayMode.DamageTaken);
+			myDamageTakenDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>>(ListDisplayMode.DamageTaken);
+			myDamageTakenDisplay.AddBreakdown(new UIStatDictionaryDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DamageTaken, (int anAccessor) =>
+			{
+				if (anAccessor == (int)DamageSource.SourceType.Other)
+					return Language.GetTextValue("Other");
+
+				return Lang.GetNPCNameValue(anAccessor);
+			}));
+			myDamageTakenDisplay.AddBreakdown(new UIStatDictionaryDisplay<StatValue>(ListDisplayMode.DamageTaken, (int anAccessor) =>
+			{
+				if (anAccessor == (int)DamageSource.SourceType.Other)
+					return Language.GetTextValue("Other");
+				else if (anAccessor >= (int)DamageSource.SourceType.Projectile)
+					return Lang.GetProjectileName(anAccessor - (int)DamageSource.SourceType.Projectile).Value;
+				else
+					return Language.GetTextValue("Melee");
+			}));
 
 			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken, Lang.GetNPCNameValue);
 			myEnemyDamageTakenDisplay.AddBreakdown(new UIListDisplay<StatValue>(ListDisplayMode.EnemyDamageTaken));

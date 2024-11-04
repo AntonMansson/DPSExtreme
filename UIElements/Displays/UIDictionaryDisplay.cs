@@ -6,6 +6,8 @@ namespace DPSExtreme.UIElements.Displays
 	internal class UIStatDictionaryDisplay<T> : UICombatInfoDisplay
 		where T : IStatContainer, new()
 	{
+		internal override DisplayContainerType myContainerType => DisplayContainerType.Dictionary;
+
 		internal DPSExtremeStatDictionary<int, T> myInfoLookup
 		{
 			get
@@ -14,9 +16,18 @@ namespace DPSExtreme.UIElements.Displays
 				{
 					if (myParentDisplay != null)
 					{
-						UIListDisplay<DPSExtremeStatDictionary<int, T>> parent = myParentDisplay as UIListDisplay<DPSExtremeStatDictionary<int, T>>;
-						if (parent != null)
-							return parent.myInfoList[myParentDisplay.myBreakdownAccessor];
+						if (myParentDisplay.myContainerType == DisplayContainerType.List)
+						{
+							UIListDisplay<DPSExtremeStatDictionary<int, T>> parent = myParentDisplay as UIListDisplay<DPSExtremeStatDictionary<int, T>>;
+							if (parent != null)
+								return parent.myInfoList[myParentDisplay.myBreakdownAccessor];
+						}
+						else if (myParentDisplay.myContainerType == DisplayContainerType.Dictionary)
+						{
+							UIStatDictionaryDisplay<DPSExtremeStatDictionary<int, T>> parent = myParentDisplay as UIStatDictionaryDisplay<DPSExtremeStatDictionary<int, T>>;
+							if (parent != null)
+								return parent.myInfoLookup[myParentDisplay.myBreakdownAccessor];
+						}
 					}
 
 					return DPSExtremeUI.instance.myDisplayedCombat?.GetInfoContainer(myDisplayMode) as DPSExtremeStatDictionary<int, T>;

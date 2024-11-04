@@ -4,6 +4,7 @@ Keybinds.ToggleTeamDPSBossMeter.DisplayName: 开关队伍成员伤害/对Boss伤
 // CombatHistory: Combat history:
 // DamagePerSecond: DPS
 // DamageDone: Damage done
+// DamageTaken: Damage taken
 // EnemyDamageTaken: Enemy damage taken
 TogglePercent: 显示 %
 NoDPSWearDPSMeter: 需要[i:DPSMeter]
@@ -18,3 +19,5 @@ DamageOverTime: 减益总伤害
 ToggleTeamDPSCommandDescription: 显示队伍成员伤害统计
 // Invasion: Invasion
 // Event: Event
+// Other: Other
+// Melee: Melee
