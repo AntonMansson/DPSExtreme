@@ -74,7 +74,7 @@ namespace DPSExtreme
 			{
 				damageSource.mySourceType = DamageSource.SourceType.Other;
 				damageSource.myDamageCauserId = (int)DamageSource.SourceType.Other;
-				damageSource.myDamageCauserAbility = ProjectileID.None;
+				damageSource.myDamageCauserAbility = aHurtInfo.DamageSource.SourceOtherIndex + 1; //+1 since we want the 0 index to be "Other", but fall damage is already assigned to 0
 			}
 			else if (aHurtInfo.DamageSource.SourceNPCIndex != -1)
 			{

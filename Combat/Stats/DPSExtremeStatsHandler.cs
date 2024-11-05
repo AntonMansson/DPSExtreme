@@ -2,6 +2,7 @@
 using Terraria.ID;
 using Terraria;
 using Terraria.Localization;
+using Terraria.Map;
 
 namespace DPSExtreme.Combat.Stats
 {
@@ -25,8 +26,9 @@ namespace DPSExtreme.Combat.Stats
 			TrapsEnd = Other - 1,
 
 			Other = 41000,
+			OtherEnd = 42000,
 
-			Unknown = Other + 1,
+			Unknown = OtherEnd + 1,
 		}
 
 		private SourceType _mySourceType = SourceType.Unknown;
@@ -81,7 +83,7 @@ namespace DPSExtreme.Combat.Stats
 						_myDamageCauserAbility = value + (int)SourceType.Traps;
 						break;
 					case SourceType.Other:
-						_myDamageCauserAbility = (int)SourceType.Other;
+						_myDamageCauserAbility = value + (int)SourceType.Other;
 						break;
 					default:
 						_myDamageCauserAbility = -1;
@@ -117,8 +119,55 @@ namespace DPSExtreme.Combat.Stats
 				return Lang.GetItemName(aAbilityId - (int)SourceType.Traps).Value;
 
 			if (IsInSourceTypeRange(SourceType.Other, aAbilityId))
-				return Language.GetTextValue("Other");
+			{
+				if (aAbilityId == (int)SourceType.Other)
+					return Language.GetTextValue("Other");
 
+				int otherType = aAbilityId - (int)SourceType.Other - 1;
+				switch (otherType)
+				{
+					//Loc
+					case 0:
+						return Language.GetTextValue("FallDamage");
+					case 1:
+						return Language.GetTextValue("Drowning");
+
+					//Tile
+					case 2:
+						return Language.GetTextValue("Lava");
+					case 3:
+						return Language.GetTextValue("BlockContactDamage");
+					case 4:
+						return Lang._mapLegendCache[MapHelper.TileToLookup(26, WorldGen.crimson ? 1 : 0)].Value;
+
+					//Debuffs
+					case 5:
+						return Lang.GetBuffName(BuffID.Stoned);
+					case 7:
+						return Lang.GetBuffName(BuffID.Suffocation);
+					case 8:
+						return Lang.GetBuffName(BuffID.Burning);
+					case 9: //poison and venom debuff
+						return Lang.GetBuffName(BuffID.Poisoned);
+					case 10:
+						return Lang.GetBuffName(BuffID.Electrified);
+					case 13: //chaos state (rod of discord) 
+					case 14: //if (rand(2) == 0... chaos state, male (rod of discord) 
+					case 15: //if (rand(2) == 0... chaos state, female (rod of discord) 
+						return Lang.GetBuffName(BuffID.ChaosState);
+					case 16:
+						return Lang.GetBuffName(BuffID.CursedInferno);
+					case 18:
+						return Lang.GetBuffName(BuffID.Starving);
+
+					//"Other"
+					case 11: //WoF insta kill from being too far away
+					case 12: //tongued
+					case 19: //death by entering space on remixWorld
+					default:
+						return Language.GetTextValue("Other");
+				}
+			}
 
 			return $"Accessor {aAbilityId} not in any range";
 		}

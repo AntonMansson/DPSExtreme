@@ -26,3 +26,7 @@ Event: Event
 Other: Other
 Melee: Melee
 UnknownTraps: Unknown traps
+FallDamage: Fall damage
+Drowning: Drowning
+Lava: lava
+BlockContactDamage: Block contact damage
