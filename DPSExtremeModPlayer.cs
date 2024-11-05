@@ -87,7 +87,8 @@ namespace DPSExtreme
 				damageSource.mySourceType = DamageSource.SourceType.Projectile;
 
 				Projectile projectile = Main.projectile[aHurtInfo.DamageSource.SourceProjectileLocalIndex];
-				int owner = projectile.GetGlobalProjectile<DPSExtremeModProjectile>().whoIsMyParent;
+				DPSExtremeModProjectile dpsProjectile = projectile.GetGlobalProjectile<DPSExtremeModProjectile>();
+				int owner = dpsProjectile.whoIsMyParent;
 
 				if (owner == -1)
 				{
@@ -95,20 +96,24 @@ namespace DPSExtreme
 					return;
 				}
 
-				//TODO: Handle
 				if (owner == (int)InfoListIndices.Traps)
-					return;
-
-				NPC parentNPC = Main.npc[owner];
-
-				if (parentNPC == null)
 				{
-					Main.NewText("owner was not npc");
-					return;
+					damageSource.myDamageCauserId = dpsProjectile.myParentItemType + (int)DamageSource.SourceType.Traps;
+					damageSource.myDamageCauserAbility = projectile.type;
 				}
+				else
+				{
+					NPC parentNPC = Main.npc[owner];
 
-				damageSource.myDamageCauserId = parentNPC.type;
-				damageSource.myDamageCauserAbility = projectile.type;
+					if (!parentNPC.active)
+					{
+						Main.NewText("owner was not npc");
+						return;
+					}
+
+					damageSource.myDamageCauserId = parentNPC.type;
+					damageSource.myDamageCauserAbility = projectile.type;
+				}
 			}
 
 			DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);

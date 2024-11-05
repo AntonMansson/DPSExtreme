@@ -1,6 +1,5 @@
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.Enums;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -39,6 +38,21 @@ namespace DPSExtreme
 			if (source is EntitySource_Wiring wiring)
 			{
 				whoIsMyParent = (int)InfoListIndices.Traps;
+				int row = Main.tile[wiring.TileCoords].TileFrameY / 18;
+				if (row == 0)
+					myParentItemType = ItemID.DartTrap;
+				else if (row == 1)
+					myParentItemType = ItemID.SuperDartTrap;
+				else if (row == 2)
+					myParentItemType = ItemID.FlameTrap;
+				else if (row == 3)
+					myParentItemType = ItemID.SpikyBallTrap;
+				else if (row == 4)
+					myParentItemType = ItemID.SpearTrap;
+				else if (row == 5)
+					myParentItemType = ItemID.VenomDartTrap;
+				else
+					myParentItemType = (int)InfoListIndices.Traps; //Clump all modded traps together
 			}
 		}
 	}

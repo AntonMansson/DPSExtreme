@@ -19,9 +19,13 @@ namespace DPSExtreme.Combat.Stats
 			ItemEnd = DOT - 1,
 
 			DOT = 39000,
-			DOTEnd = Other - 1,
+			DOTEnd = Traps - 1,
 
-			Other = 40000,
+			Traps = 40000,
+			TrapsEnd = Other - 1,
+
+			Other = 41000,
+
 			Unknown = Other + 1,
 		}
 
@@ -50,6 +54,7 @@ namespace DPSExtreme.Combat.Stats
 					case SourceType.Projectile:
 					case SourceType.Item:
 					case SourceType.DOT:
+					case SourceType.Traps:
 					case SourceType.Other:
 						return _myDamageCauserAbility;
 					default:
@@ -71,6 +76,9 @@ namespace DPSExtreme.Combat.Stats
 						break;
 					case SourceType.DOT:
 						_myDamageCauserAbility = value + (int)SourceType.DOT;
+						break;
+					case SourceType.Traps:
+						_myDamageCauserAbility = value + (int)SourceType.Traps;
 						break;
 					case SourceType.Other:
 						_myDamageCauserAbility = (int)SourceType.Other;
@@ -101,6 +109,9 @@ namespace DPSExtreme.Combat.Stats
 
 			if (IsInSourceTypeRange(SourceType.Item, aAbilityId))
 				return Lang.GetItemNameValue(aAbilityId - (int)SourceType.Item);
+
+			if (IsInSourceTypeRange(SourceType.Traps, aAbilityId))
+				return Lang.GetItemName(aAbilityId - (int)SourceType.Traps).Value;
 
 			if (IsInSourceTypeRange(SourceType.Other, aAbilityId))
 				return Language.GetTextValue("Other");
