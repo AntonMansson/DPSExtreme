@@ -73,15 +73,16 @@ namespace DPSExtreme.Combat
 
 		internal string myFormattedDuration => String.Format("{0:D2}:{1:D2}", (int)Math.Floor(myDuration.TotalMinutes), myDuration.Seconds);
 
-		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>>();
+		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new();
 
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new();
-
-		//Index : Npc id : projectileId (0 for melee)
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTaken = new();
 		internal DPSExtremeStatList<StatValue> myDeaths = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myManaUsed = new();
+
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myBuffUptimes = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDebuffUptimes = new();
 
 		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new();
 		
@@ -112,6 +113,10 @@ namespace DPSExtreme.Combat
 					return myKills;
 				case ListDisplayMode.ManaUsed:
 					return myManaUsed;
+				case ListDisplayMode.BuffUptime:
+					return myBuffUptimes;
+				case ListDisplayMode.DebuffUptime:
+					return myDebuffUptimes;
 				default:
 					return null;
 			}
@@ -169,6 +174,8 @@ namespace DPSExtreme.Combat
 				push.myDeaths = myDeaths;
 				push.myKills = myKills;
 				push.myManaUsed = myManaUsed;
+				push.myBuffUptimes = myBuffUptimes;
+				push.myDebuffUptimes = myDebuffUptimes;
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);
 

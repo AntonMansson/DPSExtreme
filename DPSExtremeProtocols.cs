@@ -107,6 +107,8 @@ namespace DPSExtreme
 			myDeaths.ToStream(aWriter);
 			myKills.ToStream(aWriter);
 			myManaUsed.ToStream(aWriter);
+			myBuffUptimes.ToStream(aWriter);
+			myDebuffUptimes.ToStream(aWriter);
 		}
 
 		public override bool FromStream(BinaryReader aReader)
@@ -119,6 +121,8 @@ namespace DPSExtreme
 			myDeaths.FromStream(aReader);
 			myKills.FromStream(aReader);
 			myManaUsed.FromStream(aReader);
+			myBuffUptimes.FromStream(aReader);
+			myDebuffUptimes.FromStream(aReader);
 
 			return true;
 		}
@@ -132,6 +136,8 @@ namespace DPSExtreme
 		public DPSExtremeStatList<StatValue> myDeaths = new();
 		public DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myManaUsed = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myBuffUptimes = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDebuffUptimes = new();
 	}
 
 	internal class ProtocolReqShareCurrentDPS : DPSExtremeProtocol

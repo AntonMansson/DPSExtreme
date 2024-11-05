@@ -17,6 +17,8 @@ namespace DPSExtreme.UIElements.Displays
 		Deaths,
 		Kills,
 		ManaUsed,
+		BuffUptime,
+		DebuffUptime,
 		EnemyDamageTaken,
 		StatDisplaysEnd,
 

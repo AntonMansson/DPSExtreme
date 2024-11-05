@@ -6,6 +6,8 @@ Keybinds.ToggleTeamDPSBossMeter.DisplayName: Отобразить статист
 // DamageDone: Damage done
 // DamageTaken: Damage taken
 // ManaUsed: Mana used
+// BuffUptime: Buff uptime
+// DebuffUptime: Debuff uptime
 // EnemyDamageTaken: Enemy damage taken
 // Deaths: Deaths
 // Kills: Kills
@@ -26,3 +28,7 @@ ToggleTeamDPSCommandDescription: Переключить отображение �
 // Other: Other
 // Melee: Melee
 // UnknownTraps: Unknown traps
+// FallDamage: Fall damage
+// Drowning: Drowning
+// Lava: lava
+// BlockContactDamage: Block contact damage

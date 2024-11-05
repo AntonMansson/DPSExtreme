@@ -44,6 +44,8 @@ namespace DPSExtreme
 		internal UIListDisplay<StatValue> myDeathsDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myKillsDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myManaUsedDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myBuffUptimesDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myDebuffUptimesDisplay;
 
 		internal UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>> myEnemyDamageTakenDisplay;
 
@@ -94,6 +96,10 @@ namespace DPSExtreme
 						return myKillsDisplay;
 					case ListDisplayMode.ManaUsed:
 						return myManaUsedDisplay;
+					case ListDisplayMode.BuffUptime:
+						return myBuffUptimesDisplay;
+					case ListDisplayMode.DebuffUptime:
+						return myDebuffUptimesDisplay;
 					default:
 						return null;
 				}
@@ -227,6 +233,8 @@ namespace DPSExtreme
 			myDamageDoneDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DamageDone);
 			myDamageTakenDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>>(ListDisplayMode.DamageTaken);
 			myManaUsedDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.ManaUsed);
+			myBuffUptimesDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.BuffUptime);
+			myDebuffUptimesDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DebuffUptime);
 
 			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken);
 
@@ -324,7 +332,7 @@ namespace DPSExtreme
 			bool isNPC = myHoveredParticipant == (int)InfoListIndices.NPCs;
 			if (IsPlayer || isNPC)
 			{
-				Rectangle hitbox = DPSExtremeUI.instance.myRootPanel.GetOuterDimensions().ToRectangle();
+				Rectangle hitbox = myRootPanel.GetOuterDimensions().ToRectangle();
 				Rectangle r2 = new Rectangle(hitbox.X + hitbox.Width / 2 - 58 / 2, hitbox.Y - 58, 58, 58);
 				spriteBatch.Draw(playerBackGroundTexture.Value, r2.TopLeft(), Color.White);
 

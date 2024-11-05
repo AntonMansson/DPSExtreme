@@ -134,8 +134,33 @@ namespace DPSExtreme
 			if (Main.netMode == NetmodeID.MultiplayerClient)
 				return;
 
-			DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+				return;
+
 			DPSExtreme.instance.combatTracker.myStatsHandler.AddConsumedMana(Player, item, manaConsumed);
+		}
+
+		public override void PostUpdateBuffs()
+		{
+			if (Main.netMode == NetmodeID.MultiplayerClient)
+				return;
+
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+				return;
+
+			for (int i = 0; i < Player.MaxBuffs; i++)
+            {
+				if (Player.buffType[i] == 0)
+					continue;
+
+				//Hardcode common vanilla buffs to be buffs even though they're part of Main.debuff?
+				//Things like Sunflower, campfire and heart lantern are all listed as debuff because you can't right click them away
+
+				if (Main.debuff[Player.buffType[i]])
+					DPSExtreme.instance.combatTracker.myStatsHandler.AddDebuffUptime(Player, Player.buffType[i]);
+				else
+					DPSExtreme.instance.combatTracker.myStatsHandler.AddBuffUptime(Player, Player.buffType[i]);
+            }
 		}
 
 		public override void ProcessTriggers(TriggersSet triggersSet)

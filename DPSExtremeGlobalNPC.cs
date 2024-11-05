@@ -49,12 +49,11 @@ namespace DPSExtreme
 
 				// whoAmI already accounts for realLife
 
-				int dotType = -1;
 				NPC npc = Main.npc[whoAmI];
 				//TODO Verify that damage has already been applied when we reach this point (otherwise overkill calculation is incorrect)
 
 				DamageSource damageSource = new DamageSource(DamageSource.SourceType.DOT);
-				damageSource.myDamageCauserAbility = dotType;
+				damageSource.myDamageCauserAbility = (int)InfoListIndices.DOTs;
 				damageSource.myDamageCauserId = (int)InfoListIndices.DOTs;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
@@ -82,11 +81,10 @@ namespace DPSExtreme
 					return;
 
 				// whoAmI already accounts for realLife
-				int dotType = -1;
 				NPC npc = Main.npc[whoAmI];
 
 				DamageSource damageSource = new DamageSource(DamageSource.SourceType.DOT);
-				damageSource.myDamageCauserAbility = dotType;
+				damageSource.myDamageCauserAbility = (int)InfoListIndices.DOTs;
 				damageSource.myDamageCauserId = (int)InfoListIndices.DOTs;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);

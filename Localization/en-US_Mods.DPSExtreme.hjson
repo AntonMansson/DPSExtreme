@@ -6,6 +6,8 @@ DamagePerSecond: DPS
 DamageDone: Damage done
 DamageTaken: Damage taken
 ManaUsed: Mana used
+BuffUptime: Buff uptime
+DebuffUptime: Debuff uptime
 EnemyDamageTaken: Enemy damage taken
 Deaths: Deaths
 Kills: Kills

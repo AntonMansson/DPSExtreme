@@ -224,6 +224,11 @@ namespace DPSExtreme
 			activeCombat.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
 
 			activeCombat.myDamageTaken = aPush.myDamageTaken;
+			activeCombat.myDeaths = aPush.myDeaths;
+			activeCombat.myKills = aPush.myKills;
+			activeCombat.myManaUsed = aPush.myManaUsed;
+			activeCombat.myBuffUptimes = aPush.myBuffUptimes;
+			activeCombat.myDebuffUptimes = aPush.myDebuffUptimes;
 
 			DPSExtremeUI.instance.updateNeeded = true;
 

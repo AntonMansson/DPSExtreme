@@ -23,10 +23,13 @@ namespace DPSExtreme.Combat.Stats
 			DOTEnd = Traps - 1,
 
 			Traps = 40000,
-			TrapsEnd = Other - 1,
+			TrapsEnd = Buffs - 1,
 
-			Other = 41000,
-			OtherEnd = 42000,
+			Buffs = 41000,
+			BuffsEnd = Other - 1,
+
+			Other = 42000,
+			OtherEnd = 43000,
 
 			Unknown = OtherEnd + 1,
 		}
@@ -57,6 +60,7 @@ namespace DPSExtreme.Combat.Stats
 					case SourceType.Item:
 					case SourceType.DOT:
 					case SourceType.Traps:
+					case SourceType.Buffs:
 					case SourceType.Other:
 						return _myDamageCauserAbility;
 					default:
@@ -77,10 +81,13 @@ namespace DPSExtreme.Combat.Stats
 						_myDamageCauserAbility = value + (int)SourceType.Item;
 						break;
 					case SourceType.DOT:
-						_myDamageCauserAbility = value + (int)SourceType.DOT;
+						_myDamageCauserAbility = value;
 						break;
 					case SourceType.Traps:
 						_myDamageCauserAbility = value + (int)SourceType.Traps;
+						break;
+					case SourceType.Buffs:
+						_myDamageCauserAbility = value + (int)SourceType.Buffs;
 						break;
 					case SourceType.Other:
 						_myDamageCauserAbility = value + (int)SourceType.Other;
@@ -112,11 +119,17 @@ namespace DPSExtreme.Combat.Stats
 			if (IsInSourceTypeRange(SourceType.Item, aAbilityId))
 				return Lang.GetItemNameValue(aAbilityId - (int)SourceType.Item);
 
+			if (IsInSourceTypeRange(SourceType.DOT, aAbilityId))
+				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime"));
+
 			if (aAbilityId == (int)SourceType.Traps)
 				return Language.GetTextValue("UnknownTraps");
 
 			if (IsInSourceTypeRange(SourceType.Traps, aAbilityId))
 				return Lang.GetItemName(aAbilityId - (int)SourceType.Traps).Value;
+
+			if (IsInSourceTypeRange(SourceType.Buffs, aAbilityId))
+				return Lang.GetBuffName(aAbilityId - (int)SourceType.Buffs);
 
 			if (IsInSourceTypeRange(SourceType.Other, aAbilityId))
 			{
@@ -277,6 +290,30 @@ namespace DPSExtreme.Combat.Stats
 			}
 
 			DPSExtreme.instance.combatTracker.myActiveCombat.myManaUsed[aPlayer.whoAmI][aUsedItem.type + (int)DamageSource.SourceType.Item] += aManaAmount;
+		}
+
+		internal void AddBuffUptime(Player aPlayer, int aBuffType)
+		{
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+			{
+				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding buff uptime without active combat");
+				Main.NewText("DPSExtreme: Adding buff uptime without active combat");
+				return;
+			}
+
+			DPSExtreme.instance.combatTracker.myActiveCombat.myBuffUptimes[aPlayer.whoAmI][aBuffType + (int)DamageSource.SourceType.Buffs] += 1;
+		}
+
+		internal void AddDebuffUptime(Player aPlayer, int aDebuffType)
+		{
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+			{
+				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding debuff uptime without active combat");
+				Main.NewText("DPSExtreme: Adding debuff uptime without active combat");
+				return;
+			}
+
+			DPSExtreme.instance.combatTracker.myActiveCombat.myDebuffUptimes[aPlayer.whoAmI][aDebuffType + (int)DamageSource.SourceType.Buffs] += 1;
 		}
 	}
 }
