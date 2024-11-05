@@ -110,6 +110,9 @@ namespace DPSExtreme.Combat.Stats
 			if (IsInSourceTypeRange(SourceType.Item, aAbilityId))
 				return Lang.GetItemNameValue(aAbilityId - (int)SourceType.Item);
 
+			if (aAbilityId == (int)SourceType.Traps)
+				return Language.GetTextValue("UnknownTraps");
+
 			if (IsInSourceTypeRange(SourceType.Traps, aAbilityId))
 				return Lang.GetItemName(aAbilityId - (int)SourceType.Traps).Value;
 
