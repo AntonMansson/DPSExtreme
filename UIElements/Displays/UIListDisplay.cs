@@ -47,9 +47,13 @@ namespace DPSExtreme.UIElements.Displays
 			{
 				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DisconnectedPlayer"));
 			}
-			else if (aParticipantIndex == (int)InfoListIndices.NPCs || aParticipantIndex == (int)InfoListIndices.Traps)
+			else if (aParticipantIndex == (int)InfoListIndices.NPCs)
 			{
-				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC"));
+				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TownNPC"));
+			}
+			else if (aParticipantIndex == (int)InfoListIndices.Traps)
+			{
+				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Traps"));
 			}
 			else if (aParticipantIndex == (int)InfoListIndices.DOTs)
 			{

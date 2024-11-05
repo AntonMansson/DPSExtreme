@@ -17,10 +17,12 @@
 // ShowCombatHistory: Click to show combat history
 // DamageStatsForNPC: "Damage stats for {0}: "
 // DisconnectedPlayer: Disconnected player
-// TrapsTownNPC: Traps/TownNPC
+// TownNPC: TownNPC
+// Traps: Traps
 // DamageOverTime: Debuff DOT
 // ToggleTeamDPSCommandDescription: Toggle Team DPS display
 // Invasion: Invasion
 // Event: Event
 // Other: Other
 // Melee: Melee
+// UnknownTraps: Unknown traps

@@ -17,10 +17,12 @@ BossLabel: Boss - {0}
 // ShowCombatHistory: Click to show combat history
 DamageStatsForNPC: "{0} 伤害: "
 // DisconnectedPlayer: Disconnected player
-TrapsTownNPC: 陷阱/城镇NPC
+// TownNPC: TownNPC
+// Traps: Traps
 DamageOverTime: 减益总伤害
 ToggleTeamDPSCommandDescription: 显示队伍成员伤害统计
 // Invasion: Invasion
 // Event: Event
 // Other: Other
 // Melee: Melee
+// UnknownTraps: Unknown traps

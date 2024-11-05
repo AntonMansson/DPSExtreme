@@ -213,9 +213,13 @@ namespace DPSExtreme.Combat
 				{
 					if (i == (int)InfoListIndices.NPCs)
 					{
-						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC")), participantDamage));
+						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TownNPC")), participantDamage));
 					}
-					if (i == (int)InfoListIndices.DOTs)
+					else if (i == (int)InfoListIndices.Traps)
+					{
+						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Traps")), participantDamage));
+					}
+					else if (i == (int)InfoListIndices.DOTs)
 					{
 						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")), participantDamage));
 					}
