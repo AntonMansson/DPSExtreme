@@ -1,7 +1,5 @@
-﻿
-using DPSExtreme.Combat;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
+using Terraria.Localization;
 
 namespace DPSExtreme.UIElements.Displays
 {
@@ -15,7 +13,8 @@ namespace DPSExtreme.UIElements.Displays
 
 		internal static string GetEntryName(int aIndex)
 		{
-			return ((ListDisplayMode)aIndex).ToString();
+			ListDisplayMode displayMode = (ListDisplayMode)aIndex;
+			return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey(displayMode.ToString()));
 		}
 
 		protected override void PopulateEntries()
