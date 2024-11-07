@@ -6,6 +6,7 @@ using Terraria.GameContent;
 using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 using System.Collections.Generic;
+using DPSExtreme.Combat.Stats;
 
 namespace DPSExtreme.UIElements.Displays
 {
@@ -27,7 +28,10 @@ namespace DPSExtreme.UIElements.Displays
 
 		}
 
+		internal UIDisplay myParentDisplay = null;
+
 		internal string myRightText = string.Empty;
+		internal StatFormat myFormat = StatFormat.RawNumber;
 
 		internal Color myColor;
 

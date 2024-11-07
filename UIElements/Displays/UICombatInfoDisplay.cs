@@ -17,7 +17,7 @@ namespace DPSExtreme.UIElements.Displays
 		internal int myHighestValue = -1;
 		internal int myTotal = 0;
 
-		protected UICombatInfoDisplay myBreakdownDisplay = null;
+		internal UICombatInfoDisplay myBreakdownDisplay = null;
 		internal int myBreakdownAccessor = -1;
 		protected bool myIsInBreakdown
 		{
@@ -26,7 +26,7 @@ namespace DPSExtreme.UIElements.Displays
 
 		internal abstract DisplayContainerType myContainerType { get; }
 
-		protected UICombatInfoDisplay myParentDisplay = null;
+		internal UICombatInfoDisplay myParentDisplay = null;
 
 		internal UICombatInfoDisplay(ListDisplayMode aDisplayMode, System.Type aContainerType)
 			: base(aDisplayMode)
@@ -34,21 +34,33 @@ namespace DPSExtreme.UIElements.Displays
 			myClickEntryCallback += OnClickBaseEntry;
 			myEntryCreator = () => { return new UIStatDisplayEntry(); };
 
-			if (aContainerType != typeof(StatValue))
+			if (aContainerType == typeof(StatValue) || aContainerType == typeof(TimeStatValue))
 			{
-				System.Type[] typeArguments = aContainerType.GetGenericArguments();
-				System.Type nextContainerType = typeArguments[typeArguments.Length - 1];
+				if (aContainerType == typeof(TimeStatValue))
+					myFormat = StatFormat.Time;
 
-				if (aContainerType.GetGenericTypeDefinition() == typeof(DPSExtremeStatDictionary<,>))
+				UICombatInfoDisplay parent = myParentDisplay;
+				while (parent != null)
 				{
-					Type nextDisplayType = typeof(UIStatDictionaryDisplay<>).MakeGenericType(nextContainerType);
-					AddBreakdown((UICombatInfoDisplay)Activator.CreateInstance(nextDisplayType, myDisplayMode));
+					parent.myFormat = myFormat;
+					parent = parent.myParentDisplay;
 				}
-				else if (aContainerType.GetGenericTypeDefinition() == typeof(DPSExtremeStatList<>))
-				{
-					Type nextDisplayType = typeof(UIListDisplay<>).MakeGenericType(nextContainerType);
-					AddBreakdown((UICombatInfoDisplay)Activator.CreateInstance(nextDisplayType, myDisplayMode));
-				}
+
+				return;
+			}
+
+			System.Type[] typeArguments = aContainerType.GetGenericArguments();
+			System.Type nextContainerType = typeArguments[typeArguments.Length - 1];
+
+			if (aContainerType.GetGenericTypeDefinition() == typeof(DPSExtremeStatDictionary<,>))
+			{
+				Type nextDisplayType = typeof(UIStatDictionaryDisplay<>).MakeGenericType(nextContainerType);
+				AddBreakdown((UICombatInfoDisplay)Activator.CreateInstance(nextDisplayType, myDisplayMode));
+			}
+			else if (aContainerType.GetGenericTypeDefinition() == typeof(DPSExtremeStatList<>))
+			{
+				Type nextDisplayType = typeof(UIListDisplay<>).MakeGenericType(nextContainerType);
+				AddBreakdown((UICombatInfoDisplay)Activator.CreateInstance(nextDisplayType, myDisplayMode, myFormat));
 			}
 		}
 

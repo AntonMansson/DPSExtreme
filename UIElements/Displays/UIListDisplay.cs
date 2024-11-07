@@ -63,10 +63,11 @@ namespace DPSExtreme.UIElements.Displays
 			return string.Format("Invalid index: {0}", aParticipantIndex);
 		}
 
-		public UIListDisplay(ListDisplayMode aDisplayMode) 
+		public UIListDisplay(ListDisplayMode aDisplayMode, StatFormat aFormat = StatFormat.RawNumber) 
 			: base(aDisplayMode, typeof(T)) 
 		{
 			myNameCallback = GetName;
+			myFormat = aFormat;
 		}
 
 		internal override void Update()

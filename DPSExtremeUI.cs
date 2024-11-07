@@ -44,8 +44,8 @@ namespace DPSExtreme
 		internal UIListDisplay<StatValue> myDeathsDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myKillsDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myManaUsedDisplay;
-		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myBuffUptimesDisplay;
-		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myDebuffUptimesDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>> myBuffUptimesDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>> myDebuffUptimesDisplay;
 
 		internal UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>> myEnemyDamageTakenDisplay;
 
@@ -233,8 +233,8 @@ namespace DPSExtreme
 			myDamageDoneDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DamageDone);
 			myDamageTakenDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>>(ListDisplayMode.DamageTaken);
 			myManaUsedDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.ManaUsed);
-			myBuffUptimesDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.BuffUptime);
-			myDebuffUptimesDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DebuffUptime);
+			myBuffUptimesDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>>(ListDisplayMode.BuffUptime, StatFormat.Time);
+			myDebuffUptimesDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>>(ListDisplayMode.DebuffUptime, StatFormat.Time);
 
 			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken);
 

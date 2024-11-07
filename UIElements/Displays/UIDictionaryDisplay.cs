@@ -77,6 +77,9 @@ namespace DPSExtreme.UIElements.Displays
 				myHighestValue = Math.Max(myHighestValue, listTotal); //Yes, listTotal is correct
 				myTotal += listTotal;
 			}
+
+			if (myFormat == StatFormat.Time)
+				myTotal = (int)(DPSExtremeUI.instance.myDisplayedCombat.myDuration.TotalSeconds * 60);
 		}
 
 		internal override void UpdateValues()
@@ -101,7 +104,7 @@ namespace DPSExtreme.UIElements.Displays
 				int listTotal = 0;
 
 				damageInfo.GetMaxAndTotal(out listMax, out listTotal);
-
+				
 				if (listTotal > 0)
 				{
 					string name = "Missing name callback";

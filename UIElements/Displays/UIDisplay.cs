@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DPSExtreme.Combat.Stats;
+using System;
 using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 
@@ -35,6 +36,8 @@ namespace DPSExtreme.UIElements.Displays
 		internal event MouseEvent myClickEntryCallback;
 		internal string myLabelOverride = null;
 
+		internal StatFormat myFormat = StatFormat.RawNumber;
+
 		internal UIDisplay(ListDisplayMode aDisplayMode)
 		{
 			myDisplayMode = aDisplayMode;
@@ -58,7 +61,9 @@ namespace DPSExtreme.UIElements.Displays
 			if (aIndex >= _items.Count)
 			{
 				UIDisplayEntry entry = myEntryCreator();
+				entry.myParentDisplay = this;
 				entry.OnLeftClick += myClickEntryCallback;
+				entry.myFormat = myFormat;
 				Add(entry);
 				return entry;
 			}

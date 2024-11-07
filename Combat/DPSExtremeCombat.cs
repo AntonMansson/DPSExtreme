@@ -81,8 +81,8 @@ namespace DPSExtreme.Combat
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myManaUsed = new();
 
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myBuffUptimes = new();
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDebuffUptimes = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, TimeStatValue>> myBuffUptimes = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, TimeStatValue>> myDebuffUptimes = new();
 
 		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new();
 		
