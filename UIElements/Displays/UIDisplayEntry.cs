@@ -7,6 +7,8 @@ using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 using System.Collections.Generic;
 using DPSExtreme.Combat.Stats;
+using ReLogic.Content;
+using System;
 
 namespace DPSExtreme.UIElements.Displays
 {
@@ -53,13 +55,11 @@ namespace DPSExtreme.UIElements.Displays
 			Rectangle hitbox = GetOuterDimensions().ToRectangle();
 			hitbox.Width = GetEntryWidth();
 
-			Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, hitbox, myColor/** 0.6f*/);
-			hitbox = GetInnerDimensions().ToRectangle();
+			myColor.A = ContainsPoint(Main.MouseScreen) ? (byte)(Math.Floor(255f * 0.75f)) : (byte)255; //Kinda inverse but it looked better this way
 
-			DynamicSpriteFont fontMouseText = FontAssets.MouseText.Value;
-
-			float textScale = .9f;
-
+			Texture2D backdropTex = DPSExtreme.instance.Assets.Request<Texture2D>("DisplayEntry", AssetRequestMode.ImmediateLoad).Value;
+			Main.spriteBatch.Draw(backdropTex, hitbox, myColor);
+			
 			//Parent.Children does NOT get sorted with UpdateOrder. So access the outer _items list which DOES get sorted
 			List<UIElement> sortedList = (Parent.Parent as UIGrid)._items;
 
@@ -77,8 +77,11 @@ namespace DPSExtreme.UIElements.Displays
 				break;
             }
 
-            string leftText = (entryIndex + 1).ToString() + ". " + myNameText;
-			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, leftText, hitbox.TopLeft() + new Vector2(4, 3), Color.White, 0f,
+			DynamicSpriteFont fontMouseText = FontAssets.MouseText.Value;
+			float textScale = .9f;
+
+			string leftText = (entryIndex + 1).ToString() + ". " + myNameText;
+			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, leftText, GetOuterDimensions().ToRectangle().TopLeft() + new Vector2(4, 3), Color.White, 0f,
 				new Vector2(0, 0), new Vector2(textScale), -1f, 1.5f);
 
 			Vector2 rightTextBounds = fontMouseText.MeasureString(myRightText);
