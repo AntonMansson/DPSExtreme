@@ -8,6 +8,7 @@ using Terraria.Localization;
 using Terraria;
 using DPSExtreme.Combat.Stats;
 using DPSExtreme.UIElements.Displays;
+using Humanizer;
 
 namespace DPSExtreme.Combat
 {
@@ -137,14 +138,20 @@ namespace DPSExtreme.Combat
 
 		internal void ReassignStats(int aFrom, int aTo)
 		{
-			myDamageDone[aTo] = myDamageDone[aFrom];
-
 			foreach ((int npcType, DPSExtremeStatList<StatValue> damageInfo) in myEnemyDamageTaken)
 			{
 				myEnemyDamageTaken[npcType][aTo] = myEnemyDamageTaken[npcType][aFrom];
 			}
 
 			myDamagePerSecond[aTo] = myDamagePerSecond[aFrom];
+			myDamageDone[aTo] = myDamageDone[aFrom];
+			myDamageTaken[aTo] = myDamageTaken[aFrom];
+			myDeaths[aTo] = myDeaths[aFrom];
+			myKills[aTo] = myKills[aFrom];
+			myManaUsed[aTo] = myManaUsed[aFrom];
+
+			myBuffUptimes[aTo] = myBuffUptimes[aFrom];
+			myDebuffUptimes[aTo] = myDebuffUptimes[aFrom];
 
 			ClearStatsForPlayer(aFrom);
 		}
@@ -154,9 +161,16 @@ namespace DPSExtreme.Combat
 			myDamageDone[aPlayer].Clear();
 
 			foreach ((int npcType, DPSExtremeStatList<StatValue> damageInfo) in myEnemyDamageTaken)
-				myEnemyDamageTaken[npcType][aPlayer] = -1;
+				myEnemyDamageTaken[npcType][aPlayer] = new();
 
-			myDamagePerSecond[aPlayer] = -1;
+			myDamagePerSecond[aPlayer] = new();
+			myDamageTaken[aPlayer].Clear();
+			myDeaths[aPlayer] = new();
+			myKills[aPlayer].Clear();
+			myManaUsed[aPlayer].Clear();
+
+			myBuffUptimes[aPlayer].Clear();
+			myDebuffUptimes[aPlayer].Clear();
 		}
 
 		internal void SendStats()
