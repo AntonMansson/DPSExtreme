@@ -1,5 +1,7 @@
 ﻿using DPSExtreme.Combat.Stats;
 using System;
+using System.Reflection;
+using Terraria.ModLoader;
 using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 
@@ -49,11 +51,17 @@ namespace DPSExtreme.UIElements.Displays
 
 			InvisibleFixedUIScrollbar scrollbar = new InvisibleFixedUIScrollbar(DPSExtremeUI.instance.userInterface);
 			scrollbar.SetView(100f, 1000f);
-			scrollbar.Height.Set(0, 1f);
+			scrollbar.Height.Set(-20, 1f);
 			scrollbar.Left.Set(-20, 1f);
 			SetScrollbar(scrollbar);
 
 			OnScrollWheel += OnScroll;
+
+			DPSExtremeUI.instance.myRootPanel.AddDragTarget(this);
+
+			var type = Assembly.GetAssembly(typeof(Mod)).GetType("Terraria.ModLoader.UI.Elements.UIGrid");
+			FieldInfo loadModsField = type.GetField("_innerList", BindingFlags.Instance | BindingFlags.NonPublic);
+			DPSExtremeUI.instance.myRootPanel.AddDragTarget((UIElement)loadModsField.GetValue(this)); // list._innerList
 		}
 
 		internal UIDisplayEntry CreateEntry(int aIndex)
