@@ -3,6 +3,12 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameInput;
 using System.Collections.Generic;
+using static DPSExtreme.Combat.DPSExtremeCombat;
+using DPSExtreme.Combat.Stats;
+using Terraria.Chat;
+using Terraria.Localization;
+using Microsoft.Xna.Framework;
+using Terraria.DataStructures;
 
 namespace DPSExtreme
 {
@@ -56,6 +62,105 @@ namespace DPSExtreme
 		{
 			DPSExtreme.instance.combatTracker.OnEnterWorld();
 			DPSExtremeUI.instance.OnEnterWorld();
+		}
+
+		public override void OnHurt(Player.HurtInfo aHurtInfo)
+		{
+			if (Main.netMode == NetmodeID.MultiplayerClient)
+				return;
+
+			DamageSource damageSource = new DamageSource();
+			if (aHurtInfo.DamageSource.SourceOtherIndex != -1)
+			{
+				damageSource.mySourceType = DamageSource.SourceType.Other;
+				damageSource.myDamageCauserId = (int)DamageSource.SourceType.Other;
+				damageSource.myDamageCauserAbility = aHurtInfo.DamageSource.SourceOtherIndex + 1; //+1 since we want the 0 index to be "Other", but fall damage is already assigned to 0
+			}
+			else if (aHurtInfo.DamageSource.SourceNPCIndex != -1)
+			{
+				damageSource.mySourceType = DamageSource.SourceType.NPC;
+				damageSource.myDamageCauserId = Main.npc[aHurtInfo.DamageSource.SourceNPCIndex].type;
+				damageSource.myDamageCauserAbility = ProjectileID.None;
+			}
+			else if (aHurtInfo.DamageSource.SourceProjectileType != -1)
+			{
+				damageSource.mySourceType = DamageSource.SourceType.Projectile;
+
+				Projectile projectile = Main.projectile[aHurtInfo.DamageSource.SourceProjectileLocalIndex];
+				DPSExtremeModProjectile dpsProjectile = projectile.GetGlobalProjectile<DPSExtremeModProjectile>();
+				int owner = dpsProjectile.whoIsMyParent;
+
+				if (owner == -1)
+				{
+					ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral($"No owner found for projectile of type: {projectile.type} and local index {aHurtInfo.DamageSource.SourceProjectileLocalIndex}"), Color.Orange);
+					return;
+				}
+
+				if (owner == (int)InfoListIndices.Traps)
+				{
+					damageSource.myDamageCauserId = dpsProjectile.myParentItemType + (int)DamageSource.SourceType.Traps;
+					damageSource.myDamageCauserAbility = projectile.type;
+				}
+				else
+				{
+					NPC parentNPC = Main.npc[owner];
+
+					if (!parentNPC.active)
+					{
+						Main.NewText("owner was not npc");
+						return;
+					}
+
+					damageSource.myDamageCauserId = parentNPC.type;
+					damageSource.myDamageCauserAbility = projectile.type;
+				}
+			}
+
+			DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
+			DPSExtreme.instance.combatTracker.myStatsHandler.AddDamageTaken(Player, damageSource, aHurtInfo.Damage);
+		}
+
+		public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
+		{
+			if (Main.netMode == NetmodeID.MultiplayerClient)
+				return;
+
+			DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
+			DPSExtreme.instance.combatTracker.myStatsHandler.AddDeath(Player);
+		}
+
+		public override void OnConsumeMana(Item item, int manaConsumed)
+		{
+			if (Main.netMode == NetmodeID.MultiplayerClient)
+				return;
+
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+				return;
+
+			DPSExtreme.instance.combatTracker.myStatsHandler.AddConsumedMana(Player, item, manaConsumed);
+		}
+
+		public override void PostUpdateBuffs()
+		{
+			if (Main.netMode == NetmodeID.MultiplayerClient)
+				return;
+
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+				return;
+
+			for (int i = 0; i < Player.MaxBuffs; i++)
+            {
+				if (Player.buffType[i] == 0)
+					continue;
+
+				//Hardcode common vanilla buffs to be buffs even though they're part of Main.debuff?
+				//Things like Sunflower, campfire and heart lantern are all listed as debuff because you can't right click them away
+
+				if (Main.debuff[Player.buffType[i]])
+					DPSExtreme.instance.combatTracker.myStatsHandler.AddDebuffUptime(Player, Player.buffType[i]);
+				else
+					DPSExtreme.instance.combatTracker.myStatsHandler.AddBuffUptime(Player, Player.buffType[i]);
+            }
 		}
 
 		public override void ProcessTriggers(TriggersSet triggersSet)

@@ -6,6 +6,8 @@ namespace DPSExtreme.UIElements.Displays
 	internal class UIStatDictionaryDisplay<T> : UICombatInfoDisplay
 		where T : IStatContainer, new()
 	{
+		internal override DisplayContainerType myContainerType => DisplayContainerType.Dictionary;
+
 		internal DPSExtremeStatDictionary<int, T> myInfoLookup
 		{
 			get
@@ -14,9 +16,18 @@ namespace DPSExtreme.UIElements.Displays
 				{
 					if (myParentDisplay != null)
 					{
-						UIListDisplay<DPSExtremeStatDictionary<int, T>> parent = myParentDisplay as UIListDisplay<DPSExtremeStatDictionary<int, T>>;
-						if (parent != null)
-							return parent.myInfoList[myParentDisplay.myBreakdownAccessor];
+						if (myParentDisplay.myContainerType == DisplayContainerType.List)
+						{
+							UIListDisplay<DPSExtremeStatDictionary<int, T>> parent = myParentDisplay as UIListDisplay<DPSExtremeStatDictionary<int, T>>;
+							if (parent != null)
+								return parent.myInfoList[myParentDisplay.myBreakdownAccessor];
+						}
+						else if (myParentDisplay.myContainerType == DisplayContainerType.Dictionary)
+						{
+							UIStatDictionaryDisplay<DPSExtremeStatDictionary<int, T>> parent = myParentDisplay as UIStatDictionaryDisplay<DPSExtremeStatDictionary<int, T>>;
+							if (parent != null)
+								return parent.myInfoLookup[myParentDisplay.myBreakdownAccessor];
+						}
 					}
 
 					return DPSExtremeUI.instance.myDisplayedCombat?.GetInfoContainer(myDisplayMode) as DPSExtremeStatDictionary<int, T>;
@@ -29,10 +40,10 @@ namespace DPSExtreme.UIElements.Displays
 			}
 		}
 
-		internal UIStatDictionaryDisplay(ListDisplayMode aDisplayMode, Func<int, string> aNameCallback) 
-			: base(aDisplayMode) 
+		public UIStatDictionaryDisplay(ListDisplayMode aDisplayMode) 
+			: base(aDisplayMode, typeof(T)) 
 		{ 
-			myNameCallback = aNameCallback;
+			myNameCallback = DamageSource.GetAbilityName;
 		}
 
 		internal override void Update()
@@ -66,6 +77,9 @@ namespace DPSExtreme.UIElements.Displays
 				myHighestValue = Math.Max(myHighestValue, listTotal); //Yes, listTotal is correct
 				myTotal += listTotal;
 			}
+
+			if (myFormat == StatFormat.Time)
+				myTotal = (int)(DPSExtremeUI.instance.myDisplayedCombat.myDuration.TotalSeconds * 60);
 		}
 
 		internal override void UpdateValues()
@@ -90,7 +104,7 @@ namespace DPSExtreme.UIElements.Displays
 				int listTotal = 0;
 
 				damageInfo.GetMaxAndTotal(out listMax, out listTotal);
-
+				
 				if (listTotal > 0)
 				{
 					string name = "Missing name callback";
@@ -102,6 +116,9 @@ namespace DPSExtreme.UIElements.Displays
 					{
 						name = myNameCallback.Invoke(baseKey);
 					}
+
+					if (name.Length == 0)
+						name = $"Error - id: {baseKey}";
 
 					UIStatDisplayEntry entry = CreateEntry(entryIndex) as UIStatDisplayEntry;
 					entry.myColor = DPSExtremeUI.chatColor[Math.Abs(baseKey) % DPSExtremeUI.chatColor.Length];

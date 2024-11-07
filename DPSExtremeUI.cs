@@ -40,6 +40,13 @@ namespace DPSExtreme
 
 		internal UIListDisplay<StatValue> myDamagePerSecondDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myDamageDoneDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTakenDisplay;
+		internal UIListDisplay<StatValue> myDeathsDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myKillsDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myManaUsedDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>> myBuffUptimesDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>> myDebuffUptimesDisplay;
+
 		internal UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>> myEnemyDamageTakenDisplay;
 
 		internal ListDisplayMode myPreviousDisplayMode = ListDisplayMode.DamageDone;
@@ -75,12 +82,24 @@ namespace DPSExtreme
 						return myCombatHistoryDisplay;
 					case ListDisplayMode.StatDisplaysStart:
 					case ListDisplayMode.StatDisplaysEnd:
-					case ListDisplayMode.DamageDone:
-						return myDamageDoneDisplay;
 					case ListDisplayMode.DamagePerSecond:
 						return myDamagePerSecondDisplay;
+					case ListDisplayMode.DamageDone:
+						return myDamageDoneDisplay;
+					case ListDisplayMode.DamageTaken:
+						return myDamageTakenDisplay;
 					case ListDisplayMode.EnemyDamageTaken:
 						return myEnemyDamageTakenDisplay;
+					case ListDisplayMode.Deaths:
+						return myDeathsDisplay;
+					case ListDisplayMode.Kills:
+						return myKillsDisplay;
+					case ListDisplayMode.ManaUsed:
+						return myManaUsedDisplay;
+					case ListDisplayMode.BuffUptime:
+						return myBuffUptimesDisplay;
+					case ListDisplayMode.DebuffUptime:
+						return myDebuffUptimesDisplay;
 					default:
 						return null;
 				}
@@ -211,18 +230,16 @@ namespace DPSExtreme
 			myCombatHistoryDisplay = new UICombatHistoryDisplay();
 
 			myDamagePerSecondDisplay = new UIListDisplay<StatValue>(ListDisplayMode.DamagePerSecond);
-
 			myDamageDoneDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DamageDone);
-			myDamageDoneDisplay.AddBreakdown(new UIStatDictionaryDisplay<StatValue>(ListDisplayMode.DamageDone, (int anAccessor ) => 
-			{
-				if (anAccessor > 20000)
-					return Lang.GetProjectileName(anAccessor - 20000).Value;
-				else
-					return Lang.GetItemNameValue(anAccessor);
-			}));
+			myDamageTakenDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>>(ListDisplayMode.DamageTaken);
+			myManaUsedDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.ManaUsed);
+			myBuffUptimesDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>>(ListDisplayMode.BuffUptime, StatFormat.Time);
+			myDebuffUptimesDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>>(ListDisplayMode.DebuffUptime, StatFormat.Time);
 
-			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken, Lang.GetNPCNameValue);
-			myEnemyDamageTakenDisplay.AddBreakdown(new UIListDisplay<StatValue>(ListDisplayMode.EnemyDamageTaken));
+			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken);
+
+			myDeathsDisplay = new UIListDisplay<StatValue>(ListDisplayMode.Deaths);
+			myKillsDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.Kills);
 
 			myRootPanel.Append(myCurrentDisplay);
 		}
@@ -315,7 +332,7 @@ namespace DPSExtreme
 			bool isNPC = myHoveredParticipant == (int)InfoListIndices.NPCs;
 			if (IsPlayer || isNPC)
 			{
-				Rectangle hitbox = DPSExtremeUI.instance.myRootPanel.GetOuterDimensions().ToRectangle();
+				Rectangle hitbox = myRootPanel.GetOuterDimensions().ToRectangle();
 				Rectangle r2 = new Rectangle(hitbox.X + hitbox.Width / 2 - 58 / 2, hitbox.Y - 58, 58, 58);
 				spriteBatch.Draw(playerBackGroundTexture.Value, r2.TopLeft(), Color.White);
 

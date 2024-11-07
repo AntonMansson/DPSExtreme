@@ -8,6 +8,7 @@ using Terraria.Localization;
 using Terraria;
 using DPSExtreme.Combat.Stats;
 using DPSExtreme.UIElements.Displays;
+using Humanizer;
 
 namespace DPSExtreme.Combat
 {
@@ -73,9 +74,18 @@ namespace DPSExtreme.Combat
 
 		internal string myFormattedDuration => String.Format("{0:D2}:{1:D2}", (int)Math.Floor(myDuration.TotalMinutes), myDuration.Seconds);
 
-		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>>();
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>>();
-		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new DPSExtremeStatList<StatValue>();
+		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new();
+
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTaken = new();
+		internal DPSExtremeStatList<StatValue> myDeaths = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myManaUsed = new();
+
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, TimeStatValue>> myBuffUptimes = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, TimeStatValue>> myDebuffUptimes = new();
+
+		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new();
 		
 		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType)
 		{
@@ -90,12 +100,24 @@ namespace DPSExtreme.Combat
 		{
 			switch (aDisplayMode)
 			{
-				case ListDisplayMode.DamageDone:
-					return myDamageDone;
 				case ListDisplayMode.DamagePerSecond:
 					return myDamagePerSecond;
+				case ListDisplayMode.DamageDone:
+					return myDamageDone;
+				case ListDisplayMode.DamageTaken:
+					return myDamageTaken;
 				case ListDisplayMode.EnemyDamageTaken:
 					return myEnemyDamageTaken;
+				case ListDisplayMode.Deaths:
+					return myDeaths;
+				case ListDisplayMode.Kills:
+					return myKills;
+				case ListDisplayMode.ManaUsed:
+					return myManaUsed;
+				case ListDisplayMode.BuffUptime:
+					return myBuffUptimes;
+				case ListDisplayMode.DebuffUptime:
+					return myDebuffUptimes;
 				default:
 					return null;
 			}
@@ -116,14 +138,20 @@ namespace DPSExtreme.Combat
 
 		internal void ReassignStats(int aFrom, int aTo)
 		{
-			myDamageDone[aTo] = myDamageDone[aFrom];
-
 			foreach ((int npcType, DPSExtremeStatList<StatValue> damageInfo) in myEnemyDamageTaken)
 			{
 				myEnemyDamageTaken[npcType][aTo] = myEnemyDamageTaken[npcType][aFrom];
 			}
 
 			myDamagePerSecond[aTo] = myDamagePerSecond[aFrom];
+			myDamageDone[aTo] = myDamageDone[aFrom];
+			myDamageTaken[aTo] = myDamageTaken[aFrom];
+			myDeaths[aTo] = myDeaths[aFrom];
+			myKills[aTo] = myKills[aFrom];
+			myManaUsed[aTo] = myManaUsed[aFrom];
+
+			myBuffUptimes[aTo] = myBuffUptimes[aFrom];
+			myDebuffUptimes[aTo] = myDebuffUptimes[aFrom];
 
 			ClearStatsForPlayer(aFrom);
 		}
@@ -133,9 +161,16 @@ namespace DPSExtreme.Combat
 			myDamageDone[aPlayer].Clear();
 
 			foreach ((int npcType, DPSExtremeStatList<StatValue> damageInfo) in myEnemyDamageTaken)
-				myEnemyDamageTaken[npcType][aPlayer] = -1;
+				myEnemyDamageTaken[npcType][aPlayer] = new();
 
-			myDamagePerSecond[aPlayer] = -1;
+			myDamagePerSecond[aPlayer] = new();
+			myDamageTaken[aPlayer].Clear();
+			myDeaths[aPlayer] = new();
+			myKills[aPlayer].Clear();
+			myManaUsed[aPlayer].Clear();
+
+			myBuffUptimes[aPlayer].Clear();
+			myDebuffUptimes[aPlayer].Clear();
 		}
 
 		internal void SendStats()
@@ -149,6 +184,12 @@ namespace DPSExtreme.Combat
 				push.myCombatIsActive = true;
 				push.myEnemyDamageTaken = myEnemyDamageTaken;
 				push.myDamageDone = myDamageDone;
+				push.myDamageTaken = myDamageTaken;
+				push.myDeaths = myDeaths;
+				push.myKills = myKills;
+				push.myManaUsed = myManaUsed;
+				push.myBuffUptimes = myBuffUptimes;
+				push.myDebuffUptimes = myDebuffUptimes;
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);
 
@@ -193,9 +234,13 @@ namespace DPSExtreme.Combat
 				{
 					if (i == (int)InfoListIndices.NPCs)
 					{
-						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC")), participantDamage));
+						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TownNPC")), participantDamage));
 					}
-					if (i == (int)InfoListIndices.DOTs)
+					else if (i == (int)InfoListIndices.Traps)
+					{
+						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Traps")), participantDamage));
+					}
+					else if (i == (int)InfoListIndices.DOTs)
 					{
 						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")), participantDamage));
 					}

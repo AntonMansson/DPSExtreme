@@ -9,6 +9,8 @@ namespace DPSExtreme.UIElements.Displays
 	internal class UIListDisplay<T> : UICombatInfoDisplay
 		where T : IStatContainer, new()
 	{
+		internal override DisplayContainerType myContainerType => DisplayContainerType.List;
+
 		internal DPSExtremeStatList<T> myInfoList
 		{
 			get 
@@ -45,9 +47,13 @@ namespace DPSExtreme.UIElements.Displays
 			{
 				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DisconnectedPlayer"));
 			}
-			else if (aParticipantIndex == (int)InfoListIndices.NPCs || aParticipantIndex == (int)InfoListIndices.Traps)
+			else if (aParticipantIndex == (int)InfoListIndices.NPCs)
 			{
-				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC"));
+				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TownNPC"));
+			}
+			else if (aParticipantIndex == (int)InfoListIndices.Traps)
+			{
+				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Traps"));
 			}
 			else if (aParticipantIndex == (int)InfoListIndices.DOTs)
 			{
@@ -57,10 +63,11 @@ namespace DPSExtreme.UIElements.Displays
 			return string.Format("Invalid index: {0}", aParticipantIndex);
 		}
 
-		internal UIListDisplay(ListDisplayMode aDisplayMode) 
-			: base(aDisplayMode) 
+		public UIListDisplay(ListDisplayMode aDisplayMode, StatFormat aFormat = StatFormat.RawNumber) 
+			: base(aDisplayMode, typeof(T)) 
 		{
 			myNameCallback = GetName;
+			myFormat = aFormat;
 		}
 
 		internal override void Update()
@@ -113,6 +120,9 @@ namespace DPSExtreme.UIElements.Displays
 					string name = "Missing name callback";
 					if (myNameCallback != null)
 						name = myNameCallback.Invoke(i);
+
+					if (name.Length == 0)
+						name = $"Error - id: {i}";
 
 					UIStatDisplayEntry entry = CreateEntry(entryIndex) as UIStatDisplayEntry;
 					entry.myParticipantIndex = i;

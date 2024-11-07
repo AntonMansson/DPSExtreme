@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.ModLoader;
 using DPSExtreme.Combat;
 using static DPSExtreme.Combat.DPSExtremeCombat;
+using DPSExtreme.Combat.Stats;
 
 namespace DPSExtreme
 {
@@ -127,8 +128,12 @@ namespace DPSExtreme
 						damagedNPC = Main.npc[damagedNPC.realLife];
 					}
 
+					DamageSource damageSource = new DamageSource(DamageSource.SourceType.DOT);
+					damageSource.myDamageCauserId = playerNumber;
+					damageSource.myDamageCauserAbility = -1; //Unknown what item/projectile it is. Clients will pass this info themselves
+
 					DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(damagedNPC, playerNumber, -1, damage);
+					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(damagedNPC, damageSource, damage);
 
 					// TODO: Reimplement DPS with ring buffer for accurate?  !!! or send 0?
 					// TODO: Verify real life adjustment
@@ -217,6 +222,13 @@ namespace DPSExtreme
 			var myPrevLocalDamage = activeCombat.myDamageDone[Main.LocalPlayer.whoAmI];
 			activeCombat.myDamageDone = aPush.myDamageDone;
 			activeCombat.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
+
+			activeCombat.myDamageTaken = aPush.myDamageTaken;
+			activeCombat.myDeaths = aPush.myDeaths;
+			activeCombat.myKills = aPush.myKills;
+			activeCombat.myManaUsed = aPush.myManaUsed;
+			activeCombat.myBuffUptimes = aPush.myBuffUptimes;
+			activeCombat.myDebuffUptimes = aPush.myDebuffUptimes;
 
 			DPSExtremeUI.instance.updateNeeded = true;
 

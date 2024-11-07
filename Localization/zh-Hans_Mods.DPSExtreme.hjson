@@ -4,7 +4,13 @@ Keybinds.ToggleTeamDPSBossMeter.DisplayName: 开关队伍成员伤害/对Boss伤
 // CombatHistory: Combat history:
 // DamagePerSecond: DPS
 // DamageDone: Damage done
+// DamageTaken: Damage taken
+// ManaUsed: Mana used
+// BuffUptime: Buff uptime
+// DebuffUptime: Debuff uptime
 // EnemyDamageTaken: Enemy damage taken
+// Deaths: Deaths
+// Kills: Kills
 TogglePercent: 显示 %
 NoDPSWearDPSMeter: 需要[i:DPSMeter]
 NoBoss: 当前无Boss存活
@@ -13,8 +19,16 @@ BossLabel: Boss - {0}
 // ShowCombatHistory: Click to show combat history
 DamageStatsForNPC: "{0} 伤害: "
 // DisconnectedPlayer: Disconnected player
-TrapsTownNPC: 陷阱/城镇NPC
+// TownNPC: TownNPC
+// Traps: Traps
 DamageOverTime: 减益总伤害
 ToggleTeamDPSCommandDescription: 显示队伍成员伤害统计
 // Invasion: Invasion
 // Event: Event
+// Other: Other
+// Melee: Melee
+// UnknownTraps: Unknown traps
+// FallDamage: Fall damage
+// Drowning: Drowning
+// Lava: lava
+// BlockContactDamage: Block contact damage

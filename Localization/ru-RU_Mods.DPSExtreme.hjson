@@ -4,7 +4,13 @@ Keybinds.ToggleTeamDPSBossMeter.DisplayName: Отобразить статист
 // CombatHistory: Combat history:
 // DamagePerSecond: DPS
 // DamageDone: Damage done
+// DamageTaken: Damage taken
+// ManaUsed: Mana used
+// BuffUptime: Buff uptime
+// DebuffUptime: Debuff uptime
 // EnemyDamageTaken: Enemy damage taken
+// Deaths: Deaths
+// Kills: Kills
 TogglePercent: Вкл/откл %
 NoDPSWearDPSMeter: Нет инфо об DPS, возьмите [i:DPSMeter]
 NoBoss: Нет босса
@@ -13,8 +19,16 @@ BossLabel: Босс - {0}
 // ShowCombatHistory: Click to show combat history
 DamageStatsForNPC: "Статистика урона для {0}: "
 // DisconnectedPlayer: Disconnected player
-TrapsTownNPC: Ловушки/NPC
+// TownNPC: TownNPC
+// Traps: Traps
 DamageOverTime: DOT Дебафф
 ToggleTeamDPSCommandDescription: Переключить отображение командного DPS
 // Invasion: Invasion
 // Event: Event
+// Other: Other
+// Melee: Melee
+// UnknownTraps: Unknown traps
+// FallDamage: Fall damage
+// Drowning: Drowning
+// Lava: lava
+// BlockContactDamage: Block contact damage

@@ -4,7 +4,13 @@ DisplayModeSelect: Select mode:
 CombatHistory: Combat history:
 DamagePerSecond: DPS
 DamageDone: Damage done
+DamageTaken: Damage taken
+ManaUsed: Mana used
+BuffUptime: Buff uptime
+DebuffUptime: Debuff uptime
 EnemyDamageTaken: Enemy damage taken
+Deaths: Deaths
+Kills: Kills
 TogglePercent: Toggle %
 NoDPSWearDPSMeter: No DPS Stats, wear [i:DPSMeter]
 NoBoss: No Boss
@@ -13,8 +19,16 @@ ClickToChangeDisplay: Click to change display mode
 ShowCombatHistory: Click to show combat history
 DamageStatsForNPC: "Damage stats for {0}: "
 DisconnectedPlayer: Disconnected player
-TrapsTownNPC: Traps/TownNPC
+TownNPC: TownNPC
+Traps: Traps
 DamageOverTime: Debuff DOT
 ToggleTeamDPSCommandDescription: Toggle Team DPS display
 Invasion: Invasion
 Event: Event
+Other: Other
+Melee: Melee
+UnknownTraps: Unknown traps
+FallDamage: Fall damage
+Drowning: Drowning
+Lava: lava
+BlockContactDamage: Block contact damage

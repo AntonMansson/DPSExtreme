@@ -13,7 +13,7 @@ namespace DPSExtreme
 		DisconnectedPlayersStart = 241,
 		DisconnectedPlayersEnd = 250,
 		DOTs = 253,
-		Traps = 255,
+		Traps = 254,
 		NPCs = 255
 	}
 

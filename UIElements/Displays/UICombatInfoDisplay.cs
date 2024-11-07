@@ -1,28 +1,67 @@
-﻿using Terraria.UI;
+﻿using DPSExtreme.Combat.Stats;
+using System;
+using Terraria.UI;
 
 namespace DPSExtreme.UIElements.Displays
 {
-	
+
 
 	internal abstract class UICombatInfoDisplay : UIDisplay
 	{
+		internal enum DisplayContainerType
+		{
+			Dictionary,
+			List
+		}
+
 		internal int myHighestValue = -1;
 		internal int myTotal = 0;
 
-		protected UICombatInfoDisplay myBreakdownDisplay = null;
+		internal UICombatInfoDisplay myBreakdownDisplay = null;
 		internal int myBreakdownAccessor = -1;
 		protected bool myIsInBreakdown
 		{
 			get { return myBreakdownAccessor != -1; }
 		}
 
-		protected UICombatInfoDisplay myParentDisplay = null;
+		internal abstract DisplayContainerType myContainerType { get; }
 
-		internal UICombatInfoDisplay(ListDisplayMode aDisplayMode)
+		internal UICombatInfoDisplay myParentDisplay = null;
+
+		internal UICombatInfoDisplay(ListDisplayMode aDisplayMode, System.Type aContainerType)
 			: base(aDisplayMode)
 		{
 			myClickEntryCallback += OnClickBaseEntry;
 			myEntryCreator = () => { return new UIStatDisplayEntry(); };
+
+			if (aContainerType == typeof(StatValue) || aContainerType == typeof(TimeStatValue))
+			{
+				if (aContainerType == typeof(TimeStatValue))
+					myFormat = StatFormat.Time;
+
+				UICombatInfoDisplay parent = myParentDisplay;
+				while (parent != null)
+				{
+					parent.myFormat = myFormat;
+					parent = parent.myParentDisplay;
+				}
+
+				return;
+			}
+
+			System.Type[] typeArguments = aContainerType.GetGenericArguments();
+			System.Type nextContainerType = typeArguments[typeArguments.Length - 1];
+
+			if (aContainerType.GetGenericTypeDefinition() == typeof(DPSExtremeStatDictionary<,>))
+			{
+				Type nextDisplayType = typeof(UIStatDictionaryDisplay<>).MakeGenericType(nextContainerType);
+				AddBreakdown((UICombatInfoDisplay)Activator.CreateInstance(nextDisplayType, myDisplayMode));
+			}
+			else if (aContainerType.GetGenericTypeDefinition() == typeof(DPSExtremeStatList<>))
+			{
+				Type nextDisplayType = typeof(UIListDisplay<>).MakeGenericType(nextContainerType);
+				AddBreakdown((UICombatInfoDisplay)Activator.CreateInstance(nextDisplayType, myDisplayMode, myFormat));
+			}
 		}
 
 		internal abstract void RecalculateTotals();
@@ -30,6 +69,12 @@ namespace DPSExtreme.UIElements.Displays
 
 		internal UICombatInfoDisplay AddBreakdown(UICombatInfoDisplay aDisplay)
 		{
+			if (myBreakdownDisplay != null)
+			{
+				myBreakdownDisplay.AddBreakdown(aDisplay);
+				return aDisplay;
+			}
+
 			aDisplay.myParentDisplay = this;
 			myBreakdownDisplay = aDisplay;
 			myBreakdownDisplay.OnRightClick += OnRightClickBreakdownDisplay;
