@@ -250,6 +250,8 @@ namespace DPSExtreme
 		{
 			base.Update(gameTime);
 
+			myRootPanel.Update();
+
 			if (!Main.LocalPlayer.accDreamCatcher && myDisplayMode != ListDisplayMode.NeedAccessory)
 			{
 				myDisplayMode = ListDisplayMode.NeedAccessory;
@@ -377,6 +379,9 @@ namespace DPSExtreme
 
 		private void Label_OnLeftClick(UIMouseEvent evt, UIElement listeningElement)
 		{
+			if (myRootPanel.dragging)
+				return;
+
 			myDisplayMode = (ListDisplayMode)(((int)myDisplayMode + 1) % (int)ListDisplayMode.StatDisplaysEnd);
 
 			if (myDisplayMode <= ListDisplayMode.StatDisplaysStart)
