@@ -137,7 +137,19 @@ namespace DPSExtreme
 			Color.LightGoldenrodYellow,
 			Color.LightGray,
 			Color.LightPink,
+			Color.LightSeaGreen,
 			Color.LightSkyBlue,
+			Color.LightSteelBlue,
+			Color.Linen,
+			Color.MediumPurple,
+			Color.MediumVioletRed,
+			Color.MistyRose,
+			Color.Olive,
+			Color.Plum,
+			Color.Salmon,
+			Color.Orange,
+			Color.Silver,
+			Color.Tan,
 			Color.LightYellow
 		};
 
