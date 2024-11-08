@@ -45,13 +45,18 @@ namespace DPSExtreme.UIElements.Displays
 			myDisplayMode = aDisplayMode;
 
 			Width.Percent = 1f;
-			Height.Set(-20, 1f);
 			Top.Pixels = 20;
+			//Calculate this manually because for some reason it was causing issues
+			int displayHeight = 170 - (int)Top.Pixels - (int)DPSExtremeUI.instance.myRootPanel.PaddingTop - (int)DPSExtremeUI.instance.myRootPanel.PaddingBottom;
+			Height.Set(displayHeight, 0f);
+			MaxHeight.Set(displayHeight, 0f);
+			MinHeight.Set(displayHeight, 0f);
 			ListPadding = 0f;
+			OverflowHidden = true;
 
 			InvisibleFixedUIScrollbar scrollbar = new InvisibleFixedUIScrollbar(DPSExtremeUI.instance.userInterface);
 			scrollbar.SetView(100f, 1000f);
-			scrollbar.Height.Set(-20, 1f);
+			scrollbar.Height.Set(Top.Pixels, 1f);
 			scrollbar.Left.Set(-20, 1f);
 			SetScrollbar(scrollbar);
 

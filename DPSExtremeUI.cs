@@ -172,19 +172,20 @@ namespace DPSExtreme
 			myRootPanel.Width.Set(250f, 0f);
 			myRootPanel.MinWidth.Set(50f, 0f);
 			myRootPanel.MaxWidth.Set(500f, 0f);
-			myRootPanel.Height.Set(175f, 0f);
+			myRootPanel.Height.Set(170f, 0f);
 			myRootPanel.MinHeight.Set(50, 0f);
-			myRootPanel.MaxHeight.Set(300, 0f);
+			myRootPanel.MaxHeight.Set(500, 0f);
 			myRootPanel.BackgroundColor = new Color(73, 94, 171);
 
 			SetupDisplays();
 
-			myLabel = new UIText("", 0.8f);
+			myLabel = new UIText("", 0.7f);
 			//Figure out why tf this doesn't work
 			myLabel.DynamicallyScaleDownToWidth = true;
 			myLabel.MaxWidth.Set(50, 0);
 
 			myLabel.Left.Pixels = 18;
+			myLabel.Top.Pixels = 2;
 			myLabel.OnLeftClick += Label_OnLeftClick;
 			myLabel.OnRightClick += Label_OnRightClick;
 			myRootPanel.Append(myLabel);
