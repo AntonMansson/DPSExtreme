@@ -31,7 +31,12 @@ namespace DPSExtreme.UIElements.Displays
 					longestCombatInSeconds = Math.Max(longestCombatInSeconds, (int)combat.myDuration.TotalSeconds);
 				}
 
-				int combatDuration = (int)DPSExtreme.instance.combatTracker.GetCombatHistory(myIndex).myDuration.TotalSeconds;
+				DPSExtremeCombat combatHistory = DPSExtreme.instance.combatTracker.GetCombatHistory(myIndex - 1);
+
+				if (combatHistory == null)
+					return (int)GetOuterDimensions().Width;
+
+				int combatDuration = (int)combatHistory.myDuration.TotalSeconds;
 
 				return (int)(GetOuterDimensions().Width * (combatDuration / (float)longestCombatInSeconds));
 			}

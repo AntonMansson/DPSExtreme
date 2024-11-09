@@ -29,6 +29,9 @@ namespace DPSExtreme.Combat
 
 		internal DPSExtremeCombat GetCombatHistory(int aIndex)
 		{
+			if (aIndex < 0)
+				return null;
+
 			return myCombatHistory[(aIndex + myHistoryBufferZeroIndex) % ourHistorySize];
 		}
 
