@@ -39,7 +39,7 @@ namespace DPSExtreme.UIElements.Displays
 			
 			DrawSelfBase(spriteBatch);
 
-			if (IsMouseHovering && myParticipantIndex >= 0)
+			if (ContainsPoint(Main.MouseScreen) && myParticipantIndex >= 0)
 			{
 				DPSExtremeUI.instance.myHoveredParticipant = myParticipantIndex;
 				Main.hoverItemName = "";
