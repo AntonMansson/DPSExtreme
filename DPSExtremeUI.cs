@@ -176,6 +176,7 @@ namespace DPSExtreme
 			myRootPanel.MinHeight.Set(50, 0f);
 			myRootPanel.MaxHeight.Set(500, 0f);
 			myRootPanel.BackgroundColor = new Color(73, 94, 171);
+			myRootPanel.OverflowHidden = true;
 
 			SetupDisplays();
 
@@ -291,7 +292,6 @@ namespace DPSExtreme
 		{
 			string title = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey(myDisplayMode.ToString()));
 
-
 			if (myDisplayedCombat == null || 
 				myDisplayMode < ListDisplayMode.StatDisplaysStart)
 			{
@@ -303,14 +303,15 @@ namespace DPSExtreme
 			title += " - ";
 
 			if (myCurrentDisplay.myLabelOverride != null)
-			{
 				title += myCurrentDisplay.myLabelOverride;
-			}
 			else
-			{
 				title += myDisplayedCombat.GetTitle();
+
+			if (title.Length > 27)
+				title = title.Remove(27);
+
+			if (myCurrentDisplay.myLabelOverride != null)
 				title += " " + myDisplayedCombat.myFormattedDuration;
-			}
 
 			myLabel.SetText(title);
 			myLabel.Recalculate();
