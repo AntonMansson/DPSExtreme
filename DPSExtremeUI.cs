@@ -346,10 +346,11 @@ namespace DPSExtreme
 
 			bool IsPlayer = myHoveredParticipant >= 0 && myHoveredParticipant < (int)InfoListIndices.SupportedPlayerCount;
 			bool isNPC = myHoveredParticipant == (int)InfoListIndices.NPCs;
-			if (IsPlayer || isNPC)
+			bool enableHoveredDisplay = false;
+			if (enableHoveredDisplay && (IsPlayer || isNPC))
 			{
 				Rectangle hitbox = myRootPanel.GetOuterDimensions().ToRectangle();
-				Rectangle r2 = new Rectangle(hitbox.X + hitbox.Width / 2 - 58 / 2, hitbox.Y - 58, 58, 58);
+				Rectangle r2 = new Rectangle(hitbox.X + (hitbox.Width / 2) - (58 / 2), hitbox.Y - 58, 58, 58);
 				spriteBatch.Draw(playerBackGroundTexture.Value, r2.TopLeft(), Color.White);
 
 				if (isNPC)
@@ -372,6 +373,7 @@ namespace DPSExtreme
 						Main.instance.DrawNPCDirect(spriteBatch, drawNPC, drawNPC.behindTiles, Vector2.Zero);
 						drawNPC.position = position;
 						drawNPC.IsABestiaryIconDummy = false;
+						//drawNPC.IsABestiaryIconDummy = false;
 					}
 				}
 				else
