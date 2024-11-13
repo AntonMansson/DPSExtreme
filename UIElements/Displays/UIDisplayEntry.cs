@@ -7,26 +7,26 @@ using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
 using System.Collections.Generic;
 using DPSExtreme.Combat.Stats;
+using ReLogic.Content;
+using System;
 
 namespace DPSExtreme.UIElements.Displays
 {
 	internal class UIDisplayEntry : UIElement
 	{
-		internal string _myNameText;
-		internal string myNameText
+		float ourTextScale
 		{
-			get { return _myNameText; }
-			set
+			get 
 			{
-				_myNameText = value;
+				float textHeight = FontAssets.MouseText.Value.MeasureString(myNameText).Y;
+				float unscaledEntryHeight = textHeight + PaddingTop + PaddingBottom;
 
-				DynamicSpriteFont dynamicSpriteFont = FontAssets.MouseText.Value;
-				Vector2 textSize = new Vector2(dynamicSpriteFont.MeasureString(_myNameText.ToString()).X, 16f) * 1f;
-				MinWidth.Set(textSize.X + PaddingLeft + PaddingRight, 0f);
-				MinHeight.Set(textSize.Y + PaddingTop + PaddingBottom, 0f);
+				return ourEntryHeight / unscaledEntryHeight; 
 			}
-
 		}
+		internal const int ourEntryHeight = 22;
+
+		internal string myNameText;
 
 		internal UIDisplay myParentDisplay = null;
 
@@ -38,7 +38,8 @@ namespace DPSExtreme.UIElements.Displays
 		public UIDisplayEntry()
 		{
 			Width.Percent = 1f;
-			Height.Pixels = 25f;
+			Height.Pixels = ourEntryHeight;
+			MinHeight.Pixels = ourEntryHeight;
 
 			Recalculate();
 		}
@@ -53,12 +54,10 @@ namespace DPSExtreme.UIElements.Displays
 			Rectangle hitbox = GetOuterDimensions().ToRectangle();
 			hitbox.Width = GetEntryWidth();
 
-			Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, hitbox, myColor/** 0.6f*/);
-			hitbox = GetInnerDimensions().ToRectangle();
+			myColor.A = ContainsPoint(Main.MouseScreen) ? (byte)(Math.Floor(255f * 0.75f)) : (byte)255; //Kinda inverse but it looked better this way
 
-			DynamicSpriteFont fontMouseText = FontAssets.MouseText.Value;
-
-			float textScale = .9f;
+			Texture2D backdropTex = DPSExtreme.instance.Assets.Request<Texture2D>("DisplayEntry", AssetRequestMode.ImmediateLoad).Value;
+			Main.spriteBatch.Draw(backdropTex, hitbox, myColor);
 
 			//Parent.Children does NOT get sorted with UpdateOrder. So access the outer _items list which DOES get sorted
 			List<UIElement> sortedList = (Parent.Parent as UIGrid)._items;
@@ -66,7 +65,7 @@ namespace DPSExtreme.UIElements.Displays
 			int entryIndex = -1;
 			int index = 0;
 			for (int i = 0; i < sortedList.Count; i++)
-            {
+			{
 				if (sortedList[i] != this)
 				{
 					index++;
@@ -75,15 +74,17 @@ namespace DPSExtreme.UIElements.Displays
 
 				entryIndex = index;
 				break;
-            }
+			}
 
-            string leftText = (entryIndex + 1).ToString() + ". " + myNameText;
-			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, leftText, hitbox.TopLeft() + new Vector2(4, 3), Color.White, 0f,
-				new Vector2(0, 0), new Vector2(textScale), -1f, 1.5f);
+			DynamicSpriteFont fontMouseText = FontAssets.MouseText.Value;
+
+			string leftText = (entryIndex + 1).ToString() + ". " + myNameText;
+			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, leftText, GetOuterDimensions().ToRectangle().TopLeft() + new Vector2(4, 3), Color.White, 0f,
+				new Vector2(0, 0), new Vector2(ourTextScale), -1f, 1.5f);
 
 			Vector2 rightTextBounds = fontMouseText.MeasureString(myRightText);
 			Terraria.UI.Chat.ChatManager.DrawColorCodedStringWithShadow(spriteBatch, fontMouseText, myRightText, GetOuterDimensions().ToRectangle().TopRight() + new Vector2(-4, 2), Color.White, 0f,
-				new Vector2(1f, 0) * rightTextBounds, new Vector2(textScale), -1f, 1.5f);
+				new Vector2(1f, 0) * rightTextBounds, new Vector2(ourTextScale), -1f, 1.5f);
 		}
 	}
 }

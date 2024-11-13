@@ -138,7 +138,19 @@ namespace DPSExtreme
 			Color.LightGoldenrodYellow,
 			Color.LightGray,
 			Color.LightPink,
+			Color.LightSeaGreen,
 			Color.LightSkyBlue,
+			Color.LightSteelBlue,
+			Color.Linen,
+			Color.MediumPurple,
+			Color.MediumVioletRed,
+			Color.MistyRose,
+			Color.Olive,
+			Color.Plum,
+			Color.Salmon,
+			Color.Orange,
+			Color.Silver,
+			Color.Tan,
 			Color.LightYellow
 		};
 
@@ -163,19 +175,21 @@ namespace DPSExtreme
 			myRootPanel.Width.Set(250f, 0f);
 			myRootPanel.MinWidth.Set(50f, 0f);
 			myRootPanel.MaxWidth.Set(500f, 0f);
-			myRootPanel.Height.Set(175f, 0f);
+			myRootPanel.Height.Set(170f, 0f);
 			myRootPanel.MinHeight.Set(50, 0f);
-			myRootPanel.MaxHeight.Set(300, 0f);
+			myRootPanel.MaxHeight.Set(500, 0f);
 			myRootPanel.BackgroundColor = new Color(73, 94, 171);
+			myRootPanel.OverflowHidden = true;
 
 			SetupDisplays();
 
-			myLabel = new UIText("", 0.8f);
+			myLabel = new UIText("", 0.7f);
 			//Figure out why tf this doesn't work
 			myLabel.DynamicallyScaleDownToWidth = true;
 			myLabel.MaxWidth.Set(50, 0);
 
 			myLabel.Left.Pixels = 18;
+			myLabel.Top.Pixels = 2;
 			myLabel.OnLeftClick += Label_OnLeftClick;
 			myLabel.OnRightClick += Label_OnRightClick;
 			myRootPanel.Append(myLabel);
@@ -256,6 +270,8 @@ namespace DPSExtreme
 		{
 			base.Update(gameTime);
 
+			myRootPanel.Update();
+
 			if (!Main.LocalPlayer.accDreamCatcher && myDisplayMode != ListDisplayMode.NeedAccessory)
 			{
 				myDisplayMode = ListDisplayMode.NeedAccessory;
@@ -282,7 +298,6 @@ namespace DPSExtreme
 		{
 			string title = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey(myDisplayMode.ToString()));
 
-
 			if (myDisplayedCombat == null || 
 				myDisplayMode < ListDisplayMode.StatDisplaysStart)
 			{
@@ -294,14 +309,15 @@ namespace DPSExtreme
 			title += " - ";
 
 			if (myCurrentDisplay.myLabelOverride != null)
-			{
 				title += myCurrentDisplay.myLabelOverride;
-			}
 			else
-			{
 				title += myDisplayedCombat.GetTitle();
+
+			if (title.Length > 27)
+				title = title.Remove(27);
+
+			if (myCurrentDisplay.myLabelOverride != null)
 				title += " " + myDisplayedCombat.myFormattedDuration;
-			}
 
 			myLabel.SetText(title);
 			myLabel.Recalculate();
@@ -336,10 +352,11 @@ namespace DPSExtreme
 
 			bool IsPlayer = myHoveredParticipant >= 0 && myHoveredParticipant < (int)InfoListIndices.SupportedPlayerCount;
 			bool isNPC = myHoveredParticipant == (int)InfoListIndices.NPCs;
-			if (IsPlayer || isNPC)
+			bool enableHoveredDisplay = false;
+			if (enableHoveredDisplay && (IsPlayer || isNPC))
 			{
 				Rectangle hitbox = myRootPanel.GetOuterDimensions().ToRectangle();
-				Rectangle r2 = new Rectangle(hitbox.X + hitbox.Width / 2 - 58 / 2, hitbox.Y - 58, 58, 58);
+				Rectangle r2 = new Rectangle(hitbox.X + (hitbox.Width / 2) - (58 / 2), hitbox.Y - 58, 58, 58);
 				spriteBatch.Draw(playerBackGroundTexture.Value, r2.TopLeft(), Color.White);
 
 				if (isNPC)
@@ -362,6 +379,7 @@ namespace DPSExtreme
 						Main.instance.DrawNPCDirect(spriteBatch, drawNPC, drawNPC.behindTiles, Vector2.Zero);
 						drawNPC.position = position;
 						drawNPC.IsABestiaryIconDummy = false;
+						//drawNPC.IsABestiaryIconDummy = false;
 					}
 				}
 				else
@@ -383,6 +401,9 @@ namespace DPSExtreme
 
 		private void Label_OnLeftClick(UIMouseEvent evt, UIElement listeningElement)
 		{
+			if (myRootPanel.dragging)
+				return;
+
 			myDisplayMode = (ListDisplayMode)(((int)myDisplayMode + 1) % (int)ListDisplayMode.StatDisplaysEnd);
 
 			if (myDisplayMode <= ListDisplayMode.StatDisplaysStart)
