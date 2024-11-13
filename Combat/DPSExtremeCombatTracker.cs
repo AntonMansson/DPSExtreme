@@ -1,4 +1,5 @@
 ﻿using DPSExtreme.Combat.Stats;
+using DPSExtreme.Config;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -257,6 +258,15 @@ namespace DPSExtreme.Combat
 		//Called when damage is dealt or bosses spawn etc
 		internal void TriggerCombat(CombatType aCombatType, int aBossOrInvasionOrEventType = -1)
 		{
+			switch (aCombatType)
+			{
+				case CombatType.Generic: if (!DPSExtremeServerConfig.Instance.TrackGenericCombat) { return; } break;
+				case CombatType.Event: if (!DPSExtremeServerConfig.Instance.TrackEvents) { return; } break;
+				case CombatType.Invasion: if (!DPSExtremeServerConfig.Instance.TrackInvasions) { return; } break;
+				case CombatType.BossFight: if (!DPSExtremeServerConfig.Instance.TrackBosses) { return; } break;
+				default: break;
+			}
+
 			if (myActiveCombat != null)
 			{
 				UpgradeCombat(aCombatType, aBossOrInvasionOrEventType);

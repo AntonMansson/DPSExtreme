@@ -17,7 +17,24 @@ namespace DPSExtreme.Config
 		public int RefreshRate;
 
 		[Header("CombatConfigHeader")]
+		[DefaultValue(true)]
+		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.TrackGenericCombat.Tooltip")]
+		public bool TrackGenericCombat;
+
+		[DefaultValue(true)]
+		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.TrackEvents.Tooltip")]
+		public bool TrackEvents;
+
+		[DefaultValue(true)]
+		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.TrackInvasions.Tooltip")]
+		public bool TrackInvasions;
+
+		[DefaultValue(true)]
+		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.TrackBosses.Tooltip")]
+		public bool TrackBosses;
+
 		[DefaultValue(false)]
+		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.IgnoreCritters.Tooltip")]
 		public bool IgnoreCritters;
 
 		public override void OnChanged()

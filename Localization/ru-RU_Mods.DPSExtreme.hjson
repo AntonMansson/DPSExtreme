@@ -55,12 +55,32 @@ Configs: {
 
 		RefreshRate: {
 			// Label: Refresh Rate
-			// Tooltip: How often, in ticks, combat stats are broadcast to players. (No delay in singleplayer)
+			// Tooltip: How often, in ticks, combat stats are broadcast to players. (always 10 ticks in singleplayer)
 		}
 
 		IgnoreCritters: {
 			// Label: Ignore Critters
-			// Tooltip: ""
+			// Tooltip: If false, dealing damage to critters will not trigger combat
+		}
+
+		TrackGenericCombat: {
+			// Label: Track Generic Combats
+			// Tooltip: If false, dealing or taking damage to/from non-boss npcs will not trigger combat.
+		}
+
+		TrackEvents: {
+			// Label: Track Events
+			// Tooltip: If false, events starting will not trigger combat.
+		}
+
+		TrackInvasions: {
+			// Label: Track Invasions
+			// Tooltip: If false, invasions starting will not trigger combat.
+		}
+
+		TrackBosses: {
+			// Label: Track Bosses
+			// Tooltip: If false, bosses spawning will not trigger combat.
 		}
 	}
 }
