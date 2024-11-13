@@ -9,6 +9,8 @@ namespace DPSExtreme
 	{
 		public override void PostUpdateWorld()
 		{
+			DPSExtreme.instance.combatTracker.UpdateCombatDuration();
+
 			if ((Main.GameUpdateCount % DPSExtreme.UPDATEDELAY) != 0)
 				return;
 

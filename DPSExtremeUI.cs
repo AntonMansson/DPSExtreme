@@ -316,7 +316,7 @@ namespace DPSExtreme
 			if (title.Length > 27)
 				title = title.Remove(27);
 
-			if (myCurrentDisplay.myLabelOverride != null)
+			if (myCurrentDisplay.myLabelOverride == null)
 				title += " " + myDisplayedCombat.myFormattedDuration;
 
 			myLabel.SetText(title);

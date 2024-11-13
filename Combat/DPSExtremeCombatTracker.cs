@@ -108,6 +108,15 @@ namespace DPSExtreme.Combat
 			return 0;
 		}
 
+		internal void UpdateCombatDuration()
+		{
+			if (myActiveCombat == null)
+				return;
+
+			myActiveCombat.myDurationInTicks++;
+			myActiveCombat.myTicksSinceLastActivity++;
+		}
+
 		void UpdateEventCheckStart()
 		{
 			int eventType = GetActiveEventType();
@@ -232,9 +241,7 @@ namespace DPSExtreme.Combat
 			if (((myActiveCombat.myCombatTypeFlags & CombatType.Generic) == 0))
 				return;
 
-			TimeSpan elapsedSinceLastActivity = DateTime.Now - myActiveCombat.myLastActivityTime;
-
-			if (elapsedSinceLastActivity.TotalSeconds < ourGenericCombatTimeout)
+			if (myActiveCombat.myTimeSinceLastActivity.TotalSeconds < ourGenericCombatTimeout)
 				return;
 
 			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
@@ -253,7 +260,7 @@ namespace DPSExtreme.Combat
 			if (myActiveCombat != null)
 			{
 				UpgradeCombat(aCombatType, aBossOrInvasionOrEventType);
-				myActiveCombat.myLastActivityTime = DateTime.Now;
+				myActiveCombat.myTicksSinceLastActivity = 0;
 				return;
 			}
 
@@ -347,7 +354,6 @@ namespace DPSExtreme.Combat
 			}
 
 			myCombatHistory[(historyCount + myHistoryBufferZeroIndex) % ourHistorySize] = myActiveCombat;
-			myActiveCombat.myEndTime = DateTime.Now;
 
 			if (historyCount >= ourHistorySize)
 				myHistoryBufferZeroIndex++;

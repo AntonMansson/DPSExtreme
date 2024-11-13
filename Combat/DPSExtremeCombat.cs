@@ -57,20 +57,11 @@ namespace DPSExtreme.Combat
 		internal CombatType myHighestCombatType;
 		internal int myBossOrInvasionOrEventType = -1;
 
-		internal DateTime myStartTime;
-		internal DateTime myLastActivityTime;
-		internal DateTime myEndTime = DateTime.MinValue;
+		internal int myTicksSinceLastActivity = 0;
+		internal TimeSpan myTimeSinceLastActivity => new TimeSpan(0, 0, myTicksSinceLastActivity / 60);
 
-		internal TimeSpan myDuration
-		{
-			get
-			{
-				if (myEndTime == DateTime.MinValue)
-					return DateTime.Now - myStartTime;
-
-				return myEndTime - myStartTime;
-			}
-		}
+		internal int myDurationInTicks = 0;
+		internal TimeSpan myDuration => new TimeSpan(0, 0, myDurationInTicks / 60);
 
 		internal string myFormattedDuration => String.Format("{0:D2}:{1:D2}", (int)Math.Floor(myDuration.TotalMinutes), myDuration.Seconds);
 
@@ -92,8 +83,6 @@ namespace DPSExtreme.Combat
 			myCombatTypeFlags = aCombatType;
 			myHighestCombatType = aCombatType;
 			myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
-			myStartTime = DateTime.Now;
-			myLastActivityTime = myStartTime;
 		}
 
 		internal object GetInfoContainer(ListDisplayMode aDisplayMode)

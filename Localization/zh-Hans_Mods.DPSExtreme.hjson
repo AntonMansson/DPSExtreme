@@ -55,7 +55,7 @@ Configs: {
 
 		RefreshRate: {
 			// Label: Refresh Rate
-			// Tooltip: How often (in ticks) combat stats are broadcast to players. (No delay in singleplayer)
+			// Tooltip: How often, in ticks, combat stats are broadcast to players. (No delay in singleplayer)
 		}
 
 		IgnoreCritters: {
