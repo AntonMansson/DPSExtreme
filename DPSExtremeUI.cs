@@ -11,6 +11,8 @@ using Terraria.ModLoader.UI;
 using DPSExtreme.Combat;
 using DPSExtreme.Combat.Stats;
 using DPSExtreme.UIElements.Displays;
+using DPSExtreme.Config;
+using Terraria.ModLoader.Config;
 
 namespace DPSExtreme
 {
@@ -107,7 +109,6 @@ namespace DPSExtreme
 			set { myCurrentDisplay = value; }
 		}
 
-		internal bool myShowPercent = true;
 		internal int myHoveredParticipant = -1;
 
 		private bool showTeamDPSPanel;
@@ -149,6 +150,8 @@ namespace DPSExtreme
 		Asset<Texture2D> playerBackGroundTexture;
 		public override void OnInitialize()
 		{
+			OnClientConfigLoad();
+
 			playerBackGroundTexture = Main.Assets.Request<Texture2D>("Images/UI/PlayerBackground");
 
 			//TODO: Save window position etc
@@ -202,17 +205,10 @@ namespace DPSExtreme
 				else
 					myDisplayMode = myPreviousDisplayMode;
 			};
-			combatHistoryButton.Left.Set(-44, 1f);
+			combatHistoryButton.Left.Set(-16, 1f);
 			combatHistoryButton.Top.Pixels = -1;
 			combatHistoryButton.Recalculate();
 			myRootPanel.Append(combatHistoryButton);
-
-			var togglePercentButton = new UIHoverImageButton(DPSExtreme.instance.Assets.Request<Texture2D>("PercentButton", AssetRequestMode.ImmediateLoad), Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TogglePercent")));
-			togglePercentButton.OnLeftClick += (a, b) => myShowPercent = !myShowPercent;
-			togglePercentButton.Left.Set(-24, 1f);
-			togglePercentButton.Top.Pixels = -2;
-			togglePercentButton.Recalculate();
-			myRootPanel.Append(togglePercentButton);
 
 			ShowTeamDPSPanel = true;
 			myDisplayMode = ListDisplayMode.DamageDone;
@@ -242,6 +238,16 @@ namespace DPSExtreme
 			myKillsDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.Kills);
 
 			myRootPanel.Append(myCurrentDisplay);
+		}
+
+		public void OnClientConfigLoad()
+		{
+			updateNeeded = true;
+		}
+
+		public void OnServerConfigLoad()
+		{
+			updateNeeded = true;
 		}
 
 		internal bool updateNeeded;

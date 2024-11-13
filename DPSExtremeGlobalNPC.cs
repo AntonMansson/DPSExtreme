@@ -6,6 +6,7 @@ using MonoMod.Cil;
 using Terraria.DataStructures;
 using static DPSExtreme.Combat.DPSExtremeCombat;
 using DPSExtreme.Combat.Stats;
+using DPSExtreme.Config;
 
 namespace DPSExtreme
 {
@@ -109,6 +110,9 @@ namespace DPSExtreme
 				if (Main.netMode == NetmodeID.MultiplayerClient)
 					return;
 
+				if (DPSExtremeServerConfig.Instance.IgnoreCritters)
+					if (npc.CountsAsACritter)
+						return;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
 				DPSExtreme.instance.combatTracker.myStatsHandler.AddKill(npc, npc.lastInteraction);
@@ -126,6 +130,10 @@ namespace DPSExtreme
 			{
 				if (npc.friendly)
 					return;
+
+				if (DPSExtremeServerConfig.Instance.IgnoreCritters)
+					if (npc.CountsAsACritter)
+						return;
 
 				DamageSource damageSource = new DamageSource(DamageSource.SourceType.Item);
 				damageSource.myDamageCauserAbility = item.type;
@@ -148,6 +156,10 @@ namespace DPSExtreme
 			{
 				if (npc.friendly)
 					return;
+
+				if (DPSExtremeServerConfig.Instance.IgnoreCritters)
+					if (npc.CountsAsACritter)
+						return;
 
 				int projectileOwner = projectile.owner;
 

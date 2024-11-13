@@ -2,6 +2,7 @@
 using System;
 using Microsoft.Xna.Framework.Graphics;
 using DPSExtreme.Combat.Stats;
+using DPSExtreme.Config;
 
 namespace DPSExtreme.UIElements.Displays
 {
@@ -33,7 +34,7 @@ namespace DPSExtreme.UIElements.Displays
 			{
 				myRightText = StatValue.FormatStatNumber(myValue, myFormat);
 
-				if (DPSExtremeUI.instance.myShowPercent && myTotal > 0)
+				if (DPSExtremeClientConfig.Instance.ShowPercentages && myTotal > 0)
 					myRightText = $"{StatValue.FormatStatNumber(myValue, myFormat)} ({String.Format("{0:P0}", (float)myValue / myTotal)})";
 			}
 			

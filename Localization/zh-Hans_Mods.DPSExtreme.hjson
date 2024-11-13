@@ -15,6 +15,7 @@ TogglePercent: 显示 %
 NoDPSWearDPSMeter: 需要[i:DPSMeter]
 NoBoss: 当前无Boss存活
 BossLabel: Boss - {0}
+// Combat: CombatTest
 // ClickToChangeDisplay: Click to change display mode
 // ShowCombatHistory: Click to show combat history
 DamageStatsForNPC: "{0} 伤害: "
@@ -32,3 +33,34 @@ ToggleTeamDPSCommandDescription: 显示队伍成员伤害统计
 // Drowning: Drowning
 // Lava: lava
 // BlockContactDamage: Block contact damage
+
+Configs: {
+	DPSExtremeClientConfig: {
+		// DisplayName: DPSExtreme Client Config
+		// Headers.GeneralConfigHeader: General
+
+		ShowPercentages: {
+			// Label: Show Percentages
+			// Tooltip: ""
+		}
+	}
+
+	DPSExtremeServerConfig: {
+		// DisplayName: DPSExtreme Server Config
+
+		Headers: {
+			// GeneralConfigHeader: General
+			// CombatConfigHeader: Combat
+		}
+
+		RefreshRate: {
+			// Label: Refresh Rate
+			// Tooltip: How often (in ticks) combat stats are broadcast to players. (No delay in singleplayer)
+		}
+
+		IgnoreCritters: {
+			// Label: Ignore Critters
+			// Tooltip: ""
+		}
+	}
+}

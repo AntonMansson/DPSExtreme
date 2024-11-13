@@ -15,6 +15,7 @@ TogglePercent: Вкл/откл %
 NoDPSWearDPSMeter: Нет инфо об DPS, возьмите [i:DPSMeter]
 NoBoss: Нет босса
 BossLabel: Босс - {0}
+// Combat: CombatTest
 // ClickToChangeDisplay: Click to change display mode
 // ShowCombatHistory: Click to show combat history
 DamageStatsForNPC: "Статистика урона для {0}: "
@@ -32,3 +33,34 @@ ToggleTeamDPSCommandDescription: Переключить отображение �
 // Drowning: Drowning
 // Lava: lava
 // BlockContactDamage: Block contact damage
+
+Configs: {
+	DPSExtremeClientConfig: {
+		// DisplayName: DPSExtreme Client Config
+		// Headers.GeneralConfigHeader: General
+
+		ShowPercentages: {
+			// Label: Show Percentages
+			// Tooltip: ""
+		}
+	}
+
+	DPSExtremeServerConfig: {
+		// DisplayName: DPSExtreme Server Config
+
+		Headers: {
+			// GeneralConfigHeader: General
+			// CombatConfigHeader: Combat
+		}
+
+		RefreshRate: {
+			// Label: Refresh Rate
+			// Tooltip: How often (in ticks) combat stats are broadcast to players. (No delay in singleplayer)
+		}
+
+		IgnoreCritters: {
+			// Label: Ignore Critters
+			// Tooltip: ""
+		}
+	}
+}

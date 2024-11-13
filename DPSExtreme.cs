@@ -8,6 +8,7 @@ using Terraria.UI;
 using DPSExtreme.UIElements;
 using Microsoft.Xna.Framework;
 using DPSExtreme.Combat;
+using DPSExtreme.Config;
 
 // TODO, mod to share fog of war 
 // TODO: Death counter for each boss
@@ -85,7 +86,7 @@ namespace DPSExtreme
 
 	internal class DPSExtreme : Mod
 	{
-		internal const int UPDATEDELAY = 30; // 0.5 seconds. Configurable later?
+		internal static int UPDATEDELAY = 5; //5 ticks is default for SP. MP reads from server config
 
 		internal static DPSExtreme instance;
 
@@ -118,6 +119,12 @@ namespace DPSExtreme
 			{
 				dpsExtremeTool = new DPSExtremeTool();
 			}
+		}
+
+		public void OnServerConfigLoad()
+		{
+			if (Main.netMode != NetmodeID.SinglePlayer)
+				UPDATEDELAY = DPSExtremeServerConfig.Instance.RefreshRate;
 		}
 
 		public override void Unload()

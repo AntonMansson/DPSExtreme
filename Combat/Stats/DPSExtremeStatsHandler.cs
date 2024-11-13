@@ -3,6 +3,7 @@ using Terraria.ID;
 using Terraria;
 using Terraria.Localization;
 using Terraria.Map;
+using DPSExtreme.Config;
 
 namespace DPSExtreme.Combat.Stats
 {
@@ -200,6 +201,10 @@ namespace DPSExtreme.Combat.Stats
 	{
 		internal void AddDealtDamage(NPC aDamagedNPC, DamageSource aDamageSource, int aDamage)
 		{
+			if (DPSExtremeServerConfig.Instance.IgnoreCritters)
+				if (aDamagedNPC.CountsAsACritter)
+					return;
+
 			NPC realDamagedNPC = aDamagedNPC;
 			if (aDamagedNPC.realLife >= 0)
 				realDamagedNPC = Main.npc[aDamagedNPC.realLife];
@@ -276,6 +281,10 @@ namespace DPSExtreme.Combat.Stats
 				Main.NewText("DPSExtreme: Adding kill without active combat");
 				return;
 			}
+
+			if (DPSExtremeServerConfig.Instance.IgnoreCritters)
+				if (aKilledNPC.CountsAsACritter)
+					return;
 
 			DPSExtreme.instance.combatTracker.myActiveCombat.myKills[aKiller][aKilledNPC.type] += 1;
 		}

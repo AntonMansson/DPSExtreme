@@ -1,5 +1,7 @@
 ﻿using DPSExtreme.Combat.Stats;
+using DPSExtreme.Config;
 using System;
+using Terraria.ID;
 
 namespace DPSExtreme.UIElements.Displays
 {
@@ -107,6 +109,16 @@ namespace DPSExtreme.UIElements.Displays
 				
 				if (listTotal > 0)
 				{
+					//Filter out critter entries if config is set
+					if (DPSExtremeServerConfig.Instance.IgnoreCritters)
+					{
+						if (baseKey <= (int)DamageSource.SourceType.NPCEnd)
+						{
+							if (ContentSamples.NpcsByNetId[baseKey].CountsAsACritter)
+								continue;
+						}
+					}
+
 					string name = "Missing name callback";
 					if (baseKey == -1 && myParentDisplay != null) //not breakdownable. Show same name as parent entry
 					{
