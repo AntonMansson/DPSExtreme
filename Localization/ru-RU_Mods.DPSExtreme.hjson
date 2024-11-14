@@ -92,5 +92,10 @@ Configs: {
 			// Label: End Generic Combats When Upgraded
 			// Tooltip: ""
 		}
+
+		GenericCombatTimeout: {
+			// Label: Generic Combat Timeout
+			// Tooltip: ""
+		}
 	}
 }

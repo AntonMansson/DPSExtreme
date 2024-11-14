@@ -14,7 +14,6 @@ namespace DPSExtreme.Combat
 	internal class DPSExtremeCombatTracker
 	{
 		internal const int ourHistorySize = 5;
-		const int ourGenericCombatTimeout = 5;
 
 		private int myHistoryBufferZeroIndex = 0; //Ring buffer shit
 		private DPSExtremeCombat[] myCombatHistory = new DPSExtremeCombat[ourHistorySize];
@@ -221,7 +220,7 @@ namespace DPSExtreme.Combat
 			if (((myActiveCombat.myCombatTypeFlags & CombatType.Generic) == 0))
 				return;
 
-			if (myActiveCombat.myTimeSinceLastActivity.TotalSeconds < ourGenericCombatTimeout)
+			if (myActiveCombat.myTimeSinceLastActivity.TotalSeconds < DPSExtremeServerConfig.Instance.GenericCombatTimeout)
 				return;
 
 			SendEndCombat(CombatType.Generic);

@@ -21,6 +21,11 @@ namespace DPSExtreme.Config
 		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.TrackGenericCombat.Tooltip")]
 		public bool TrackGenericCombat;
 
+		[DefaultValue(5)]
+		[Increment(1)]
+		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.GenericCombatTimeout.Tooltip")]
+		public int GenericCombatTimeout;
+
 		[DefaultValue(false)]
 		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.EndGenericCombatsWhenUpgraded.Tooltip")]
 		public bool EndGenericCombatsWhenUpgraded;
