@@ -33,7 +33,7 @@ namespace DPSExtreme.UIElements.Displays
 				entry.myColor = Color.Yellow;
 				entry.myNameText = "Current combat";
 				entry.myRightText = DPSExtreme.instance.combatTracker.myActiveCombat.myFormattedDuration;
-				entry.myIndex = entryIndex;
+				entry.myIndex = -1;
 				entryIndex++;
 			}
 
@@ -59,7 +59,13 @@ namespace DPSExtreme.UIElements.Displays
 		{
 			DPSExtremeUI.instance.myDisplayMode = DPSExtremeUI.instance.myPreviousDisplayMode;
 
-			DPSExtremeCombat combat = DPSExtreme.instance.combatTracker.GetCombatHistory(aSelectedIndex);
+			DPSExtremeCombat combat = null;
+
+			if (aSelectedIndex == -1)
+				combat = DPSExtreme.instance.combatTracker.myActiveCombat;
+			else
+				combat = DPSExtreme.instance.combatTracker.GetCombatHistory(aSelectedIndex);
+
 			if (combat == null)
 				return;
 

@@ -87,5 +87,10 @@ Configs: {
 			// Label: Track Bosses
 			// Tooltip: If false, bosses spawning will not trigger combat.
 		}
+
+		EndGenericCombatsWhenUpgraded: {
+			// Label: End Generic Combats When Upgraded
+			// Tooltip: ""
+		}
 	}
 }

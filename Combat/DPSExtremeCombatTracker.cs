@@ -143,14 +143,7 @@ namespace DPSExtreme.Combat
 			if (GetActiveEventType() != 0)
 				return;
 
-			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
-			push.myCombatType = CombatType.Event;
-
-			//Needs to happen before it gets sent to clients
-			if (Main.netMode == NetmodeID.Server)
-				DPSExtreme.instance.packetHandler.HandleEndCombatPush(push);
-
-			DPSExtreme.instance.packetHandler.SendProtocol(push);
+			SendEndCombat(CombatType.Event);
 		}
 
 		private int GetActiveInvasionType()
@@ -193,14 +186,7 @@ namespace DPSExtreme.Combat
 			if (GetActiveInvasionType() != InvasionID.None)
 				return;
 
-			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
-			push.myCombatType = CombatType.Invasion;
-
-			//Needs to happen before it gets sent to clients
-			if (Main.netMode == NetmodeID.Server)
-				DPSExtreme.instance.packetHandler.HandleEndCombatPush(push);
-
-			DPSExtreme.instance.packetHandler.SendProtocol(push);
+			SendEndCombat(CombatType.Invasion);
 		}
 
 		private void UpdateAllBossesDeadCheck()
@@ -224,14 +210,7 @@ namespace DPSExtreme.Combat
 			if (bossAlive)
 				return;
 
-			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
-			push.myCombatType = CombatType.BossFight;
-
-			//Needs to happen before it gets sent to clients
-			if (Main.netMode == NetmodeID.Server)
-				DPSExtreme.instance.packetHandler.HandleEndCombatPush(push);
-
-			DPSExtreme.instance.packetHandler.SendProtocol(push);
+			SendEndCombat(CombatType.BossFight);
 		}
 
 		void UpdateGenericCombatTimeoutCheck()
@@ -245,14 +224,7 @@ namespace DPSExtreme.Combat
 			if (myActiveCombat.myTimeSinceLastActivity.TotalSeconds < ourGenericCombatTimeout)
 				return;
 
-			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
-			push.myCombatType = CombatType.Generic;
-
-			//Needs to happen before it gets sent to clients
-			if (Main.netMode == NetmodeID.Server)
-				DPSExtreme.instance.packetHandler.HandleEndCombatPush(push);
-
-			DPSExtreme.instance.packetHandler.SendProtocol(push);
+			SendEndCombat(CombatType.Generic);
 		}
 
 		//Called when damage is dealt or bosses spawn etc
@@ -312,6 +284,16 @@ namespace DPSExtreme.Combat
 		//Boss fight starts during an invastion etc
 		internal void UpgradeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType = -1)
 		{
+			if (DPSExtremeServerConfig.Instance.EndGenericCombatsWhenUpgraded)
+			{
+				if (aCombatType != CombatType.Generic && myActiveCombat.myHighestCombatType == CombatType.Generic)
+				{
+					SendEndCombat(CombatType.Generic);
+					TriggerCombat(aCombatType, aBossOrInvasionOrEventType);
+					return;
+				}
+			}
+
 			int oldHighestCombat = (int)myActiveCombat.myHighestCombatType;
 			myActiveCombat.myHighestCombatType = (CombatType)Math.Max((int)myActiveCombat.myHighestCombatType, (int)aCombatType);
 			myActiveCombat.myCombatTypeFlags |= aCombatType;
@@ -336,6 +318,18 @@ namespace DPSExtreme.Combat
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);
 			}
+		}
+
+		internal void SendEndCombat(CombatType aCombatType)
+		{
+			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
+			push.myCombatType = aCombatType;
+
+			//Needs to happen before it gets sent to clients
+			if (Main.netMode == NetmodeID.Server)
+				DPSExtreme.instance.packetHandler.HandleEndCombatPush(push);
+
+			DPSExtreme.instance.packetHandler.SendProtocol(push);
 		}
 
 		internal void EndCombat(CombatType aCombatType)

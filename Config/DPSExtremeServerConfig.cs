@@ -21,6 +21,10 @@ namespace DPSExtreme.Config
 		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.TrackGenericCombat.Tooltip")]
 		public bool TrackGenericCombat;
 
+		[DefaultValue(false)]
+		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.EndGenericCombatsWhenUpgraded.Tooltip")]
+		public bool EndGenericCombatsWhenUpgraded;
+
 		[DefaultValue(true)]
 		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.TrackEvents.Tooltip")]
 		public bool TrackEvents;
