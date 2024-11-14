@@ -11,8 +11,7 @@ using Terraria.ModLoader.UI;
 using DPSExtreme.Combat;
 using DPSExtreme.Combat.Stats;
 using DPSExtreme.UIElements.Displays;
-using DPSExtreme.Config;
-using Terraria.ModLoader.Config;
+using System.Collections.Generic;
 
 namespace DPSExtreme
 {
@@ -36,20 +35,22 @@ namespace DPSExtreme
 		internal UIDragablePanel myRootPanel;
 		internal UIText myLabel;
 
+		internal UIStatInfoPopup myStatInfoPopup = new UIStatInfoPopup();
+
 		internal UIListDisplay<StatValue> myNeedDPSAccDisplay;
 		internal UISelectDisplayModeDisplay mySelectDisplayModeDisplay;
 		internal UICombatHistoryDisplay myCombatHistoryDisplay;
 
 		internal UIListDisplay<StatValue> myDamagePerSecondDisplay;
-		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myDamageDoneDisplay;
-		internal UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTakenDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, DamageStatValue>> myDamageDoneDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>> myDamageTakenDisplay;
 		internal UIListDisplay<StatValue> myDeathsDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myKillsDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myManaUsedDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>> myBuffUptimesDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>> myDebuffUptimesDisplay;
 
-		internal UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>> myEnemyDamageTakenDisplay;
+		internal UIStatDictionaryDisplay<DPSExtremeStatList<DamageStatValue>> myEnemyDamageTakenDisplay;
 
 		internal ListDisplayMode myPreviousDisplayMode = ListDisplayMode.DamageDone;
 
@@ -70,9 +71,9 @@ namespace DPSExtreme
 			}
 		}
 
-		UIDisplay myCurrentDisplay
+		internal UIDisplay myCurrentDisplay
 		{
-			get 
+			get
 			{
 				switch (myDisplayMode)
 				{
@@ -119,10 +120,12 @@ namespace DPSExtreme
 			{
 				if (value)
 				{
+					Append(myStatInfoPopup);
 					Append(myRootPanel);
 				}
 				else
 				{
+					RemoveChild(myStatInfoPopup);
 					RemoveChild(myRootPanel);
 				}
 				showTeamDPSPanel = value;
@@ -159,7 +162,7 @@ namespace DPSExtreme
 			instance = this;
 		}
 
-		Asset<Texture2D> playerBackGroundTexture;
+		internal Asset<Texture2D> playerBackGroundTexture;
 		public override void OnInitialize()
 		{
 			OnClientConfigLoad();
@@ -199,7 +202,7 @@ namespace DPSExtreme
 
 
 			var chooseDisplayModeButton = new UIHoverImageButton(DPSExtreme.instance.Assets.Request<Texture2D>("DisplayModeButton", AssetRequestMode.ImmediateLoad), Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("ClickToChangeDisplay")));
-			chooseDisplayModeButton.OnLeftClick += (a, b) => 
+			chooseDisplayModeButton.OnLeftClick += (a, b) =>
 			{
 				if (myDisplayMode != ListDisplayMode.DisplayModeSelect)
 					myDisplayMode = ListDisplayMode.DisplayModeSelect;
@@ -240,13 +243,13 @@ namespace DPSExtreme
 			myCombatHistoryDisplay = new UICombatHistoryDisplay();
 
 			myDamagePerSecondDisplay = new UIListDisplay<StatValue>(ListDisplayMode.DamagePerSecond);
-			myDamageDoneDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.DamageDone);
-			myDamageTakenDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>>(ListDisplayMode.DamageTaken);
+			myDamageDoneDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DamageStatValue>>(ListDisplayMode.DamageDone);
+			myDamageTakenDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>>(ListDisplayMode.DamageTaken);
 			myManaUsedDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.ManaUsed);
 			myBuffUptimesDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>>(ListDisplayMode.BuffUptime, StatFormat.Time);
 			myDebuffUptimesDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>>(ListDisplayMode.DebuffUptime, StatFormat.Time);
 
-			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<StatValue>>(ListDisplayMode.EnemyDamageTaken);
+			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<DamageStatValue>>(ListDisplayMode.EnemyDamageTaken);
 
 			myDeathsDisplay = new UIListDisplay<StatValue>(ListDisplayMode.Deaths);
 			myKillsDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.Kills);
@@ -298,7 +301,7 @@ namespace DPSExtreme
 		{
 			string title = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey(myDisplayMode.ToString()));
 
-			if (myDisplayedCombat == null || 
+			if (myDisplayedCombat == null ||
 				myDisplayMode < ListDisplayMode.StatDisplaysStart)
 			{
 				myLabel.SetText(title);

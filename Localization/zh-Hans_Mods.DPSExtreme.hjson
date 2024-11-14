@@ -43,6 +43,11 @@ Configs: {
 			// Label: Show Percentages
 			// Tooltip: ""
 		}
+
+		SnapAdditionalInfoBoxToMouse: {
+			// Label: Snap Additional Info Box To Mouse
+			// Tooltip: ""
+		}
 	}
 
 	DPSExtremeServerConfig: {

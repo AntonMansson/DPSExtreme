@@ -36,6 +36,8 @@ namespace DPSExtreme.Combat.Stats
 			}
 		}
 
+		public virtual List<string> GetInfoBoxLines() { return new List<string>(); }
+
 		public bool HasStats()
 		{
 			foreach ((int _, Value stat) in this)

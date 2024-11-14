@@ -129,11 +129,12 @@ namespace DPSExtreme
 					}
 
 					DamageSource damageSource = new DamageSource(DamageSource.SourceType.DOT);
+					damageSource.myDamageAmount = damage;
 					damageSource.myDamageCauserId = playerNumber;
 					damageSource.myDamageCauserAbility = -1; //Unknown what item/projectile it is. Clients will pass this info themselves
 
 					DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(damagedNPC, damageSource, damage);
+					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(damagedNPC, damageSource);
 
 					// TODO: Reimplement DPS with ring buffer for accurate?  !!! or send 0?
 					// TODO: Verify real life adjustment

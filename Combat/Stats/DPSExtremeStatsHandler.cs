@@ -47,6 +47,9 @@ namespace DPSExtreme.Combat.Stats
 			}
 		}
 
+		internal int myDamageAmount = 0;
+		internal bool myIsCrit = false;
+
 		internal int myDamageCauserId = -1;  //NPC id/Player index etc
 
 		private int _myDamageCauserAbility = -1;
@@ -199,7 +202,7 @@ namespace DPSExtreme.Combat.Stats
 
 	internal class DPSExtremeStatsHandler
 	{
-		internal void AddDealtDamage(NPC aDamagedNPC, DamageSource aDamageSource, int aDamage)
+		internal void AddDealtDamage(NPC aDamagedNPC, DamageSource aDamageSource)
 		{
 			if (DPSExtremeServerConfig.Instance.IgnoreCritters)
 				if (aDamagedNPC.CountsAsACritter)
@@ -214,13 +217,13 @@ namespace DPSExtreme.Combat.Stats
 			realDamagedNPC.GetLifeStats(out npcRemainingHealth, out npcMaxHealth);
 
 			if (Main.netMode != NetmodeID.Server) //Damage has not been applied yet on server
-				npcRemainingHealth += aDamage; //damage has already been applied when we reach this point. But we're interested in the value pre-damage
+				npcRemainingHealth += aDamageSource.myDamageAmount; //damage has already been applied when we reach this point. But we're interested in the value pre-damage
 
 			//Not sure why this happens. Seems like there are multiple hits in a single frame for massive overkills
 			if (npcRemainingHealth < 0)
 				return;
 
-			int clampedDamageAmount = Math.Clamp(aDamage, 0, npcRemainingHealth); //Avoid overkill
+			int clampedDamageAmount = Math.Clamp(aDamageSource.myDamageAmount, 0, npcRemainingHealth); //Avoid overkill
 
 			//Merge all penguin ids into single id etc
 			int consolidatedType = NPCID.FromLegacyName(Lang.GetNPCNameValue(realDamagedNPC.type));
@@ -233,7 +236,11 @@ namespace DPSExtreme.Combat.Stats
 				return;
 			}
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId] += clampedDamageAmount;
+			DamageStatValue enemyDamageTakenStat = DPSExtreme.instance.combatTracker.myActiveCombat.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId];
+			enemyDamageTakenStat.myValue += clampedDamageAmount;
+			enemyDamageTakenStat.myHitCount += 1;
+			enemyDamageTakenStat.myCritCount += aDamageSource.myIsCrit ? 1 : 0;
+			enemyDamageTakenStat.myMaxHit = Math.Max(enemyDamageTakenStat.myMaxHit, clampedDamageAmount);
 
 			if (Main.netMode == NetmodeID.Server &&
 				aDamageSource.myDamageCauserId < (int)InfoListIndices.SupportedPlayerCount) //MP clients sync their local damage so that we can include item/proj type
@@ -241,10 +248,15 @@ namespace DPSExtreme.Combat.Stats
 				return;
 			}
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDamageDone[aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility] += clampedDamageAmount;
+			DamageStatValue stat = DPSExtreme.instance.combatTracker.myActiveCombat.myDamageDone[aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
+
+			stat.myHitCount += 1;
+			stat.myCritCount += aDamageSource.myIsCrit ? 1 : 0;
+			stat.myValue += clampedDamageAmount;
+			stat.myMaxHit = Math.Max(stat.myMaxHit, clampedDamageAmount);
 		}
 
-		internal void AddDamageTaken(Player aDamagedPlayer, DamageSource aDamageSource, int aDamage)
+		internal void AddDamageTaken(Player aDamagedPlayer, DamageSource aDamageSource)
 		{
 			if (aDamagedPlayer.statLife <= 0)
 				return;
@@ -256,9 +268,13 @@ namespace DPSExtreme.Combat.Stats
 				return;
 			}
 
-			int clampedDamageAmount = Math.Clamp(aDamage, 0, aDamagedPlayer.statLife); //Avoid overkill
+			int clampedDamageAmount = Math.Clamp(aDamageSource.myDamageAmount, 0, aDamagedPlayer.statLife); //Avoid overkill
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDamageTaken[aDamagedPlayer.whoAmI][aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility] += clampedDamageAmount;
+			DamageStatValue stat = DPSExtreme.instance.combatTracker.myActiveCombat.myDamageTaken[aDamagedPlayer.whoAmI][aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
+			stat.myValue += clampedDamageAmount;
+			stat.myMaxHit = Math.Max(stat.myMaxHit, clampedDamageAmount);
+			stat.myHitCount += 1;
+			stat.myCritCount += aDamageSource.myIsCrit ? 1 : 0;
 		}
 
 		internal void AddDeath(Player aKilledPlayer)

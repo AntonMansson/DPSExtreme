@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.VisualBasic;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace DPSExtreme.Combat.Stats
@@ -17,6 +16,8 @@ namespace DPSExtreme.Combat.Stats
 
 		public abstract void ToStream(BinaryWriter aWriter);
 		public abstract void FromStream(BinaryReader aReader);
+
+		public abstract List<string> GetInfoBoxLines();
 	}
 
 	internal class StatValue : IStatContainer
@@ -40,6 +41,8 @@ namespace DPSExtreme.Combat.Stats
 			aMax = myValue;
 			aTotal = myValue;
 		}
+
+		public virtual List<string> GetInfoBoxLines() { return new List<string>(); }
 
 		internal static string FormatStatNumber(int aValue, StatFormat aFormat)
 		{
@@ -99,6 +102,41 @@ namespace DPSExtreme.Combat.Stats
 		{
 			aMax = (int)DPSExtremeUI.instance.myDisplayedCombat.myDuration.TotalSeconds * 60;
 			aTotal = myValue;
+		}
+	}
+
+	internal class DamageStatValue : StatValue
+	{
+		internal int myHitCount = 0;
+		internal int myCritCount = 0;
+		internal int myMaxHit = 0;
+
+		public DamageStatValue() { }
+
+		public override List<string> GetInfoBoxLines() 
+		{
+			List<string> lines = new List<string>();
+			lines.Add(string.Format("Total Damage: {0}", myValue));
+			lines.Add(string.Format("Hits: {0}", myHitCount));
+			lines.Add(string.Format("Max hit: {0}", myMaxHit));
+			if (myHitCount > 0) lines.Add(string.Format("Average Damage: {0}", myValue / myHitCount));
+			if (myCritCount > 0) lines.Add(string.Format("Crits: {0} ({1:P0})", myCritCount, myCritCount / (float)myHitCount));
+
+			return lines; 
+		}
+
+		public new void ToStream(BinaryWriter aWriter)
+		{
+			aWriter.Write7BitEncodedInt(myValue);
+			aWriter.Write7BitEncodedInt(myHitCount);
+			aWriter.Write7BitEncodedInt(myCritCount);
+		}
+
+		public new void FromStream(BinaryReader aReader)
+		{
+			myValue = aReader.Read7BitEncodedInt();
+			myHitCount = aReader.Read7BitEncodedInt();
+			myCritCount = aReader.Read7BitEncodedInt();
 		}
 	}
 }

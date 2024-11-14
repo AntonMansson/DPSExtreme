@@ -54,11 +54,12 @@ namespace DPSExtreme
 				//TODO Verify that damage has already been applied when we reach this point (otherwise overkill calculation is incorrect)
 
 				DamageSource damageSource = new DamageSource(DamageSource.SourceType.DOT);
+				damageSource.myDamageAmount = damage;
 				damageSource.myDamageCauserAbility = (int)InfoListIndices.DOTs;
 				damageSource.myDamageCauserId = (int)InfoListIndices.DOTs;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource, damage);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource);
 
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
 			});
@@ -85,11 +86,12 @@ namespace DPSExtreme
 				NPC npc = Main.npc[whoAmI];
 
 				DamageSource damageSource = new DamageSource(DamageSource.SourceType.DOT);
+				damageSource.myDamageAmount = damage;
 				damageSource.myDamageCauserAbility = (int)InfoListIndices.DOTs;
 				damageSource.myDamageCauserId = (int)InfoListIndices.DOTs;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource, damage);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource);
 
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
 			});
@@ -136,11 +138,13 @@ namespace DPSExtreme
 						return;
 
 				DamageSource damageSource = new DamageSource(DamageSource.SourceType.Item);
+				damageSource.myDamageAmount = damageDone;
+				damageSource.myIsCrit = hit.Crit;
 				damageSource.myDamageCauserAbility = item.type;
 				damageSource.myDamageCauserId = player.whoAmI;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource, damageDone);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource);
 			}
 			catch (Exception)
 			{
@@ -177,11 +181,13 @@ namespace DPSExtreme
 				if (dpsProjectile.myParentItemType != -1)
 					damageSource.mySourceType = DamageSource.SourceType.Item;
 
+				damageSource.myDamageAmount = damageDone;
+				damageSource.myIsCrit = hit.Crit;
 				damageSource.myDamageCauserAbility = dpsProjectile.myParentItemType != -1 ? dpsProjectile.myParentItemType : projectile.type;
 				damageSource.myDamageCauserId = projectileOwner;
 
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource, damageDone);
+				DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource);
 			}
 			catch (Exception)
 			{

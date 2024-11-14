@@ -1,6 +1,7 @@
 ﻿
 using DPSExtreme.Combat.Stats;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace DPSExtreme
@@ -67,6 +68,8 @@ namespace DPSExtreme
 				}
 			}
 		}
+
+		public virtual List<string> GetInfoBoxLines() { return new List<string>(); }
 
 		public bool HasStats()
 		{

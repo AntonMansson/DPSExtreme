@@ -65,10 +65,10 @@ namespace DPSExtreme.Combat
 
 		internal string myFormattedDuration => String.Format("{0:D2}:{1:D2}", (int)Math.Floor(myDuration.TotalMinutes), myDuration.Seconds);
 
-		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new();
+		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<DamageStatValue>> myEnemyDamageTaken = new();
 
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new();
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTaken = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> myDamageDone = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>> myDamageTaken = new();
 		internal DPSExtremeStatList<StatValue> myDeaths = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myManaUsed = new();
@@ -127,7 +127,7 @@ namespace DPSExtreme.Combat
 
 		internal void ReassignStats(int aFrom, int aTo)
 		{
-			foreach ((int npcType, DPSExtremeStatList<StatValue> damageInfo) in myEnemyDamageTaken)
+			foreach ((int npcType, DPSExtremeStatList<DamageStatValue> damageInfo) in myEnemyDamageTaken)
 			{
 				myEnemyDamageTaken[npcType][aTo] = myEnemyDamageTaken[npcType][aFrom];
 			}
@@ -149,7 +149,7 @@ namespace DPSExtreme.Combat
 		{
 			myDamageDone[aPlayer].Clear();
 
-			foreach ((int npcType, DPSExtremeStatList<StatValue> damageInfo) in myEnemyDamageTaken)
+			foreach ((int npcType, DPSExtremeStatList<DamageStatValue> damageInfo) in myEnemyDamageTaken)
 				myEnemyDamageTaken[npcType][aPlayer] = new();
 
 			myDamagePerSecond[aPlayer] = new();

@@ -136,6 +136,7 @@ namespace DPSExtreme.UIElements.Displays
 					entry.myColor = DPSExtremeUI.chatColor[Math.Abs(baseKey) % DPSExtremeUI.chatColor.Length];
 					entry.myNameText = name;
 					entry.myBaseKey = baseKey;
+					entry.myInfoBoxLines = damageInfo.GetInfoBoxLines();
 					entry.SetValues(listTotal, myHighestValue, myTotal);
 					entryIndex++;
 				}

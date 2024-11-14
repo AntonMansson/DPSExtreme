@@ -128,6 +128,7 @@ namespace DPSExtreme.UIElements.Displays
 					entry.myParticipantIndex = i;
 					entry.myColor = DPSExtremeUI.chatColor[i % DPSExtremeUI.chatColor.Length];
 					entry.myNameText = name;
+					entry.myInfoBoxLines = value.GetInfoBoxLines();
 					entry.SetValues(total, myHighestValue, myTotal);
 					entryIndex++;
 				}

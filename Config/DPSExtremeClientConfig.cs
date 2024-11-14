@@ -9,9 +9,12 @@ namespace DPSExtreme.Config
 
 		public override ConfigScope Mode => ConfigScope.ClientSide;
 
-		[Header("$GeneralConfigHeader")]
+		[Header("GeneralConfigHeader")]
 		[DefaultValue(false)]
 		public bool ShowPercentages;
+
+		[DefaultValue(false)]
+		public bool SnapAdditionalInfoBoxToMouse;
 
 		public override void OnChanged() 
 		{

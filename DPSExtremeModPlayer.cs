@@ -116,8 +116,11 @@ namespace DPSExtreme
 				}
 			}
 
+			damageSource.myIsCrit = false;
+			damageSource.myDamageAmount = aHurtInfo.Damage;
+
 			DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-			DPSExtreme.instance.combatTracker.myStatsHandler.AddDamageTaken(Player, damageSource, aHurtInfo.Damage);
+			DPSExtreme.instance.combatTracker.myStatsHandler.AddDamageTaken(Player, damageSource);
 		}
 
 		public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)

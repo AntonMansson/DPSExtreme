@@ -58,10 +58,11 @@ namespace DPSExtreme
 					int dealtDamage = (int)(dotDPS * ratio);
 
 					DamageSource damageSource = new DamageSource(DamageSource.SourceType.DOT);
+					damageSource.myDamageAmount = dealtDamage;
 					damageSource.myDamageCauserId = (int)InfoListIndices.DOTs;
 					damageSource.myDamageCauserAbility = (int)DamageSource.SourceType.DOT; //Unknown what dots it is
 
-					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource, dealtDamage);
+					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(npc, damageSource);
 				}
 			}
 

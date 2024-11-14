@@ -129,10 +129,10 @@ namespace DPSExtreme
 
 		public bool myCombatIsActive = false;
 
-		public DPSExtremeStatDictionary<int, DPSExtremeStatList<StatValue>> myEnemyDamageTaken = new();
+		public DPSExtremeStatDictionary<int, DPSExtremeStatList<DamageStatValue>> myEnemyDamageTaken = new();
 
-		public DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myDamageDone = new();
-		public DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, StatValue>>> myDamageTaken = new();
+		public DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> myDamageDone = new();
+		public DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>> myDamageTaken = new();
 		public DPSExtremeStatList<StatValue> myDeaths = new();
 		public DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myManaUsed = new();
@@ -164,7 +164,7 @@ namespace DPSExtreme
 
 		public int myPlayer = 0;
 		public int myDPS = 0;
-		public DPSExtremeStatDictionary<int, StatValue> myDamageDoneBreakdown = new DPSExtremeStatDictionary<int, StatValue>();
+		public DPSExtremeStatDictionary<int, DamageStatValue> myDamageDoneBreakdown = new DPSExtremeStatDictionary<int, DamageStatValue>();
 	}
 
 	internal class ProtocolPushClientDPSs : DPSExtremeProtocol

@@ -30,6 +30,8 @@ namespace DPSExtreme.UIElements.Displays
 
 		internal UIDisplay myParentDisplay = null;
 
+		internal List<string> myInfoBoxLines = new List<string>();
+
 		internal string myRightText = string.Empty;
 		internal StatFormat myFormat = StatFormat.RawNumber;
 
