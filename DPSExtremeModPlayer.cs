@@ -9,6 +9,7 @@ using Terraria.Chat;
 using Terraria.Localization;
 using Microsoft.Xna.Framework;
 using Terraria.DataStructures;
+using DPSExtreme.Config;
 
 namespace DPSExtreme
 {
@@ -156,10 +157,57 @@ namespace DPSExtreme
 				if (Player.buffType[i] == 0)
 					continue;
 
-				//Hardcode common vanilla buffs to be buffs even though they're part of Main.debuff?
-				//Things like Sunflower, campfire and heart lantern are all listed as debuff because you can't right click them away
+				bool isDebuff = Main.debuff[Player.buffType[i]];
+				bool isPermanent = Player.buffTime[i] == 1;
+				bool isMinion = Player.buffTime[i] == 18000;
 
-				if (Main.debuff[Player.buffType[i]])
+				if (isPermanent && DPSExtremeServerConfig.Instance.IgnorePermanentBuffs)
+					continue;
+
+				if (isMinion && DPSExtremeServerConfig.Instance.IgnoreMinionBuffs)
+					continue;
+
+				switch (Player.buffType[i])
+				{
+					case BuffID.Werewolf:
+					case BuffID.Merfolk:
+					case BuffID.PaladinsShield:
+					case BuffID.Honey:
+					case BuffID.LeafCrystal:
+					case BuffID.IceBarrier:
+					case BuffID.Campfire:
+					case BuffID.HeartLamp:
+					case BuffID.BeetleMight1:
+					case BuffID.BeetleMight2:
+					case BuffID.BeetleMight3:
+					case BuffID.Sunflower:
+					case BuffID.MonsterBanner:
+					case BuffID.StarInBottle:
+					case BuffID.Sharpened:
+					case BuffID.DryadsWard:
+					case BuffID.SolarShield1:
+					case BuffID.SolarShield2:
+					case BuffID.SolarShield3:
+					case BuffID.NebulaUpLife1:
+					case BuffID.NebulaUpLife2:
+					case BuffID.NebulaUpLife3:
+					case BuffID.NebulaUpMana1:
+					case BuffID.NebulaUpMana2:
+					case BuffID.NebulaUpMana3:
+					case BuffID.NebulaUpDmg1:
+					case BuffID.NebulaUpDmg2:
+					case BuffID.NebulaUpDmg3:
+					case BuffID.SugarRush:
+					case BuffID.ParryDamageBuff:
+					case BuffID.Lucky:
+					case BuffID.TitaniumStorm:
+						isDebuff = false;
+						break;
+					default:
+						break;
+				}
+
+				if (isDebuff)
 					DPSExtreme.instance.combatTracker.myStatsHandler.AddDebuffUptime(Player, Player.buffType[i]);
 				else
 					DPSExtreme.instance.combatTracker.myStatsHandler.AddBuffUptime(Player, Player.buffType[i]);

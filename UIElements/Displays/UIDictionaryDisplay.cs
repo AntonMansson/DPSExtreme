@@ -81,7 +81,7 @@ namespace DPSExtreme.UIElements.Displays
 			}
 
 			if (myFormat == StatFormat.Time)
-				myTotal = (int)(DPSExtremeUI.instance.myDisplayedCombat.myDuration.TotalSeconds * 60);
+				myTotal = DPSExtremeUI.instance.myDisplayedCombat.myDurationInTicks;
 		}
 
 		internal override void UpdateValues()

@@ -66,7 +66,7 @@ namespace DPSExtreme.Combat.Stats
 				if (minutes == 0)
 					return seconds.ToString("#.0");
 				else
-					return string.Format("{0}:{1}", minutes.ToString(), seconds.ToString("#.0"));
+					return string.Format("{0:D2}:{1:D2}", minutes, (int)seconds);
 			}
 
 			return "Invalid format";
@@ -100,7 +100,7 @@ namespace DPSExtreme.Combat.Stats
 
 		public override void GetMaxAndTotal(out int aMax, out int aTotal)
 		{
-			aMax = (int)DPSExtremeUI.instance.myDisplayedCombat.myDuration.TotalSeconds * 60;
+			aMax = (int)DPSExtremeUI.instance.myDisplayedCombat.myDurationInTicks;
 			aTotal = myValue;
 		}
 	}

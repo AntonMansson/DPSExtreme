@@ -46,6 +46,13 @@ namespace DPSExtreme.Config
 		[TooltipKey("$Mods.DPSExtreme.Configs.DPSExtremeServerConfig.IgnoreCritters.Tooltip")]
 		public bool IgnoreCritters;
 
+		[Header("BuffUptimesHeader")]
+		[DefaultValue(false)]
+		public bool IgnorePermanentBuffs;
+
+		[DefaultValue(false)]
+		public bool IgnoreMinionBuffs;
+
 		public override void OnChanged()
 		{
 			if (DPSExtremeUI.instance != null)
