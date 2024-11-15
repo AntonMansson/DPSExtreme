@@ -56,7 +56,7 @@ Configs: {
 		Headers: {
 			// GeneralConfigHeader: General
 			// CombatConfigHeader: Combat
-			// BuffUptimesHeader: Buff Uptimes Header Header
+			// BuffUptimesHeader: Buff Uptimes
 		}
 
 		RefreshRate: {
