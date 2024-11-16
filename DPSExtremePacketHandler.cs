@@ -206,7 +206,7 @@ namespace DPSExtreme
 				return;
 
 			DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDamagePerSecond = aPush.myDamagePerSecond;
-			
+
 			DPSExtremeUI.instance.updateNeeded = true;
 		}
 
@@ -215,18 +215,24 @@ namespace DPSExtreme
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
-			Combat.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
+			{
+				Combat.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
+				activeCombat.myDurationInTicks = aPush.myActiveCombatDurationInTicks;
 
-			var myPrevLocalDamage = activeCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI];
-			activeCombat.myStats = aPush.myStats;
-			//Sync remote player damage, but don't overwrite local
-			activeCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
+				var myPrevLocalDamage = activeCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI];
+				activeCombat.myStats = aPush.myStats;
+				//Sync remote player damage, but don't overwrite local
+				activeCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
+			}
+			{
+				Combat.DPSExtremeCombat totalCombat = DPSExtreme.instance.combatTracker.myTotalCombat;
+				totalCombat.myDurationInTicks = aPush.myTotalCombatDurationInTicks;
 
-			Combat.DPSExtremeCombat totalCombat = DPSExtreme.instance.combatTracker.myTotalCombat;
-			var myPrevLocalTotalDamage = totalCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI];
-			totalCombat.myStats = aPush.myTotalStats;
-			//Sync remote total player damage, but don't overwrite local
-			totalCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalTotalDamage;
+				var myPrevLocalTotalDamage = totalCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI];
+				totalCombat.myStats = aPush.myTotalStats;
+				//Sync remote total player damage, but don't overwrite local
+				totalCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalTotalDamage;
+			}
 
 			DPSExtremeUI.instance.updateNeeded = true;
 

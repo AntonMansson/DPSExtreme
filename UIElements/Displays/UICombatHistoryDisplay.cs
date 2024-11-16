@@ -28,23 +28,6 @@ namespace DPSExtreme.UIElements.Displays
 		{
 			int entryIndex = 0;
 
-			int allCombatDurationsInTicks = 0;
-
-			if (DPSExtreme.instance.combatTracker.myActiveCombat != null)
-				allCombatDurationsInTicks += DPSExtreme.instance.combatTracker.myActiveCombat.myDurationInTicks;
-
-			for (int i = 0; i < DPSExtremeCombatTracker.ourHistorySize; i++)
-            {
-				DPSExtremeCombat combat = DPSExtreme.instance.combatTracker.GetCombatHistory(i);
-
-				if (combat == null)
-					continue;
-
-				allCombatDurationsInTicks += combat.myDurationInTicks;
-            }
-
-			DPSExtreme.instance.combatTracker.myTotalCombat.myDurationInTicks = allCombatDurationsInTicks;
-
 			UISelectionDisplayEntry allCombatsEntry = CreateEntry(entryIndex) as UISelectionDisplayEntry;
 			allCombatsEntry.myColor = Color.Orange;
 			allCombatsEntry.myNameText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("AllCombats"));

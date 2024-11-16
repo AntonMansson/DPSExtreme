@@ -122,8 +122,9 @@ namespace DPSExtreme.Combat
 					return;
 
 				ProtocolPushCombatStats push = new ProtocolPushCombatStats();
-				push.myCombatIsActive = true;
+				push.myActiveCombatDurationInTicks = myDurationInTicks;
 				push.myStats = myStats;
+				push.myTotalCombatDurationInTicks = DPSExtreme.instance.combatTracker.myTotalCombat.myDurationInTicks;
 				push.myTotalStats = DPSExtreme.instance.combatTracker.myTotalCombat.myStats;
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);

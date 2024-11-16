@@ -116,6 +116,8 @@ namespace DPSExtreme.Combat
 
 			myActiveCombat.myDurationInTicks++;
 			myActiveCombat.myTicksSinceLastActivity++;
+
+			myTotalCombat.myDurationInTicks++;
 		}
 
 		void UpdateEventCheckStart()

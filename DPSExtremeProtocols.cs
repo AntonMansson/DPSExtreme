@@ -99,25 +99,25 @@ namespace DPSExtreme
 		{
 			aWriter.Write((byte)GetDelimiter());
 
-			aWriter.Write(myCombatIsActive);
-
+			aWriter.Write7BitEncodedInt(myActiveCombatDurationInTicks);
 			myStats.ToStream(aWriter);
+			aWriter.Write7BitEncodedInt(myTotalCombatDurationInTicks);
 			myTotalStats.ToStream(aWriter);
 		}
 
 		public override bool FromStream(BinaryReader aReader)
 		{
-			myCombatIsActive = aReader.ReadBoolean();
-
+			myActiveCombatDurationInTicks = aReader.Read7BitEncodedInt();
 			myStats.FromStream(aReader);
+			myTotalCombatDurationInTicks = aReader.Read7BitEncodedInt();
 			myTotalStats.FromStream(aReader);
 
 			return true;
 		}
 
-		public bool myCombatIsActive = false;
-
+		public int myActiveCombatDurationInTicks = 0;
 		public CombatStats myStats = new CombatStats();
+		public int myTotalCombatDurationInTicks = 0;
 		public CombatStats myTotalStats = new CombatStats();
 	}
 
