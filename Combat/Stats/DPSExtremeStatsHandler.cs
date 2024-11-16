@@ -115,7 +115,7 @@ namespace DPSExtreme.Combat.Stats
 				return Lang.GetNPCNameValue(aAbilityId);
 
 			if (aAbilityId == (int)SourceType.Projectile) //ProjectileID.None passed. Kinda hacky, Let's see if it causes problems
-				return Language.GetTextValue("Melee");
+				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Melee"));
 
 			if (IsInSourceTypeRange(SourceType.Projectile, aAbilityId))
 				return Lang.GetProjectileName(aAbilityId - (int)SourceType.Projectile).Value;
@@ -127,7 +127,7 @@ namespace DPSExtreme.Combat.Stats
 				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime"));
 
 			if (aAbilityId == (int)SourceType.Traps)
-				return Language.GetTextValue("UnknownTraps");
+				return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("UnknownTraps"));
 
 			if (IsInSourceTypeRange(SourceType.Traps, aAbilityId))
 				return Lang.GetItemName(aAbilityId - (int)SourceType.Traps).Value;
@@ -138,22 +138,22 @@ namespace DPSExtreme.Combat.Stats
 			if (IsInSourceTypeRange(SourceType.Other, aAbilityId))
 			{
 				if (aAbilityId == (int)SourceType.Other)
-					return Language.GetTextValue("Other");
+					return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Other"));
 
 				int otherType = aAbilityId - (int)SourceType.Other - 1;
 				switch (otherType)
 				{
 					//Loc
 					case 0:
-						return Language.GetTextValue("FallDamage");
+						return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("FallDamage"));
 					case 1:
-						return Language.GetTextValue("Drowning");
+						return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Drowning"));
 
 					//Tile
 					case 2:
-						return Language.GetTextValue("Lava");
+						return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Lava"));
 					case 3:
-						return Language.GetTextValue("BlockContactDamage");
+						return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("BlockContactDamage"));
 					case 4:
 						return Lang._mapLegendCache[MapHelper.TileToLookup(26, WorldGen.crimson ? 1 : 0)].Value;
 
@@ -182,7 +182,7 @@ namespace DPSExtreme.Combat.Stats
 					case 12: //tongued
 					case 19: //death by entering space on remixWorld
 					default:
-						return Language.GetTextValue("Other");
+						return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Other"));
 				}
 			}
 

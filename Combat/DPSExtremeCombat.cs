@@ -246,9 +246,9 @@ namespace DPSExtreme.Combat
 							return Language.GetTextValue("Bestiary_Invasions.OldOnesArmy");
 						case InvasionType.ModdedInvasionsStart:
 							//TODO: Boss checklist support to fetch name?
-							return Language.GetTextValue("Invasion");
+							goto default;
 						default:
-							return Language.GetTextValue("Invasion");
+							return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Invasion"));
 					}
 				case CombatType.Event:
 					switch ((EventType)myBossOrInvasionOrEventType)
@@ -260,11 +260,11 @@ namespace DPSExtreme.Combat
 						case EventType.SlimeRain:
 							return Language.GetTextValue("Bestiary_Events.SlimeRain");
 						default:
-							return Language.GetTextValue("Event");
+							return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Event"));
 					}
 				case CombatType.Generic:
 					//Maybe display name of first npc hit?
-					return Language.GetTextValue("Combat");
+					return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Combat"));
 				default:
 					return "Unknown combat type";
 			}
