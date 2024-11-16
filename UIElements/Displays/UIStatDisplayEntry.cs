@@ -35,7 +35,13 @@ namespace DPSExtreme.UIElements.Displays
 				myRightText = StatValue.FormatStatNumber(myValue, myFormat);
 
 				if (DPSExtremeClientConfig.Instance.ShowPercentages && myTotal > 0)
-					myRightText = $"{StatValue.FormatStatNumber(myValue, myFormat)} ({String.Format("{0:P0}", (float)myValue / myTotal)})";
+				{
+					if (myValue == myTotal - 1) //ugly fix for off-by-one showing 99%
+						myValue = myTotal;
+
+					float fraction = Math.Min(1f, (float)myValue / myTotal);
+					myRightText = $"{StatValue.FormatStatNumber(myValue, myFormat)} ({String.Format("{0:P0}", fraction)})";
+				}
 			}
 			
 			DrawSelfBase(spriteBatch);

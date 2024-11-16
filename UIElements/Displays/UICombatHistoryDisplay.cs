@@ -2,6 +2,7 @@
 using DPSExtreme.Combat;
 using Microsoft.Xna.Framework;
 using System;
+using Terraria.Localization;
 
 namespace DPSExtreme.UIElements.Displays
 {
@@ -27,11 +28,38 @@ namespace DPSExtreme.UIElements.Displays
 		{
 			int entryIndex = 0;
 
+			int allCombatDurationsInTicks = 0;
+
+			if (DPSExtreme.instance.combatTracker.myActiveCombat != null)
+				allCombatDurationsInTicks += DPSExtreme.instance.combatTracker.myActiveCombat.myDurationInTicks;
+
+			for (int i = 0; i < DPSExtremeCombatTracker.ourHistorySize; i++)
+            {
+				DPSExtremeCombat combat = DPSExtreme.instance.combatTracker.GetCombatHistory(i);
+
+				if (combat == null)
+					continue;
+
+				allCombatDurationsInTicks += combat.myDurationInTicks;
+            }
+
+			DPSExtreme.instance.combatTracker.myTotalCombat.myDurationInTicks = allCombatDurationsInTicks;
+
+			UISelectionDisplayEntry allCombatsEntry = CreateEntry(entryIndex) as UISelectionDisplayEntry;
+			allCombatsEntry.myColor = Color.Orange;
+			allCombatsEntry.myNameText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("AllCombats"));
+
+			allCombatsEntry.myRightText = String.Format("{0:D2}:{1:D2}", 
+				(int)Math.Floor(DPSExtreme.instance.combatTracker.myTotalCombat.myDuration.TotalMinutes), DPSExtreme.instance.combatTracker.myTotalCombat.myDuration.Seconds);
+
+			allCombatsEntry.myIndex = -2;
+			entryIndex++;
+
 			if (DPSExtreme.instance.combatTracker.myActiveCombat != null)
 			{
 				UISelectionDisplayEntry entry = CreateEntry(entryIndex) as UISelectionDisplayEntry;
 				entry.myColor = Color.Yellow;
-				entry.myNameText = "Current combat";
+				entry.myNameText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("CurrentCombat"));
 				entry.myRightText = DPSExtreme.instance.combatTracker.myActiveCombat.myFormattedDuration;
 				entry.myIndex = -1;
 				entryIndex++;
@@ -61,7 +89,11 @@ namespace DPSExtreme.UIElements.Displays
 
 			DPSExtremeCombat combat = null;
 
-			if (aSelectedIndex == -1)
+			DPSExtremeUI.instance.myShowAllCombatTotals = false;
+
+			if (aSelectedIndex == -2)
+				DPSExtremeUI.instance.myShowAllCombatTotals = true;
+			else if (aSelectedIndex == -1)
 				combat = DPSExtreme.instance.combatTracker.myActiveCombat;
 			else
 				combat = DPSExtreme.instance.combatTracker.GetCombatHistory(aSelectedIndex);

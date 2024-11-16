@@ -29,7 +29,7 @@ namespace DPSExtreme
 				return;
 
 			ProtocolPushClientDPSs push = new ProtocolPushClientDPSs();
-			push.myDamagePerSecond = DPSExtreme.instance.combatTracker.myActiveCombat.myDamagePerSecond;
+			push.myDamagePerSecond = DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDamagePerSecond;
 
 			DPSExtreme.instance.packetHandler.SendProtocol(push);
 			DPSExtreme.instance.combatTracker.myActiveCombat.SendStats();
@@ -66,7 +66,7 @@ namespace DPSExtreme
 				}
 			}
 
-			activeCombat.myDamagePerSecond[(int)InfoListIndices.DOTs] = totalDotDPS;
+			activeCombat.myStats.myDamagePerSecond[(int)InfoListIndices.DOTs] = totalDotDPS;
 		}
 	}
 }

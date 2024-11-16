@@ -25,9 +25,9 @@ namespace DPSExtreme
 
 		public DPSExtremeStatList()
 		{
-			myValues = new T[Size()];
+			myValues = new T[Size];
 
-			for (int i = 0; i < Size(); i++)
+			for (int i = 0; i < Size; i++)
 			{
 				myValues[i] = new T();
 			}
@@ -38,11 +38,11 @@ namespace DPSExtreme
 			get { return ref myValues[i]; }
 		}
 
-		public int Size() { return 256; }
+		public const int Size = 256;
 
 		public void Clear()
 		{
-			for (int i = 0; i < Size(); i++)
+			for (int i = 0; i < Size; i++)
 			{
 				myValues[i] = default;
 			}
@@ -56,7 +56,7 @@ namespace DPSExtreme
 			int subMax = 0;
 			int subTotal = 0;
 
-			for (int i = 0; i < Size(); i++)
+			for (int i = 0; i < Size; i++)
 			{
 				IStatContainer stat = myValues[i];
 				if (stat.HasStats())
@@ -73,7 +73,7 @@ namespace DPSExtreme
 
 		public bool HasStats()
 		{
-			for (int i = 0; i < Size(); i++)
+			for (int i = 0; i < Size; i++)
 			{
 				if (myValues[i].HasStats())
 					return true;
@@ -89,7 +89,7 @@ namespace DPSExtreme
 			aWriter.Write((byte)123); //placeholder for count
 
 			byte count = 0;
-			for (int i = 0; i < Size(); i++)
+			for (int i = 0; i < Size; i++)
 			{
 				if (!myValues[i].HasStats())
 					continue;

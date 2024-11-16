@@ -13,18 +13,19 @@ namespace DPSExtreme.Combat
 {
 	internal class DPSExtremeCombatTracker
 	{
-		internal const int ourHistorySize = 5;
+		internal const int ourHistorySize = 10;
 
 		private int myHistoryBufferZeroIndex = 0; //Ring buffer shit
 		private DPSExtremeCombat[] myCombatHistory = new DPSExtremeCombat[ourHistorySize];
 
+		internal DPSExtremeCombat myTotalCombat = new DPSExtremeCombat(CombatType.Generic, -1); //Stores accumulated data from all combats (even those erased from history)
 		internal DPSExtremeCombat myActiveCombat = null;
 
 		internal DPSExtremeStatsHandler myStatsHandler = new DPSExtremeStatsHandler();
 
 		internal int myLastFrameInvasionType = InvasionID.None;
 		internal int myLastFrameEventType = 0;
-		
+
 		public List<int> myJoiningPlayers = new List<int>();
 
 		internal DPSExtremeCombat GetCombatHistory(int aIndex)
@@ -250,7 +251,7 @@ namespace DPSExtreme.Combat
 			push.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
 
 			if (Main.netMode == NetmodeID.MultiplayerClient)
-			{ 
+			{
 				DPSExtreme.instance.packetHandler.HandleStartCombatPush(push);
 				return;
 			}
@@ -348,7 +349,7 @@ namespace DPSExtreme.Combat
 				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Server ended combat"), Color.Orange);
 
 			int historyCount = 0;
-			for (int i = 0;	i < ourHistorySize; i++)
+			for (int i = 0; i < ourHistorySize; i++)
 			{
 				if (myCombatHistory[i] == null)
 					continue;

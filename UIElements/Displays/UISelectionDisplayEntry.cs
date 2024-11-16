@@ -19,7 +19,7 @@ namespace DPSExtreme.UIElements.Displays
 		{
 			if (DPSExtremeUI.instance.myDisplayMode == ListDisplayMode.CombatHistory)
 			{
-				int longestCombatInSeconds = 0;
+				int longestCombatInTicks = 0;
 
 				for (int i = 0; i < DPSExtremeCombatTracker.ourHistorySize; i++)
 				{
@@ -28,7 +28,7 @@ namespace DPSExtreme.UIElements.Displays
 					if (combat == null)
 						continue;
 
-					longestCombatInSeconds = Math.Max(longestCombatInSeconds, (int)combat.myDuration.TotalSeconds);
+					longestCombatInTicks = Math.Max(longestCombatInTicks, combat.myDurationInTicks);
 				}
 
 				DPSExtremeCombat combatHistory = DPSExtreme.instance.combatTracker.GetCombatHistory(myIndex);
@@ -36,9 +36,9 @@ namespace DPSExtreme.UIElements.Displays
 				if (combatHistory == null)
 					return (int)GetOuterDimensions().Width;
 
-				int combatDuration = (int)combatHistory.myDuration.TotalSeconds;
+				int combatDuration = combatHistory.myDurationInTicks;
 
-				return (int)(GetOuterDimensions().Width * (combatDuration / (float)longestCombatInSeconds));
+				return (int)(GetOuterDimensions().Width * (combatDuration / (float)longestCombatInTicks));
 			}
 
 			return (int)GetOuterDimensions().Width;

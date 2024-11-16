@@ -65,18 +65,7 @@ namespace DPSExtreme.Combat
 
 		internal string myFormattedDuration => String.Format("{0:D2}:{1:D2}", (int)Math.Floor(myDuration.TotalMinutes), myDuration.Seconds);
 
-		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<DamageStatValue>> myEnemyDamageTaken = new();
-
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> myDamageDone = new();
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>> myDamageTaken = new();
-		internal DPSExtremeStatList<StatValue> myDeaths = new();
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myManaUsed = new();
-
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, TimeStatValue>> myBuffUptimes = new();
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, TimeStatValue>> myDebuffUptimes = new();
-
-		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new();
+		internal CombatStats myStats = new CombatStats();
 		
 		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType)
 		{
@@ -90,23 +79,23 @@ namespace DPSExtreme.Combat
 			switch (aDisplayMode)
 			{
 				case ListDisplayMode.DamagePerSecond:
-					return myDamagePerSecond;
+					return myStats.myDamagePerSecond;
 				case ListDisplayMode.DamageDone:
-					return myDamageDone;
+					return myStats.myDamageDone;
 				case ListDisplayMode.DamageTaken:
-					return myDamageTaken;
+					return myStats.myDamageTaken;
 				case ListDisplayMode.EnemyDamageTaken:
-					return myEnemyDamageTaken;
+					return myStats.myEnemyDamageTaken;
 				case ListDisplayMode.Deaths:
-					return myDeaths;
+					return myStats.myDeaths;
 				case ListDisplayMode.Kills:
-					return myKills;
+					return myStats.myKills;
 				case ListDisplayMode.ManaUsed:
-					return myManaUsed;
+					return myStats.myManaUsed;
 				case ListDisplayMode.BuffUptime:
-					return myBuffUptimes;
+					return myStats.myBuffUptimes;
 				case ListDisplayMode.DebuffUptime:
-					return myDebuffUptimes;
+					return myStats.myDebuffUptimes;
 				default:
 					return null;
 			}
@@ -117,49 +106,12 @@ namespace DPSExtreme.Combat
 			//Move player's stats into designated part of the buffer for disconnected players
 			for (int i = (int)InfoListIndices.DisconnectedPlayersStart; i < (int)InfoListIndices.DisconnectedPlayersEnd; i++)
 			{
-				if (myDamageDone[i].HasStats())
+				if (myStats.myDamageDone[i].HasStats())
 					continue;
 
-				ReassignStats(aPlayer, i);
+				myStats.ReassignStats(aPlayer, i);
 				break;
 			}
-		}
-
-		internal void ReassignStats(int aFrom, int aTo)
-		{
-			foreach ((int npcType, DPSExtremeStatList<DamageStatValue> damageInfo) in myEnemyDamageTaken)
-			{
-				myEnemyDamageTaken[npcType][aTo] = myEnemyDamageTaken[npcType][aFrom];
-			}
-
-			myDamagePerSecond[aTo] = myDamagePerSecond[aFrom];
-			myDamageDone[aTo] = myDamageDone[aFrom];
-			myDamageTaken[aTo] = myDamageTaken[aFrom];
-			myDeaths[aTo] = myDeaths[aFrom];
-			myKills[aTo] = myKills[aFrom];
-			myManaUsed[aTo] = myManaUsed[aFrom];
-
-			myBuffUptimes[aTo] = myBuffUptimes[aFrom];
-			myDebuffUptimes[aTo] = myDebuffUptimes[aFrom];
-
-			ClearStatsForPlayer(aFrom);
-		}
-
-		internal void ClearStatsForPlayer(int aPlayer)
-		{
-			myDamageDone[aPlayer].Clear();
-
-			foreach ((int npcType, DPSExtremeStatList<DamageStatValue> damageInfo) in myEnemyDamageTaken)
-				myEnemyDamageTaken[npcType][aPlayer] = new();
-
-			myDamagePerSecond[aPlayer] = new();
-			myDamageTaken[aPlayer].Clear();
-			myDeaths[aPlayer] = new();
-			myKills[aPlayer].Clear();
-			myManaUsed[aPlayer].Clear();
-
-			myBuffUptimes[aPlayer].Clear();
-			myDebuffUptimes[aPlayer].Clear();
 		}
 
 		internal void SendStats()
@@ -171,34 +123,28 @@ namespace DPSExtreme.Combat
 
 				ProtocolPushCombatStats push = new ProtocolPushCombatStats();
 				push.myCombatIsActive = true;
-				push.myEnemyDamageTaken = myEnemyDamageTaken;
-				push.myDamageDone = myDamageDone;
-				push.myDamageTaken = myDamageTaken;
-				push.myDeaths = myDeaths;
-				push.myKills = myKills;
-				push.myManaUsed = myManaUsed;
-				push.myBuffUptimes = myBuffUptimes;
-				push.myDebuffUptimes = myDebuffUptimes;
+				push.myStats = myStats;
+				push.myTotalStats = DPSExtreme.instance.combatTracker.myTotalCombat.myStats;
 
 				DPSExtreme.instance.packetHandler.SendProtocol(push);
 
-				if (Main.netMode == NetmodeID.Server)
-				{
-					Dictionary<byte, int> stats = new Dictionary<byte, int>();
-					for (int i = 0; i < 256; i++)
-					{
-						if (myDamageDone[i].HasStats())
-						{
-							int max = 0;
-							int participantTotal = 0;
-							myDamageDone[i].GetMaxAndTotal(out max, out participantTotal);
+				//if (Main.netMode == NetmodeID.Server)
+				//{
+				//	Dictionary<byte, int> stats = new Dictionary<byte, int>();
+				//	for (int i = 0; i < 256; i++)
+				//	{
+				//		if (myStats.myDamageDone[i].HasStats())
+				//		{
+				//			int max = 0;
+				//			int participantTotal = 0;
+				//			myStats.myDamageDone[i].GetMaxAndTotal(out max, out participantTotal);
 
-							stats[(byte)i] = participantTotal;
-						}
-					}
+				//			stats[(byte)i] = participantTotal;
+				//		}
+				//	}
 
-					DPSExtreme.instance.InvokeOnSimpleBossStats(stats);
-				}
+				//	DPSExtreme.instance.InvokeOnSimpleBossStats(stats);
+				//}
 
 			}
 			catch (Exception)
@@ -217,7 +163,7 @@ namespace DPSExtreme.Combat
 			{
 				int max = 0;
 				int participantDamage = 0;
-				myDamageDone[i].GetMaxAndTotal(out max, out participantDamage);
+				myStats.myDamageDone[i].GetMaxAndTotal(out max, out participantDamage);
 
 				if (participantDamage > 0)
 				{

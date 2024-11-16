@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace DPSExtreme.Combat.Stats
@@ -7,6 +8,83 @@ namespace DPSExtreme.Combat.Stats
 	{
 		RawNumber,
 		Time
+	}
+
+	internal class CombatStats
+	{
+		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<DamageStatValue>> myEnemyDamageTaken = new();
+
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> myDamageDone = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>> myDamageTaken = new();
+		internal DPSExtremeStatList<StatValue> myDeaths = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myManaUsed = new();
+
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, TimeStatValue>> myBuffUptimes = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, TimeStatValue>> myDebuffUptimes = new();
+
+		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new();
+
+		public void ToStream(BinaryWriter aWriter)
+		{
+			myEnemyDamageTaken.ToStream(aWriter);
+			myDamageDone.ToStream(aWriter);
+			myDamageTaken.ToStream(aWriter);
+			myDeaths.ToStream(aWriter);
+			myKills.ToStream(aWriter);
+			myManaUsed.ToStream(aWriter);
+			myBuffUptimes.ToStream(aWriter);
+			myDebuffUptimes.ToStream(aWriter);
+		}
+
+		public void FromStream(BinaryReader aReader)
+		{
+			myEnemyDamageTaken.FromStream(aReader);
+			myDamageDone.FromStream(aReader);
+			myDamageTaken.FromStream(aReader);
+			myDeaths.FromStream(aReader);
+			myKills.FromStream(aReader);
+			myManaUsed.FromStream(aReader);
+			myBuffUptimes.FromStream(aReader);
+			myDebuffUptimes.FromStream(aReader);
+		}
+
+		internal void ReassignStats(int aFrom, int aTo)
+		{
+			foreach ((int npcType, DPSExtremeStatList<DamageStatValue> damageInfo) in myEnemyDamageTaken)
+			{
+				myEnemyDamageTaken[npcType][aTo] = myEnemyDamageTaken[npcType][aFrom];
+			}
+
+			myDamagePerSecond[aTo] = myDamagePerSecond[aFrom];
+			myDamageDone[aTo] = myDamageDone[aFrom];
+			myDamageTaken[aTo] = myDamageTaken[aFrom];
+			myDeaths[aTo] = myDeaths[aFrom];
+			myKills[aTo] = myKills[aFrom];
+			myManaUsed[aTo] = myManaUsed[aFrom];
+
+			myBuffUptimes[aTo] = myBuffUptimes[aFrom];
+			myDebuffUptimes[aTo] = myDebuffUptimes[aFrom];
+
+			ClearStatsForPlayer(aFrom);
+		}
+
+		internal void ClearStatsForPlayer(int aPlayer)
+		{
+			myDamageDone[aPlayer].Clear();
+
+			foreach ((int npcType, DPSExtremeStatList<DamageStatValue> damageInfo) in myEnemyDamageTaken)
+				myEnemyDamageTaken[npcType][aPlayer] = new();
+
+			myDamagePerSecond[aPlayer] = new();
+			myDamageTaken[aPlayer].Clear();
+			myDeaths[aPlayer] = new();
+			myKills[aPlayer].Clear();
+			myManaUsed[aPlayer].Clear();
+
+			myBuffUptimes[aPlayer].Clear();
+			myDebuffUptimes[aPlayer].Clear();
+		}
 	}
 
 	internal interface IStatContainer
@@ -112,6 +190,14 @@ namespace DPSExtreme.Combat.Stats
 		internal int myMaxHit = 0;
 
 		public DamageStatValue() { }
+
+		public void AddDamage(int aDamage, bool aCrit)
+		{
+			myHitCount += 1;
+			myCritCount += aCrit ? 1 : 0;
+			myValue += aDamage;
+			myMaxHit = Math.Max(myMaxHit, aDamage);
+		}
 
 		public override List<string> GetInfoBoxLines() 
 		{

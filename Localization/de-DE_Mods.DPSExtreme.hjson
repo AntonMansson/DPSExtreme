@@ -2,6 +2,8 @@
 // NeedAccessory: Missing accessory
 // DisplayModeSelect: Select mode:
 // CombatHistory: Combat history:
+// AllCombats: All combats
+// CurrentCombat: Current combat
 // DamagePerSecond: DPS
 // DamageDone: Damage done
 // DamageTaken: Damage taken

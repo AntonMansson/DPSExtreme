@@ -2,6 +2,8 @@ Keybinds.ToggleTeamDPSBossMeter.DisplayName: 开关队伍成员伤害/对Boss伤
 // NeedAccessory: Missing accessory
 // DisplayModeSelect: Select mode:
 // CombatHistory: Combat history:
+// AllCombats: All combats
+// CurrentCombat: Current combat
 // DamagePerSecond: DPS
 // DamageDone: Damage done
 // DamageTaken: Damage taken

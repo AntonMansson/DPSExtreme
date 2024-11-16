@@ -108,7 +108,7 @@ namespace DPSExtreme.UIElements.Displays
 
 			int entryIndex = 0;
 
-			for (int i = 0; i < myInfoList.Size(); i++)
+			for (int i = 0; i < DPSExtremeStatList<T>.Size; i++)
 			{
 				T value = myInfoList[i];
 				if (value.HasStats())

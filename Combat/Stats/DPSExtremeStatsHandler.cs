@@ -236,11 +236,11 @@ namespace DPSExtreme.Combat.Stats
 				return;
 			}
 
-			DamageStatValue enemyDamageTakenStat = DPSExtreme.instance.combatTracker.myActiveCombat.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId];
-			enemyDamageTakenStat.myValue += clampedDamageAmount;
-			enemyDamageTakenStat.myHitCount += 1;
-			enemyDamageTakenStat.myCritCount += aDamageSource.myIsCrit ? 1 : 0;
-			enemyDamageTakenStat.myMaxHit = Math.Max(enemyDamageTakenStat.myMaxHit, clampedDamageAmount);
+			DamageStatValue enemyDamageTakenStat = DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId];
+			enemyDamageTakenStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
+
+			DamageStatValue enemyDamageTakenTotalStat = DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId];
+			enemyDamageTakenTotalStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
 
 			if (Main.netMode == NetmodeID.Server &&
 				aDamageSource.myDamageCauserId < (int)InfoListIndices.SupportedPlayerCount) //MP clients sync their local damage so that we can include item/proj type
@@ -248,12 +248,11 @@ namespace DPSExtreme.Combat.Stats
 				return;
 			}
 
-			DamageStatValue stat = DPSExtreme.instance.combatTracker.myActiveCombat.myDamageDone[aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
+			DamageStatValue damageDoneStat = DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDamageDone[aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
+			damageDoneStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
 
-			stat.myHitCount += 1;
-			stat.myCritCount += aDamageSource.myIsCrit ? 1 : 0;
-			stat.myValue += clampedDamageAmount;
-			stat.myMaxHit = Math.Max(stat.myMaxHit, clampedDamageAmount);
+			DamageStatValue damageDoneTotalStat = DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myDamageDone[aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
+			damageDoneTotalStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
 		}
 
 		internal void AddDamageTaken(Player aDamagedPlayer, DamageSource aDamageSource)
@@ -270,11 +269,11 @@ namespace DPSExtreme.Combat.Stats
 
 			int clampedDamageAmount = Math.Clamp(aDamageSource.myDamageAmount, 0, aDamagedPlayer.statLife); //Avoid overkill
 
-			DamageStatValue stat = DPSExtreme.instance.combatTracker.myActiveCombat.myDamageTaken[aDamagedPlayer.whoAmI][aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
-			stat.myValue += clampedDamageAmount;
-			stat.myMaxHit = Math.Max(stat.myMaxHit, clampedDamageAmount);
-			stat.myHitCount += 1;
-			stat.myCritCount += aDamageSource.myIsCrit ? 1 : 0;
+			DamageStatValue stat = DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDamageTaken[aDamagedPlayer.whoAmI][aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
+			stat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
+
+			DamageStatValue totalStat = DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myDamageTaken[aDamagedPlayer.whoAmI][aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
+			totalStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
 		}
 
 		internal void AddDeath(Player aKilledPlayer)
@@ -286,7 +285,8 @@ namespace DPSExtreme.Combat.Stats
 				return;
 			}
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDeaths[aKilledPlayer.whoAmI] += 1;
+			DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDeaths[aKilledPlayer.whoAmI] += 1;
+			DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myDeaths[aKilledPlayer.whoAmI] += 1;
 		}
 
 		internal void AddKill(NPC aKilledNPC, int aKiller)
@@ -302,7 +302,8 @@ namespace DPSExtreme.Combat.Stats
 				if (aKilledNPC.CountsAsACritter)
 					return;
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myKills[aKiller][aKilledNPC.type] += 1;
+			DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myKills[aKiller][aKilledNPC.type] += 1;
+			DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myKills[aKiller][aKilledNPC.type] += 1;
 		}
 
 		internal void AddConsumedMana(Player aPlayer, Item aUsedItem, int aManaAmount)
@@ -314,7 +315,8 @@ namespace DPSExtreme.Combat.Stats
 				return;
 			}
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myManaUsed[aPlayer.whoAmI][aUsedItem.type + (int)DamageSource.SourceType.Item] += aManaAmount;
+			DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myManaUsed[aPlayer.whoAmI][aUsedItem.type + (int)DamageSource.SourceType.Item] += aManaAmount;
+			DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myManaUsed[aPlayer.whoAmI][aUsedItem.type + (int)DamageSource.SourceType.Item] += aManaAmount;
 		}
 
 		internal void AddBuffUptime(Player aPlayer, int aBuffType)
@@ -326,7 +328,8 @@ namespace DPSExtreme.Combat.Stats
 				return;
 			}
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myBuffUptimes[aPlayer.whoAmI][aBuffType + (int)DamageSource.SourceType.Buffs] += 1;
+			DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myBuffUptimes[aPlayer.whoAmI][aBuffType + (int)DamageSource.SourceType.Buffs] += 1;
+			DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myBuffUptimes[aPlayer.whoAmI][aBuffType + (int)DamageSource.SourceType.Buffs] += 1;
 		}
 
 		internal void AddDebuffUptime(Player aPlayer, int aDebuffType)
@@ -338,7 +341,8 @@ namespace DPSExtreme.Combat.Stats
 				return;
 			}
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDebuffUptimes[aPlayer.whoAmI][aDebuffType + (int)DamageSource.SourceType.Buffs] += 1;
+			DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDebuffUptimes[aPlayer.whoAmI][aDebuffType + (int)DamageSource.SourceType.Buffs] += 1;
+			DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myDebuffUptimes[aPlayer.whoAmI][aDebuffType + (int)DamageSource.SourceType.Buffs] += 1;
 		}
 	}
 }

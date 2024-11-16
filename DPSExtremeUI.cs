@@ -19,10 +19,18 @@ namespace DPSExtreme
 	{
 		internal static DPSExtremeUI instance;
 
+		internal bool myShowAllCombatTotals = false; //overrides myDisplayedCombat and displays totals for all combats in history
+
 		private DPSExtremeCombat _myDisplayedCombat;
 		internal DPSExtremeCombat myDisplayedCombat
 		{
-			get { return _myDisplayedCombat; }
+			get
+			{
+				if (myShowAllCombatTotals)
+					return DPSExtreme.instance.combatTracker.myTotalCombat;
+
+				return _myDisplayedCombat;
+			}
 			set
 			{
 				_myDisplayedCombat = value;
@@ -310,17 +318,24 @@ namespace DPSExtreme
 			}
 
 			title += " - ";
-
+			
 			if (myCurrentDisplay.myLabelOverride != null)
 				title += myCurrentDisplay.myLabelOverride;
+			else if (myShowAllCombatTotals)
+				title += Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("AllCombats"));
 			else
 				title += myDisplayedCombat.GetTitle();
 
-			if (title.Length > 27)
-				title = title.Remove(27);
+			if (title.Length > 33)
+				title = title.Remove(33);
 
-			if (myCurrentDisplay.myLabelOverride == null)
+			if (myCurrentDisplay.myLabelOverride == null && !myShowAllCombatTotals)
+			{
+				if (title.Length > 27)
+					title = title.Remove(27);
+
 				title += " " + myDisplayedCombat.myFormattedDuration;
+			}
 
 			myLabel.SetText(title);
 			myLabel.Recalculate();

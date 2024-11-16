@@ -196,8 +196,8 @@ namespace DPSExtreme
 			if (activeCombat == null)
 				return;
 
-			activeCombat.myDamagePerSecond[aReq.myPlayer] = aReq.myDPS;
-			activeCombat.myDamageDone[aReq.myPlayer] = aReq.myDamageDoneBreakdown;
+			activeCombat.myStats.myDamagePerSecond[aReq.myPlayer] = aReq.myDPS;
+			activeCombat.myStats.myDamageDone[aReq.myPlayer] = aReq.myDamageDoneBreakdown;
 		}
 
 		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush)
@@ -205,7 +205,7 @@ namespace DPSExtreme
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDamagePerSecond = aPush.myDamagePerSecond;
+			DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDamagePerSecond = aPush.myDamagePerSecond;
 			
 			DPSExtremeUI.instance.updateNeeded = true;
 		}
@@ -217,19 +217,16 @@ namespace DPSExtreme
 
 			Combat.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
 
-			activeCombat.myEnemyDamageTaken = aPush.myEnemyDamageTaken;
-
+			var myPrevLocalDamage = activeCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI];
+			activeCombat.myStats = aPush.myStats;
 			//Sync remote player damage, but don't overwrite local
-			var myPrevLocalDamage = activeCombat.myDamageDone[Main.LocalPlayer.whoAmI];
-			activeCombat.myDamageDone = aPush.myDamageDone;
-			activeCombat.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
+			activeCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
 
-			activeCombat.myDamageTaken = aPush.myDamageTaken;
-			activeCombat.myDeaths = aPush.myDeaths;
-			activeCombat.myKills = aPush.myKills;
-			activeCombat.myManaUsed = aPush.myManaUsed;
-			activeCombat.myBuffUptimes = aPush.myBuffUptimes;
-			activeCombat.myDebuffUptimes = aPush.myDebuffUptimes;
+			Combat.DPSExtremeCombat totalCombat = DPSExtreme.instance.combatTracker.myTotalCombat;
+			var myPrevLocalTotalDamage = totalCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI];
+			totalCombat.myStats = aPush.myTotalStats;
+			//Sync remote total player damage, but don't overwrite local
+			totalCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalTotalDamage;
 
 			DPSExtremeUI.instance.updateNeeded = true;
 

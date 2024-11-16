@@ -101,43 +101,24 @@ namespace DPSExtreme
 
 			aWriter.Write(myCombatIsActive);
 
-			myEnemyDamageTaken.ToStream(aWriter);
-			myDamageDone.ToStream(aWriter);
-			myDamageTaken.ToStream(aWriter);
-			myDeaths.ToStream(aWriter);
-			myKills.ToStream(aWriter);
-			myManaUsed.ToStream(aWriter);
-			myBuffUptimes.ToStream(aWriter);
-			myDebuffUptimes.ToStream(aWriter);
+			myStats.ToStream(aWriter);
+			myTotalStats.ToStream(aWriter);
 		}
 
 		public override bool FromStream(BinaryReader aReader)
 		{
 			myCombatIsActive = aReader.ReadBoolean();
 
-			myEnemyDamageTaken.FromStream(aReader);
-			myDamageDone.FromStream(aReader);
-			myDamageTaken.FromStream(aReader);
-			myDeaths.FromStream(aReader);
-			myKills.FromStream(aReader);
-			myManaUsed.FromStream(aReader);
-			myBuffUptimes.FromStream(aReader);
-			myDebuffUptimes.FromStream(aReader);
+			myStats.FromStream(aReader);
+			myTotalStats.FromStream(aReader);
 
 			return true;
 		}
 
 		public bool myCombatIsActive = false;
 
-		public DPSExtremeStatDictionary<int, DPSExtremeStatList<DamageStatValue>> myEnemyDamageTaken = new();
-
-		public DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> myDamageDone = new();
-		public DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>> myDamageTaken = new();
-		public DPSExtremeStatList<StatValue> myDeaths = new();
-		public DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myManaUsed = new();
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, TimeStatValue>> myBuffUptimes = new();
-		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, TimeStatValue>> myDebuffUptimes = new();
+		public CombatStats myStats = new CombatStats();
+		public CombatStats myTotalStats = new CombatStats();
 	}
 
 	internal class ProtocolReqShareCurrentDPS : DPSExtremeProtocol
