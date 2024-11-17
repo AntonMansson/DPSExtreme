@@ -216,22 +216,26 @@ namespace DPSExtreme
 				return;
 
 			{
-				Combat.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
+				DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
 				activeCombat.myDurationInTicks = aPush.myActiveCombatDurationInTicks;
 
 				var myPrevLocalDamage = activeCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI];
+				var myPrevLocalMinionDamage = activeCombat.myStats.myMinionDamageDone[Main.LocalPlayer.whoAmI];
 				activeCombat.myStats = aPush.myStats;
 				//Sync remote player damage, but don't overwrite local
 				activeCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
+				activeCombat.myStats.myMinionDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalMinionDamage;
 			}
 			{
-				Combat.DPSExtremeCombat totalCombat = DPSExtreme.instance.combatTracker.myTotalCombat;
+				DPSExtremeCombat totalCombat = DPSExtreme.instance.combatTracker.myTotalCombat;
 				totalCombat.myDurationInTicks = aPush.myTotalCombatDurationInTicks;
 
 				var myPrevLocalTotalDamage = totalCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI];
+				var myPrevLocalMinionTotalDamage = totalCombat.myStats.myMinionDamageDone[Main.LocalPlayer.whoAmI];
 				totalCombat.myStats = aPush.myTotalStats;
 				//Sync remote total player damage, but don't overwrite local
 				totalCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalTotalDamage;
+				totalCombat.myStats.myMinionDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalMinionTotalDamage;
 			}
 
 			DPSExtremeUI.instance.updateNeeded = true;

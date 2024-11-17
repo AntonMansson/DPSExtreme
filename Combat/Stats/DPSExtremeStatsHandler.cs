@@ -241,8 +241,13 @@ namespace DPSExtreme.Combat.Stats
 
 			DamageStatValue enemyDamageTakenTotalStat = DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId];
 			enemyDamageTakenTotalStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
+			
+			if (Main.netMode == NetmodeID.Server &&
+				aDamageSource.myDamageCauserId < (int)InfoListIndices.SupportedPlayerCount) //MP clients sync their local damage so that we can include item/proj type
+			{
+				return;
+			}
 
-			//Maybe move down below server check?
 			if (aDamageSource.mySourceType == DamageSource.SourceType.Item)
 			{
 				var proectileItemSource = ContentSamples.ItemsByType[aDamageSource.myDamageCauserAbility - (int)DamageSource.SourceType.Item];
@@ -262,12 +267,6 @@ namespace DPSExtreme.Combat.Stats
 						minionTotalDamageDealtStat.myMinionOwner = aDamageSource.myDamageCauserId;
 					}
 				}
-			}
-
-			if (Main.netMode == NetmodeID.Server &&
-				aDamageSource.myDamageCauserId < (int)InfoListIndices.SupportedPlayerCount) //MP clients sync their local damage so that we can include item/proj type
-			{
-				return;
 			}
 
 			DamageStatValue damageDoneStat = DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDamageDone[aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
