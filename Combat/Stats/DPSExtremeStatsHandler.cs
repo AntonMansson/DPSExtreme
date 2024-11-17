@@ -236,17 +236,17 @@ namespace DPSExtreme.Combat.Stats
 				return;
 			}
 
-			DamageStatValue enemyDamageTakenStat = DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId];
-			enemyDamageTakenStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
-
-			DamageStatValue enemyDamageTakenTotalStat = DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId];
-			enemyDamageTakenTotalStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
-			
 			if (Main.netMode == NetmodeID.Server &&
 				aDamageSource.myDamageCauserId < (int)InfoListIndices.SupportedPlayerCount) //MP clients sync their local damage so that we can include item/proj type
 			{
 				return;
 			}
+
+			DamageStatValue enemyDamageTakenStat = DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
+			enemyDamageTakenStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
+
+			DamageStatValue enemyDamageTakenTotalStat = DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
+			enemyDamageTakenTotalStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
 
 			if (aDamageSource.mySourceType == DamageSource.SourceType.Item)
 			{

@@ -56,6 +56,11 @@ namespace DPSExtreme
 			req.myDPS = dps;
 			req.myDamageDoneBreakdown = DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDamageDone[Player.whoAmI];
 
+            foreach ((int enemyType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> stat) in DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myEnemyDamageTaken)
+            {
+				req.myEnemyDamageTakenByMeBreakdown[enemyType] = stat[Player.whoAmI];
+			}
+
 			DPSExtreme.instance.packetHandler.SendProtocol(req);
 		}
 

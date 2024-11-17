@@ -14,7 +14,7 @@ namespace DPSExtreme.Combat.Stats
 
 	internal class CombatStats
 	{
-		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<DamageStatValue>> myEnemyDamageTaken = new();
+		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>>> myEnemyDamageTaken = new();
 
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> myDamageDone = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myMinionCounts = new(); //Helper for MinionDamageDone display
@@ -59,7 +59,7 @@ namespace DPSExtreme.Combat.Stats
 
 		internal void ReassignStats(int aFrom, int aTo)
 		{
-			foreach ((int npcType, DPSExtremeStatList<DamageStatValue> damageInfo) in myEnemyDamageTaken)
+			foreach ((int npcType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> damageInfo) in myEnemyDamageTaken)
 			{
 				myEnemyDamageTaken[npcType][aTo] = myEnemyDamageTaken[npcType][aFrom];
 			}
@@ -84,7 +84,7 @@ namespace DPSExtreme.Combat.Stats
 			myDamageDone[aPlayer].Clear();
 			myMinionDamageDone[aPlayer].Clear();
 
-			foreach ((int npcType, DPSExtremeStatList<DamageStatValue> damageInfo) in myEnemyDamageTaken)
+			foreach ((int npcType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> damageInfo) in myEnemyDamageTaken)
 				myEnemyDamageTaken[npcType][aPlayer] = new();
 
 			myDamagePerSecond[aPlayer] = new();
