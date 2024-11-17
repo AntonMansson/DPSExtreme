@@ -1,5 +1,6 @@
 ﻿using DPSExtreme.Combat.Stats;
 using System;
+using System.Linq;
 using System.Reflection;
 using Terraria.ModLoader;
 using Terraria.ModLoader.UI.Elements;
@@ -72,7 +73,7 @@ namespace DPSExtreme.UIElements.Displays
 
 		internal UIDisplayEntry CreateEntry(int aIndex)
 		{
-			if (aIndex >= _items.Count)
+			if (aIndex >= Children.ElementAt(0).Children.Count())
 			{
 				UIDisplayEntry entry = myEntryCreator();
 				entry.myParentDisplay = this;
@@ -82,7 +83,7 @@ namespace DPSExtreme.UIElements.Displays
 				return entry;
 			}
 
-			return _items[aIndex] as UIDisplayEntry;
+			return Children.ElementAt(0).Children.ElementAt(aIndex) as UIDisplayEntry;
 		}
 
 		internal abstract void Update();
