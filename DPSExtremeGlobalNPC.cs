@@ -116,6 +116,9 @@ namespace DPSExtreme
 					if (npc.CountsAsACritter)
 						return;
 
+				if (npc.friendly)
+					return;
+
 				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
 				DPSExtreme.instance.combatTracker.myStatsHandler.AddKill(npc, npc.lastInteraction);
 			}
