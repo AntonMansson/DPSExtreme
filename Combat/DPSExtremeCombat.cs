@@ -8,7 +8,6 @@ using Terraria.Localization;
 using Terraria;
 using DPSExtreme.Combat.Stats;
 using DPSExtreme.UIElements.Displays;
-using Humanizer;
 
 namespace DPSExtreme.Combat
 {
@@ -66,7 +65,7 @@ namespace DPSExtreme.Combat
 		internal string myFormattedDuration => String.Format("{0:D2}:{1:D2}", (int)Math.Floor(myDuration.TotalMinutes), myDuration.Seconds);
 
 		internal CombatStats myStats = new CombatStats();
-		
+
 		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType)
 		{
 			myCombatTypeFlags = aCombatType;
@@ -82,6 +81,8 @@ namespace DPSExtreme.Combat
 					return myStats.myDamagePerSecond;
 				case ListDisplayMode.DamageDone:
 					return myStats.myDamageDone;
+				case ListDisplayMode.MinionDamageDone:
+					return myStats.myMinionDamageDone;
 				case ListDisplayMode.DamageTaken:
 					return myStats.myDamageTaken;
 				case ListDisplayMode.EnemyDamageTaken:
@@ -111,6 +112,32 @@ namespace DPSExtreme.Combat
 
 				myStats.ReassignStats(aPlayer, i);
 				break;
+			}
+		}
+
+		internal void OnEnd()
+		{
+			SendStats();
+			PrintStats();
+
+			for (int i = 0; i < 256; i++)
+			{
+				if (i >= (int)InfoListIndices.DisconnectedPlayersEnd)
+					break;
+
+				Player player = Main.player[i];
+
+				foreach ((int itemType, MinionDamageStatValue stat) in myStats.myMinionDamageDone[i])
+				{
+					Item summonItem = ContentSamples.ItemsByType[itemType - (int)DamageSource.SourceType.Item];
+
+					if (summonItem == null)
+						continue;
+
+					Projectile projectile = ContentSamples.ProjectilesByType[summonItem.shoot];
+
+					myStats.myMinionCounts[player.whoAmI][projectile.type] = player.ownedProjectileCounts[projectile.type];
+				}
 			}
 		}
 

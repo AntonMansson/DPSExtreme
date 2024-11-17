@@ -16,6 +16,7 @@ namespace DPSExtreme.UIElements.Displays
 		StatDisplaysStart,
 		DamagePerSecond,
 		DamageDone,
+		MinionDamageDone,
 		DamageTaken,
 		Deaths,
 		Kills,
@@ -30,7 +31,7 @@ namespace DPSExtreme.UIElements.Displays
 
 	internal abstract class UIDisplay : UIGrid
 	{
-		protected ListDisplayMode myDisplayMode;
+		internal ListDisplayMode myDisplayMode;
 
 		internal Func<int, string> myNameCallback;
 		internal Func<UIDisplayEntry> myEntryCreator;

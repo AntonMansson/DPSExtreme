@@ -59,7 +59,7 @@ namespace DPSExtreme.UIElements.Displays
 			myColor.A = ContainsPoint(Main.MouseScreen) ? (byte)(Math.Floor(255f * 0.75f)) : (byte)255; //Kinda inverse but it looked better this way
 
 			Texture2D backdropTex = DPSExtreme.instance.Assets.Request<Texture2D>("DisplayEntry", AssetRequestMode.ImmediateLoad).Value;
-			Main.spriteBatch.Draw(backdropTex, hitbox, myColor);
+			spriteBatch.Draw(backdropTex, hitbox, myColor);
 
 			//Parent.Children does NOT get sorted with UpdateOrder. So access the outer _items list which DOES get sorted
 			List<UIElement> sortedList = (Parent.Parent as UIGrid)._items;

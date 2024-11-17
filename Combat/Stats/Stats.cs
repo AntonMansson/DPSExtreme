@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Terraria;
+using Terraria.ID;
 
 namespace DPSExtreme.Combat.Stats
 {
@@ -15,6 +17,8 @@ namespace DPSExtreme.Combat.Stats
 		internal DPSExtremeStatDictionary<int, DPSExtremeStatList<DamageStatValue>> myEnemyDamageTaken = new();
 
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> myDamageDone = new();
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myMinionCounts = new(); //Helper for MinionDamageDone display
+		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, MinionDamageStatValue>> myMinionDamageDone = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>> myDamageTaken = new();
 		internal DPSExtremeStatList<StatValue> myDeaths = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
@@ -29,6 +33,8 @@ namespace DPSExtreme.Combat.Stats
 		{
 			myEnemyDamageTaken.ToStream(aWriter);
 			myDamageDone.ToStream(aWriter);
+			myMinionCounts.ToStream(aWriter);
+			myMinionDamageDone.ToStream(aWriter);
 			myDamageTaken.ToStream(aWriter);
 			myDeaths.ToStream(aWriter);
 			myKills.ToStream(aWriter);
@@ -41,6 +47,8 @@ namespace DPSExtreme.Combat.Stats
 		{
 			myEnemyDamageTaken.FromStream(aReader);
 			myDamageDone.FromStream(aReader);
+			myMinionCounts.FromStream(aReader);
+			myMinionDamageDone.FromStream(aReader);
 			myDamageTaken.FromStream(aReader);
 			myDeaths.FromStream(aReader);
 			myKills.FromStream(aReader);
@@ -58,6 +66,8 @@ namespace DPSExtreme.Combat.Stats
 
 			myDamagePerSecond[aTo] = myDamagePerSecond[aFrom];
 			myDamageDone[aTo] = myDamageDone[aFrom];
+			myMinionCounts[aTo] = myMinionCounts[aFrom];
+			myMinionDamageDone[aTo] = myMinionDamageDone[aFrom];
 			myDamageTaken[aTo] = myDamageTaken[aFrom];
 			myDeaths[aTo] = myDeaths[aFrom];
 			myKills[aTo] = myKills[aFrom];
@@ -72,6 +82,7 @@ namespace DPSExtreme.Combat.Stats
 		internal void ClearStatsForPlayer(int aPlayer)
 		{
 			myDamageDone[aPlayer].Clear();
+			myMinionDamageDone[aPlayer].Clear();
 
 			foreach ((int npcType, DPSExtremeStatList<DamageStatValue> damageInfo) in myEnemyDamageTaken)
 				myEnemyDamageTaken[npcType][aPlayer] = new();
@@ -223,6 +234,52 @@ namespace DPSExtreme.Combat.Stats
 			myValue = aReader.Read7BitEncodedInt();
 			myHitCount = aReader.Read7BitEncodedInt();
 			myCritCount = aReader.Read7BitEncodedInt();
+		}
+	}
+
+	internal class MinionDamageStatValue : DamageStatValue
+	{
+		internal int myMinionType = -1;
+		internal int myMinionOwner = -1;
+
+		public MinionDamageStatValue() { }
+
+		public override void GetMaxAndTotal(out int aMax, out int aTotal)
+		{
+			aMax = 0;
+			aTotal = 0;
+
+			Projectile minion = ContentSamples.ProjectilesByType[myMinionType];
+			if (minion == null)
+				return;
+
+			Player ownerPlayer = Main.player[myMinionOwner];
+
+			DPSExtremeCombat displayedCombat = DPSExtremeUI.instance.myDisplayedCombat;
+			DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
+
+			int ownedProjectilesOfType = 
+				displayedCombat == activeCombat ?
+				ownerPlayer.ownedProjectileCounts[minion.type] :
+				displayedCombat.myStats.myMinionCounts[ownerPlayer.whoAmI][minion.type];
+
+			float minionSlotsTakenByType = ownedProjectilesOfType * minion.minionSlots;
+			if (minionSlotsTakenByType == 0)
+				return;
+
+			float damagePerMinionSlot = myValue / minionSlotsTakenByType;
+
+			aMax = (int)damagePerMinionSlot;
+			aTotal = (int)damagePerMinionSlot;
+		}
+
+		public new void ToStream(BinaryWriter aWriter)
+		{
+			//base.ToStream(aWriter);
+		}
+
+		public new void FromStream(BinaryReader aReader)
+		{
 		}
 	}
 }

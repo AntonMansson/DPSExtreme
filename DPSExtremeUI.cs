@@ -11,7 +11,6 @@ using Terraria.ModLoader.UI;
 using DPSExtreme.Combat;
 using DPSExtreme.Combat.Stats;
 using DPSExtreme.UIElements.Displays;
-using System.Collections.Generic;
 
 namespace DPSExtreme
 {
@@ -51,6 +50,7 @@ namespace DPSExtreme
 
 		internal UIListDisplay<StatValue> myDamagePerSecondDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, DamageStatValue>> myDamageDoneDisplay;
+		internal UIListDisplay<DPSExtremeStatDictionary<int, MinionDamageStatValue>> myMinionDamageDoneDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>> myDamageTakenDisplay;
 		internal UIListDisplay<StatValue> myDeathsDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myKillsDisplay;
@@ -97,6 +97,8 @@ namespace DPSExtreme
 						return myDamagePerSecondDisplay;
 					case ListDisplayMode.DamageDone:
 						return myDamageDoneDisplay;
+					case ListDisplayMode.MinionDamageDone:
+						return myMinionDamageDoneDisplay;
 					case ListDisplayMode.DamageTaken:
 						return myDamageTakenDisplay;
 					case ListDisplayMode.EnemyDamageTaken:
@@ -252,6 +254,7 @@ namespace DPSExtreme
 
 			myDamagePerSecondDisplay = new UIListDisplay<StatValue>(ListDisplayMode.DamagePerSecond);
 			myDamageDoneDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DamageStatValue>>(ListDisplayMode.DamageDone);
+			myMinionDamageDoneDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, MinionDamageStatValue>>(ListDisplayMode.MinionDamageDone);
 			myDamageTakenDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>>(ListDisplayMode.DamageTaken);
 			myManaUsedDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.ManaUsed);
 			myBuffUptimesDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>>(ListDisplayMode.BuffUptime, StatFormat.Time);
@@ -318,7 +321,7 @@ namespace DPSExtreme
 			}
 
 			title += " - ";
-			
+
 			if (myCurrentDisplay.myLabelOverride != null)
 				title += myCurrentDisplay.myLabelOverride;
 			else if (myShowAllCombatTotals)

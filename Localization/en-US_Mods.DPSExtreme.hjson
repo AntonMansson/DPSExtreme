@@ -6,6 +6,7 @@ AllCombats: All combats
 CurrentCombat: Current combat
 DamagePerSecond: DPS
 DamageDone: Damage done
+MinionDamageDone: Minion damage done
 DamageTaken: Damage taken
 ManaUsed: Mana used
 BuffUptime: Buff uptime
@@ -17,7 +18,7 @@ TogglePercent: Toggle %
 NoDPSWearDPSMeter: No DPS Stats, wear [i:DPSMeter]
 NoBoss: No Boss
 BossLabel: Boss - {0}
-Combat: CombatTest
+Combat: Combat
 ClickToChangeDisplay: Click to change display mode
 ShowCombatHistory: Click to show combat history
 DamageStatsForNPC: "Damage stats for {0}: "

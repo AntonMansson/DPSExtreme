@@ -2,7 +2,6 @@
 using Terraria.Localization;
 using Terraria;
 using DPSExtreme.Combat.Stats;
-using System.Reflection;
 
 namespace DPSExtreme.UIElements.Displays
 {

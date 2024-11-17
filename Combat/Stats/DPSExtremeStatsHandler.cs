@@ -55,7 +55,7 @@ namespace DPSExtreme.Combat.Stats
 		private int _myDamageCauserAbility = -1;
 		internal int myDamageCauserAbility //Projectile/Item id etc
 		{
-			get 
+			get
 			{
 				switch (mySourceType)
 				{
@@ -71,7 +71,7 @@ namespace DPSExtreme.Combat.Stats
 						return -1;
 				}
 			}
-			set 
+			set
 			{
 				switch (mySourceType)
 				{
@@ -241,6 +241,28 @@ namespace DPSExtreme.Combat.Stats
 
 			DamageStatValue enemyDamageTakenTotalStat = DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId];
 			enemyDamageTakenTotalStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
+
+			//Maybe move down below server check?
+			if (aDamageSource.mySourceType == DamageSource.SourceType.Item)
+			{
+				var proectileItemSource = ContentSamples.ItemsByType[aDamageSource.myDamageCauserAbility - (int)DamageSource.SourceType.Item];
+				if (proectileItemSource != null)
+				{
+					int projectileTypeId = proectileItemSource.shoot;
+					if (ContentSamples.ProjectilesByType[projectileTypeId].minion)
+					{
+						MinionDamageStatValue minionDamageDealtStat = DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myMinionDamageDone[aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
+						minionDamageDealtStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
+						minionDamageDealtStat.myMinionType = projectileTypeId;
+						minionDamageDealtStat.myMinionOwner = aDamageSource.myDamageCauserId;
+
+						MinionDamageStatValue minionTotalDamageDealtStat = DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myMinionDamageDone[aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
+						minionTotalDamageDealtStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
+						minionTotalDamageDealtStat.myMinionType = projectileTypeId;
+						minionTotalDamageDealtStat.myMinionOwner = aDamageSource.myDamageCauserId;
+					}
+				}
+			}
 
 			if (Main.netMode == NetmodeID.Server &&
 				aDamageSource.myDamageCauserId < (int)InfoListIndices.SupportedPlayerCount) //MP clients sync their local damage so that we can include item/proj type

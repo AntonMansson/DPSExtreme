@@ -34,7 +34,13 @@ namespace DPSExtreme.UIElements.Displays
 			myClickEntryCallback += OnClickBaseEntry;
 			myEntryCreator = () => { return new UIStatDisplayEntry(); };
 
-			if (aContainerType == typeof(StatValue) || aContainerType == typeof(DamageStatValue) || aContainerType == typeof(TimeStatValue))
+			if (aContainerType == null)
+				return;
+
+			if (aContainerType == typeof(StatValue) || 
+				aContainerType == typeof(DamageStatValue) || 
+				aContainerType == typeof(TimeStatValue) ||
+				aContainerType == typeof(MinionDamageStatValue))
 			{
 				if (aContainerType == typeof(TimeStatValue))
 					myFormat = StatFormat.Time;

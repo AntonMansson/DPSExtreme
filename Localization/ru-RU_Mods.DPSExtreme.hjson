@@ -6,6 +6,7 @@ Keybinds.ToggleTeamDPSBossMeter.DisplayName: Отобразить статист
 // CurrentCombat: Current combat
 // DamagePerSecond: DPS
 // DamageDone: Damage done
+// MinionDamageDone: Minion damage done
 // DamageTaken: Damage taken
 // ManaUsed: Mana used
 // BuffUptime: Buff uptime
@@ -17,7 +18,7 @@ TogglePercent: Вкл/откл %
 NoDPSWearDPSMeter: Нет инфо об DPS, возьмите [i:DPSMeter]
 NoBoss: Нет босса
 BossLabel: Босс - {0}
-// Combat: CombatTest
+// Combat: Combat
 // ClickToChangeDisplay: Click to change display mode
 // ShowCombatHistory: Click to show combat history
 DamageStatsForNPC: "Статистика урона для {0}: "

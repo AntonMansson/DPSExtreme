@@ -6,6 +6,7 @@ Keybinds.ToggleTeamDPSBossMeter.DisplayName: 开关队伍成员伤害/对Boss伤
 // CurrentCombat: Current combat
 // DamagePerSecond: DPS
 // DamageDone: Damage done
+// MinionDamageDone: Minion damage done
 // DamageTaken: Damage taken
 // ManaUsed: Mana used
 // BuffUptime: Buff uptime
@@ -17,7 +18,7 @@ TogglePercent: 显示 %
 NoDPSWearDPSMeter: 需要[i:DPSMeter]
 NoBoss: 当前无Boss存活
 BossLabel: Boss - {0}
-// Combat: CombatTest
+// Combat: Combat
 // ClickToChangeDisplay: Click to change display mode
 // ShowCombatHistory: Click to show combat history
 DamageStatsForNPC: "{0} 伤害: "

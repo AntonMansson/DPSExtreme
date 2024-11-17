@@ -167,8 +167,6 @@ namespace DPSExtreme
 
 				int projectileOwner = projectile.owner;
 
-				/*Temp hack to assign npc projectiles to npc table. Necessary for them to appear in list on SP clients
-				whoIsMyParent could be used to diffirentiate between individual npcs in the future. And could also seperate other damage sources like traps apart from npcs*/
 				DPSExtremeModProjectile dpsProjectile = projectile.GetGlobalProjectile<DPSExtremeModProjectile>();
 
 				if (dpsProjectile.whoIsMyParent == (int)InfoListIndices.NPCs)
@@ -180,7 +178,7 @@ namespace DPSExtreme
 
 				if (dpsProjectile.myParentItemType != -1)
 					damageSource.mySourceType = DamageSource.SourceType.Item;
-
+				
 				damageSource.myDamageAmount = damageDone;
 				damageSource.myIsCrit = hit.Crit;
 				damageSource.myDamageCauserAbility = dpsProjectile.myParentItemType != -1 ? dpsProjectile.myParentItemType : projectile.type;

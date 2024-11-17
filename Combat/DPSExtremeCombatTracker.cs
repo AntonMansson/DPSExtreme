@@ -364,8 +364,7 @@ namespace DPSExtreme.Combat
 			if (historyCount >= ourHistorySize)
 				myHistoryBufferZeroIndex++;
 
-			myActiveCombat.SendStats();
-			myActiveCombat.PrintStats();
+			myActiveCombat.OnEnd();
 			myActiveCombat = null;
 
 			DPSExtremeUI.instance?.OnCombatEnded();

@@ -3,6 +3,7 @@ using System;
 using Microsoft.Xna.Framework.Graphics;
 using DPSExtreme.Combat.Stats;
 using DPSExtreme.Config;
+using Terraria.ID;
 
 namespace DPSExtreme.UIElements.Displays
 {
@@ -32,18 +33,49 @@ namespace DPSExtreme.UIElements.Displays
 
 			if (drawRightText)
 			{
-				myRightText = StatValue.FormatStatNumber(myValue, myFormat);
-
-				if (DPSExtremeClientConfig.Instance.ShowPercentages && myTotal > 0)
+				if (myParentDisplay.myDisplayMode == ListDisplayMode.MinionDamageDone)
 				{
-					if (myValue == myTotal - 1) //ugly fix for off-by-one showing 99%
-						myValue = myTotal;
+					Combat.DPSExtremeCombat displayedCombat = DPSExtremeUI.instance.myDisplayedCombat;
+					Combat.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
 
-					float fraction = Math.Min(1f, (float)myValue / myTotal);
-					myRightText = $"{StatValue.FormatStatNumber(myValue, myFormat)} ({String.Format("{0:P0}", fraction)})";
+					UICombatInfoDisplay parentDisplay = (myParentDisplay as UICombatInfoDisplay).myParentDisplay;
+					if (parentDisplay != null && parentDisplay.myBreakdownAccessor != -1)
+					{
+						Player player = Main.player[parentDisplay.myBreakdownAccessor];
+
+						Item summonItem = ContentSamples.ItemsByType[myBaseKey - (int)DamageSource.SourceType.Item];
+
+						if (summonItem != null)
+						{
+							Projectile projectile = ContentSamples.ProjectilesByType[summonItem.shoot];
+
+							int ownedProjectilesOfType = displayedCombat ==
+								activeCombat ?
+								player.ownedProjectileCounts[projectile.type] :
+								displayedCombat.myStats.myMinionCounts[player.whoAmI][projectile.type];
+
+							if (projectile.minionSlots == 1)
+								myRightText = string.Format("{0:F0}", ownedProjectilesOfType) + " x " + myValue.ToString();
+							else
+								myRightText = string.Format("({0:D0}*{1:F1})", ownedProjectilesOfType, projectile.minionSlots) + " x " + myValue.ToString();
+						}
+					}
+				}
+				else
+				{
+					myRightText = StatValue.FormatStatNumber(myValue, myFormat);
+
+					if (DPSExtremeClientConfig.Instance.ShowPercentages && myTotal > 0)
+					{
+						if (myValue == myTotal - 1) //ugly fix for off-by-one showing 99%
+							myValue = myTotal;
+
+						float fraction = Math.Min(1f, (float)myValue / myTotal);
+						myRightText = $"{StatValue.FormatStatNumber(myValue, myFormat)} ({String.Format("{0:P0}", fraction)})";
+					}
 				}
 			}
-			
+
 			DrawSelfBase(spriteBatch);
 
 			if (ContainsPoint(Main.MouseScreen) && myParticipantIndex >= 0)
@@ -53,7 +85,7 @@ namespace DPSExtreme.UIElements.Displays
 			}
 		}
 
-		internal void SetValues(int aValue, int aMax, int aTotal)
+		internal void SetValues(StatValue aValue, int aMax, int aTotal)
 		{
 			myValue = aValue;
 			myMax = aMax;
