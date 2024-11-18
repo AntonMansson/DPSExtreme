@@ -133,6 +133,7 @@ namespace DPSExtreme
 			aWriter.Write(myDPS);
 			myDamageDoneBreakdown.ToStream(aWriter);
 			myEnemyDamageTakenByMeBreakdown.ToStream(aWriter);
+			myMinionDamageDoneBreakdown.ToStream(aWriter);
 		}
 
 		public override bool FromStream(BinaryReader aReader)
@@ -141,14 +142,16 @@ namespace DPSExtreme
 			myDPS = aReader.ReadInt32();
 			myDamageDoneBreakdown.FromStream(aReader);
 			myEnemyDamageTakenByMeBreakdown.FromStream(aReader);
+			myMinionDamageDoneBreakdown.FromStream(aReader);
 
 			return true;
 		}
 
 		public int myPlayer = 0;
 		public int myDPS = 0;
-		public DPSExtremeStatDictionary<int, DamageStatValue> myDamageDoneBreakdown = new DPSExtremeStatDictionary<int, DamageStatValue>();
-		public DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>> myEnemyDamageTakenByMeBreakdown = new DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>();
+		public DPSExtremeStatDictionary<int, DamageStatValue> myDamageDoneBreakdown = new();
+		public DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>> myEnemyDamageTakenByMeBreakdown = new();
+		public DPSExtremeStatDictionary<int, MinionDamageStatValue> myMinionDamageDoneBreakdown = new();
 	}
 
 	internal class ProtocolPushClientDPSs : DPSExtremeProtocol

@@ -51,12 +51,15 @@ namespace DPSExtreme
 			if (!Player.dpsStarted)
 				dps = 0;
 
+			CombatStats stats = DPSExtreme.instance.combatTracker.myActiveCombat.myStats;
+
 			ProtocolReqShareCurrentDPS req = new ProtocolReqShareCurrentDPS();
 			req.myPlayer = Player.whoAmI;
 			req.myDPS = dps;
-			req.myDamageDoneBreakdown = DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDamageDone[Player.whoAmI];
+			req.myDamageDoneBreakdown = stats.myDamageDone[Player.whoAmI];
+			req.myMinionDamageDoneBreakdown = stats.myMinionDamageDone[Player.whoAmI];
 
-            foreach ((int enemyType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> stat) in DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myEnemyDamageTaken)
+            foreach ((int enemyType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> stat) in stats.myEnemyDamageTaken)
             {
 				req.myEnemyDamageTakenByMeBreakdown[enemyType] = stat[Player.whoAmI];
 			}

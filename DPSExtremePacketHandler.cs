@@ -198,10 +198,11 @@ namespace DPSExtreme
 
 			activeCombat.myStats.myDamagePerSecond[aReq.myPlayer] = aReq.myDPS;
 			activeCombat.myStats.myDamageDone[aReq.myPlayer] = aReq.myDamageDoneBreakdown;
+			activeCombat.myStats.myMinionDamageDone[aReq.myPlayer] = aReq.myMinionDamageDoneBreakdown;
 
 			foreach ((int enemyType, DPSExtremeStatDictionary<int, DamageStatValue> stat) in aReq.myEnemyDamageTakenByMeBreakdown)
 			{
-				activeCombat.myStats.myEnemyDamageTaken[enemyType][aReq.myPlayer] = aReq.myEnemyDamageTakenByMeBreakdown[enemyType];
+				activeCombat.myStats.myEnemyDamageTaken[enemyType][aReq.myPlayer] = stat;
 			}
 		}
 
@@ -231,7 +232,7 @@ namespace DPSExtreme
 				//Sync remote player damage, but don't overwrite local
 				activeCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
 				activeCombat.myStats.myMinionDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalMinionDamage;
-
+				
 				foreach ((int enemyType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> stat) in myPrevLocalEnemyDamageTaken)
 				{
 					activeCombat.myStats.myEnemyDamageTaken[enemyType][Main.LocalPlayer.whoAmI] = stat[Main.LocalPlayer.whoAmI];

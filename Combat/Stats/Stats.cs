@@ -161,12 +161,12 @@ namespace DPSExtreme.Combat.Stats
 			return "Invalid format";
 		}
 
-		public void ToStream(BinaryWriter aWriter)
+		public virtual void ToStream(BinaryWriter aWriter)
 		{
 			aWriter.Write7BitEncodedInt(myValue);
 		}
 
-		public void FromStream(BinaryReader aReader)
+		public virtual void FromStream(BinaryReader aReader)
 		{
 			myValue = aReader.Read7BitEncodedInt();
 		}
@@ -222,18 +222,20 @@ namespace DPSExtreme.Combat.Stats
 			return lines; 
 		}
 
-		public new void ToStream(BinaryWriter aWriter)
+		public override void ToStream(BinaryWriter aWriter)
 		{
-			aWriter.Write7BitEncodedInt(myValue);
+			base.ToStream(aWriter);
 			aWriter.Write7BitEncodedInt(myHitCount);
 			aWriter.Write7BitEncodedInt(myCritCount);
+			aWriter.Write7BitEncodedInt(myMaxHit);
 		}
 
-		public new void FromStream(BinaryReader aReader)
+		public override void FromStream(BinaryReader aReader)
 		{
-			myValue = aReader.Read7BitEncodedInt();
+			base.FromStream(aReader);
 			myHitCount = aReader.Read7BitEncodedInt();
 			myCritCount = aReader.Read7BitEncodedInt();
+			myMaxHit = aReader.Read7BitEncodedInt();
 		}
 	}
 
@@ -273,13 +275,18 @@ namespace DPSExtreme.Combat.Stats
 			aTotal = (int)damagePerMinionSlot;
 		}
 
-		public new void ToStream(BinaryWriter aWriter)
+		public override void ToStream(BinaryWriter aWriter)
 		{
-			//base.ToStream(aWriter);
+			base.ToStream(aWriter);
+			aWriter.Write7BitEncodedInt(myMinionType);
+			aWriter.Write7BitEncodedInt(myMinionOwner);
 		}
 
-		public new void FromStream(BinaryReader aReader)
+		public override void FromStream(BinaryReader aReader)
 		{
+			base.FromStream(aReader);
+			myMinionType = aReader.Read7BitEncodedInt();
+			myMinionOwner = aReader.Read7BitEncodedInt();
 		}
 	}
 }
