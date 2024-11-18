@@ -38,9 +38,7 @@ namespace DPSExtreme.UIElements.Displays
 				return;
 
 			if (aContainerType == typeof(StatValue) || 
-				aContainerType == typeof(DamageStatValue) || 
-				aContainerType == typeof(TimeStatValue) ||
-				aContainerType == typeof(MinionDamageStatValue))
+				aContainerType.IsSubclassOf(typeof(StatValue)))
 			{
 				if (aContainerType == typeof(TimeStatValue))
 					myFormat = StatFormat.Time;

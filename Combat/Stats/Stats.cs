@@ -20,7 +20,7 @@ namespace DPSExtreme.Combat.Stats
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myMinionCounts = new(); //Helper for MinionDamageDone display
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, MinionDamageStatValue>> myMinionDamageDone = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>> myDamageTaken = new();
-		internal DPSExtremeStatList<StatValue> myDeaths = new();
+		internal DPSExtremeStatList<DeathStatValue> myDeaths = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myKills = new();
 		internal DPSExtremeStatList<DPSExtremeStatDictionary<int, StatValue>> myManaUsed = new();
 
@@ -288,5 +288,53 @@ namespace DPSExtreme.Combat.Stats
 			myMinionType = aReader.Read7BitEncodedInt();
 			myMinionOwner = aReader.Read7BitEncodedInt();
 		}
+	}
+
+	internal class DeathStatValue : StatValue
+	{
+		public List<int> myDeathTimesInTicks = new();
+
+		public DeathStatValue() { }
+
+		public void AddDeath(int aDeathTime)
+		{
+			myValue++;
+			myDeathTimesInTicks.Add(aDeathTime);
+		}
+
+		public override List<string> GetInfoBoxLines()
+		{
+			List<string> lines = new List<string>();
+
+            for (int i = myDeathTimesInTicks.Count - 1; i >= 0; i--)
+            {
+				int deathTime = myDeathTimesInTicks[i];
+
+				float seconds = (deathTime / 60f) % 60;
+				int minutes = (deathTime / 60) / 60;
+
+                lines.Add(string.Format("{0}. {1:D2}:{2:D2}", i + 1, minutes, (int)seconds));
+			}
+
+			return lines;
+		}
+
+		public override void ToStream(BinaryWriter aWriter)
+		{
+			base.ToStream(aWriter);
+
+			aWriter.Write7BitEncodedInt(myDeathTimesInTicks.Count);
+            foreach (int deathTime in myDeathTimesInTicks)
+				aWriter.Write7BitEncodedInt(deathTime);
+		}
+
+		public override void FromStream(BinaryReader aReader)
+		{
+			base.FromStream(aReader);
+
+			int count = aReader.Read7BitEncodedInt();
+            for (int i = 0; i < count; i++)
+				myDeathTimesInTicks.Add(aReader.Read7BitEncodedInt());
+        }
 	}
 }

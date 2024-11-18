@@ -52,7 +52,7 @@ namespace DPSExtreme
 		internal UIListDisplay<DPSExtremeStatDictionary<int, DamageStatValue>> myDamageDoneDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, MinionDamageStatValue>> myMinionDamageDoneDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, DPSExtremeStatDictionary<int, DamageStatValue>>> myDamageTakenDisplay;
-		internal UIListDisplay<StatValue> myDeathsDisplay;
+		internal UIListDisplay<DeathStatValue> myDeathsDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myKillsDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, StatValue>> myManaUsedDisplay;
 		internal UIListDisplay<DPSExtremeStatDictionary<int, TimeStatValue>> myBuffUptimesDisplay;
@@ -262,7 +262,7 @@ namespace DPSExtreme
 
 			myEnemyDamageTakenDisplay = new UIStatDictionaryDisplay<DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>>>(ListDisplayMode.EnemyDamageTaken);
 
-			myDeathsDisplay = new UIListDisplay<StatValue>(ListDisplayMode.Deaths);
+			myDeathsDisplay = new UIListDisplay<DeathStatValue>(ListDisplayMode.Deaths);
 			myKillsDisplay = new UIListDisplay<DPSExtremeStatDictionary<int, StatValue>>(ListDisplayMode.Kills);
 
 			myRootPanel.Append(myCurrentDisplay);

@@ -306,8 +306,8 @@ namespace DPSExtreme.Combat.Stats
 				return;
 			}
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDeaths[aKilledPlayer.whoAmI] += 1;
-			DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myDeaths[aKilledPlayer.whoAmI] += 1;
+			DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myDeaths[aKilledPlayer.whoAmI].AddDeath(DPSExtreme.instance.combatTracker.myActiveCombat.myDurationInTicks);
+			DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myDeaths[aKilledPlayer.whoAmI].AddDeath(DPSExtreme.instance.combatTracker.myTotalCombat.myDurationInTicks);
 		}
 
 		internal void AddKill(NPC aKilledNPC, int aKiller)
