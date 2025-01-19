@@ -1,9 +1,6 @@
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
-using MonoMod.Utils;
-using System.IO;
-using System.Collections.Generic;
+using Terraria.ModLoader;
 
 namespace DPSExtreme
 {

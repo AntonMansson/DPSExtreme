@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameInput;
-using System.Collections.Generic;
 
 namespace DPSExtreme
 {

@@ -1,8 +1,8 @@
-﻿using Terraria;
-using System;
-using Terraria.UI;
-using DPSExtreme.UIElements;
+﻿using DPSExtreme.UIElements;
 using Microsoft.Xna.Framework;
+using System;
+using Terraria;
+using Terraria.UI;
 
 namespace DPSExtreme
 {

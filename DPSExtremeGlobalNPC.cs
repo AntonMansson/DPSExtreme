@@ -1,10 +1,9 @@
+using MonoMod.Cil;
+using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using MonoMod.Cil;
-using DPSExtreme.CombatTracking;
-using Terraria.DataStructures;
 using static DPSExtreme.CombatTracking.DPSExtremeCombat;
 
 namespace DPSExtreme

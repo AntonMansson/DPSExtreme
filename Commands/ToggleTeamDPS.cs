@@ -1,7 +1,5 @@
-﻿using Terraria;
-using Terraria.Localization;
+﻿using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.ID;
 
 namespace DPSExtreme.Commands
 {

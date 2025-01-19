@@ -1,17 +1,17 @@
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.ModLoader;
-using System;
-using Terraria.UI;
-using Terraria.ModLoader.UI.Elements;
-using Terraria.GameContent.UI.Elements;
-using System.Reflection;
-using Microsoft.Xna.Framework.Graphics;
-using DPSExtreme.UIElements;
-using ReLogic.Content;
-using Terraria.Localization;
-using Terraria.ID;
 using DPSExtreme.CombatTracking;
+using DPSExtreme.UIElements;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using System;
+using System.Reflection;
+using Terraria;
+using Terraria.GameContent.UI.Elements;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using Terraria.ModLoader.UI.Elements;
+using Terraria.UI;
 
 namespace DPSExtreme
 {

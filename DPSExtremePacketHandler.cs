@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using Terraria.ID;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 using static DPSExtreme.CombatTracking.DPSExtremeCombat;
 

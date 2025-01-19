@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using System.IO;
-using System;
-using Terraria.UI;
+﻿using DPSExtreme.CombatTracking;
 using DPSExtreme.UIElements;
 using Microsoft.Xna.Framework;
-using DPSExtreme.CombatTracking;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Terraria;
+using Terraria.ModLoader;
+using Terraria.UI;
 
 // TODO, mod to share fog of war 
 // TODO: Death counter for each boss

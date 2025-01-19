@@ -1,11 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
-using Terraria;
-using System;
-using Terraria.GameContent;
-using Terraria.UI;
-using ReLogic.Graphics;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Graphics;
+using System;
+using Terraria;
+using Terraria.GameContent;
 using Terraria.Localization;
+using Terraria.UI;
 
 namespace DPSExtreme
 {

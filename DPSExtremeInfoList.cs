@@ -1,8 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection.Emit;
+﻿using System.IO;
 using static DPSExtreme.CombatTracking.DPSExtremeCombat;
 
 namespace DPSExtreme
