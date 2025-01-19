@@ -1,27 +1,19 @@
-﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Text;
+using MonoMod.Cil;
+using System;
 using Terraria;
-using Terraria.Chat;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using Terraria.Localization;
-using MonoMod.Cil;
+using static DPSExtreme.CombatTracking.DPSExtremeCombat;
 
 namespace DPSExtreme
 {
 	internal class DPSExtremeGlobalNPC : GlobalNPC
 	{
-		public override bool InstancePerEntity => true;
+		//Not needed anymore as we don't have instanced data?
+		//public override bool InstancePerEntity => true;
 
-		internal int[] damageDone;
-		internal int damageDOT; // damage from damage over time buffs.
-		internal bool onDeathBed; // SP only flag for something?
-
-		public DPSExtremeGlobalNPC()
-		{
-			damageDone = new int[256];
+		public DPSExtremeGlobalNPC() {
 		}
 
 		public override void Load() {
@@ -47,9 +39,16 @@ namespace DPSExtreme
 			c.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, (byte)18);
 			c.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_0);
 			c.EmitDelegate<Action<int, int>>((int whoAmI, int damage) => {
+				if (Main.netMode != NetmodeID.Server)
+					return;
+
 				// whoAmI already accounts for realLife
-				DPSExtremeGlobalNPC info = Main.npc[whoAmI].GetGlobalNPC<DPSExtremeGlobalNPC>();
-				info.damageDOT += damage;
+
+				NPC npc = Main.npc[whoAmI];
+				//TODO Verify that damage has already been applied when we reach this point (otherwise overkill calculation is incorrect)
+				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
+				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, damage);
+
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
 			});
 
@@ -67,9 +66,15 @@ namespace DPSExtreme
 			c.Emit(Mono.Cecil.Cil.OpCodes.Ldloc_S, (byte)19);
 			c.Emit(Mono.Cecil.Cil.OpCodes.Ldc_I4_1);
 			c.EmitDelegate<Action<int, int>>((int whoAmI, int damage) => {
+				if (Main.netMode != NetmodeID.Server)
+					return;
+
 				// whoAmI already accounts for realLife
-				DPSExtremeGlobalNPC info = Main.npc[whoAmI].GetGlobalNPC<DPSExtremeGlobalNPC>();
-				info.damageDOT += damage;
+				NPC npc = Main.npc[whoAmI];
+
+				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
+				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, damage);
+
 				//Main.NewText($"Detected DOT: {Main.npc[whoAmI].FullName}, {damage}");
 			});
 		}
@@ -89,176 +94,66 @@ namespace DPSExtreme
 		//	return null;
 		//}
 
-		// question, in MP, is this called before or after last hit?
-		public override void OnKill(NPC npc)
-		{
-			try
-			{
-				//System.Console.WriteLine("NPCLoot");
-
-				if (npc.boss)
-				{
-					if (Main.netMode == NetmodeID.SinglePlayer)
-					{
-						onDeathBed = true;
-					}
-					else
-					{
-						SendStats(npc);
-					}
-				}
+		public override void OnSpawn(NPC npc, IEntitySource source) {
+			if (npc.boss) {
+				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.BossFight, npc.type);
 			}
-			catch (Exception)
-			{
+		}
+
+		public override void OnKill(NPC npc) {
+			try {
+
+			}
+			catch (Exception) {
 				//ErrorLogger.Log("NPCLoot" + e.Message);
 			}
 		}
 
-		void SendStats(NPC npc)
-		{
-			try
-			{
-				//System.Console.WriteLine("SendStats");
-
-				StringBuilder sb = new StringBuilder();
-				sb.Append(Language.GetText(DPSExtreme.instance.GetLocalizationKey("DamageStatsForNPC")).Format(Lang.GetNPCNameValue(npc.type)));
-				for (int i = 0; i < 256; i++)
-				{
-					int playerDamage = damageDone[i];
-					if (playerDamage > 0)
-					{
-						if (i == 255)
-						{
-							sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TrapsTownNPC")), playerDamage));
-						}
-						else
-						{
-							sb.Append(string.Format("{0}: {1}, ", Main.player[i].name, playerDamage));
-						}
-					}
-				}
-				if(damageDOT > 0) {
-					sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")), damageDOT));
-				}
-				sb.Length -= 2; // removes last ,
-				Color messageColor = Color.Orange;
-
-				if (Main.netMode == NetmodeID.Server)
-				{
-					ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(sb.ToString()), messageColor);
-
-					var netMessage = Mod.GetPacket();
-					netMessage.Write((byte)DPSExtremeMessageType.InformClientsCurrentBossTotals);
-					netMessage.Write(true);
-					netMessage.Write((byte)npc.whoAmI);
-					DPSExtremeGlobalNPC bossGlobalNPC = npc.GetGlobalNPC<DPSExtremeGlobalNPC>();
-					byte count = 0;
-					for (int i = 0; i < 256; i++)
-					{
-						if (bossGlobalNPC.damageDone[i] > 0)
-						{
-							count++;
-						}
-					}
-					netMessage.Write(count);
-					for (int i = 0; i < 256; i++)
-					{
-						if (bossGlobalNPC.damageDone[i] > 0)
-						{
-							netMessage.Write((byte)i);
-							netMessage.Write(bossGlobalNPC.damageDone[i]);
-						}
-					}
-					netMessage.Write(bossGlobalNPC.damageDOT);
-					// No need to send DOT dps.
-					netMessage.Send();
-
-					Dictionary<byte, int> stats = new Dictionary<byte, int>();
-					for (int i = 0; i < 256; i++)
-					{
-						if (bossGlobalNPC.damageDone[i] > -1)
-						{
-							stats[(byte)i] = bossGlobalNPC.damageDone[i];
-						}
-					}
-					// DOT can't be in simple boss stats it seems, would need to adjust call.
-					DPSExtreme.instance.InvokeOnSimpleBossStats(stats);
-				}
-				else if (Main.netMode == NetmodeID.SinglePlayer)
-				{
-					Main.NewText(sb.ToString(), messageColor);
-				}
-				else if (Main.netMode == NetmodeID.MultiplayerClient)
-				{
-					// MP clients should just wait for message.
-				}
-			}
-			catch (Exception) {
-				//ErrorLogger.Log("SendStats" + e.Message);
-			}
-		}
-
 		// Things like townNPC and I think traps will trigger this in Server. In SP, all is done here.
-		public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
-		{
-			try
-			{
+		public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone) {
+			try {
+				if (Main.netMode == NetmodeID.MultiplayerClient)
+					return;
+
 				//System.Console.WriteLine("OnHitByItem " + player.whoAmI);
 
 				NPC damagedNPC = npc;
-				if (npc.realLife >= 0)
-				{
+				if (npc.realLife >= 0) {
 					damagedNPC = Main.npc[damagedNPC.realLife];
 				}
-				DPSExtremeGlobalNPC info = damagedNPC.GetGlobalNPC<DPSExtremeGlobalNPC>();
-				info.damageDone[player.whoAmI] += damageDone;
-				if (info.onDeathBed) // oh wait, is this the same as .active in this case? probably not.
-				{
-					info.SendStats(damagedNPC);
-					info.onDeathBed = false; // multiple things can hit while on deathbed.
-				}
 
-				//damageDone[player.whoAmI] += damage;
-				//if (onDeathBed)
-				//{
-				//	SendStats(npc);
-				//}
+				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
+				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, player.whoAmI, damageDone);
 			}
-			catch (Exception)
-			{
+			catch (Exception) {
 				//ErrorLogger.Log("OnHitByItem" + e.Message);
 			}
 		}
 
 		// Things like townNPC and I think traps will trigger this in Server. In SP, all is done here.
-		public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
-		{
+		public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone) {
 			//TODO, owner could be -1?
-			try
-			{
-				//System.Console.WriteLine("OnHitByProjectile " + projectile.owner);
+			try {
+				if (Main.netMode == NetmodeID.MultiplayerClient)
+					return;
 
+				//System.Console.WriteLine("OnHitByProjectile " + projectile.owner);
 				NPC damagedNPC = npc;
-				if (npc.realLife >= 0)
-				{
+				if (npc.realLife >= 0) {
 					damagedNPC = Main.npc[damagedNPC.realLife];
 				}
-				DPSExtremeGlobalNPC info = damagedNPC.GetGlobalNPC<DPSExtremeGlobalNPC>();
-				info.damageDone[projectile.owner] += damageDone;
-				if (info.onDeathBed)
-				{
-					info.SendStats(damagedNPC);
-					info.onDeathBed = false;
-				}
 
-				//damageDone[projectile.owner] += damage;
-				//if (onDeathBed)
-				//{
-				//	SendStats(npc);
-				//}
+				int projectileOwner = projectile.owner;
+
+				/*Temp hack to assign npc projectiles to npc table. Necessary for them to appear in list on SP clients
+				whoIsMyParent could be used to diffirentiate between individual npcs in the future. And could also seperate other damage sources like traps apart from npcs*/
+				if (projectile.GetGlobalProjectile<DPSExtremeModProjectile>().whoIsMyParent != -1)
+					projectileOwner = (int)InfoListIndices.NPCs;
+
+				DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
+				DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, projectileOwner, damageDone);
 			}
-			catch (Exception)
-			{
+			catch (Exception) {
 				//ErrorLogger.Log("OnHitByProjectile" + e.Message);
 			}
 		}

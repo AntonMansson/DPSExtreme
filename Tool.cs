@@ -1,8 +1,8 @@
-﻿using Terraria;
-using System;
-using Terraria.UI;
-using DPSExtreme.UIElements;
+﻿using DPSExtreme.UIElements;
 using Microsoft.Xna.Framework;
+using System;
+using Terraria;
+using Terraria.UI;
 
 namespace DPSExtreme
 {
@@ -17,8 +17,7 @@ namespace DPSExtreme
 		internal UIModState uistate;
 		//	Type uistateType;
 
-		public Tool(Type uistateType)
-		{
+		public Tool(Type uistateType) {
 			userInterface = new UserInterface();
 			//	this.uistateType = uistateType;
 			uistate = (UIModState)Activator.CreateInstance(uistateType, new object[] { userInterface });
@@ -34,8 +33,7 @@ namespace DPSExtreme
 		/// Initializes this Tool. Called during Load.
 		/// Useful for initializing data.
 		/// </summary>
-		internal virtual void Initialize()
-		{
+		internal virtual void Initialize() {
 		}
 
 		/// <summary>
@@ -44,21 +42,18 @@ namespace DPSExtreme
 		/// </summary>
 		internal virtual void ClientInitialize() { }
 
-		internal virtual void ScreenResolutionChanged()
-		{
+		internal virtual void ScreenResolutionChanged() {
 			userInterface?.Recalculate();
 		}
 
-		internal virtual void UIUpdate(GameTime gameTime)
-		{
+		internal virtual void UIUpdate(GameTime gameTime) {
 			//if (visible)
 			{
 				userInterface?.Update(gameTime);
 			}
 		}
 
-		internal virtual void UIDraw()
-		{
+		internal virtual void UIDraw() {
 			//if (visible)
 			{
 				uistate.ReverseChildren();
@@ -67,18 +62,14 @@ namespace DPSExtreme
 			}
 		}
 
-		internal virtual void DrawUpdateToggle()
-		{
+		internal virtual void DrawUpdateToggle() {
 		}
 
-		internal virtual void Toggled()
-		{
+		internal virtual void Toggled() {
 		}
 
-		internal virtual void PostSetupContent()
-		{
-			if (!Main.dedServ)
-			{
+		internal virtual void PostSetupContent() {
+			if (!Main.dedServ) {
 			}
 		}
 	}

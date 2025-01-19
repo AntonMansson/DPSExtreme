@@ -1,7 +1,5 @@
-﻿using Terraria;
-using Terraria.Localization;
+﻿using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.ID;
 
 namespace DPSExtreme.Commands
 {
@@ -11,13 +9,7 @@ namespace DPSExtreme.Commands
 		public override string Command => "teamdps"; // TODO: investigate if localized commands works.
 		public override string Description => Language.GetTextValue(Mod.GetLocalizationKey("ToggleTeamDPSCommandDescription"));
 
-		public override void Action(CommandCaller caller, string input, string[] args)
-		{
-			if (Main.netMode != NetmodeID.MultiplayerClient && !DPSExtremeUI.instance.ShowTeamDPSPanel)
-			{
-				Main.NewText(Language.GetTextValue(Mod.GetLocalizationKey("OnlyAvailableInMultiplayer")));
-				return;
-			}
+		public override void Action(CommandCaller caller, string input, string[] args) {
 			DPSExtremeUI.instance.ShowTeamDPSPanel = !DPSExtremeUI.instance.ShowTeamDPSPanel;
 			//DPSExtreme.ShowTeamDPS = !DPSExtreme.ShowTeamDPS;
 		}

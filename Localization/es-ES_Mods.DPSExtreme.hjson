@@ -1,5 +1,6 @@
 // Keybinds.ToggleTeamDPSBossMeter.DisplayName: Toggle Team DPS/Boss Meter
 // DPS: DPS
+// DamageDone: Damage done
 // TogglePercent: Toggle %
 // NoDPSWearDPSMeter: No DPS Stats, wear [i:DPSMeter]
 // NoBoss: No Boss
@@ -7,7 +8,25 @@
 // ClickToViewBossDamage: Click to view Boss damage taken breakdown
 // ClickToViewDPSStats: Click to view DPS stats
 // DamageStatsForNPC: "Damage stats for {0}: "
+// DisconnectedPlayer: Disconnected player
 // TrapsTownNPC: Traps/TownNPC
 // DamageOverTime: Debuff DOT
 // OnlyAvailableInMultiplayer: Team DPS only available in Multiplayer game.
 // ToggleTeamDPSCommandDescription: Toggle Team DPS display
+// Invasion: Invasion
+// Event: Event
+
+Configs: {
+	DPSExtremeConfig: {
+		// DisplayName: DPSExtreme Config
+
+		DebugLogging: {
+			// Label: Log Debug Messages
+			/* Tooltip:
+				'''
+				If enabled, debug messages will be shown.
+				This can be helpful in identifying issues with the mod.
+				''' */
+		}
+	}
+}
