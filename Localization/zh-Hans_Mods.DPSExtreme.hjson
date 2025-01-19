@@ -17,7 +17,7 @@ ToggleTeamDPSCommandDescription: 显示队伍成员伤害统计
 // Event: Event
 
 Configs: {
-	DPSExtremeConfig: {
+	DPSExtremeServerConfig: {
 		// DisplayName: DPSExtreme Config
 
 		DebugLogging: {

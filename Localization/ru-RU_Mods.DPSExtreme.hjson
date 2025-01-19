@@ -17,7 +17,7 @@ ToggleTeamDPSCommandDescription: Переключить отображение �
 // Event: Event
 
 Configs: {
-	DPSExtremeConfig: {
+	DPSExtremeServerConfig: {
 		// DisplayName: DPSExtreme Config
 
 		DebugLogging: {

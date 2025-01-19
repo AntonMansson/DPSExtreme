@@ -17,7 +17,7 @@ Invasion: Invasion
 Event: Event
 
 Configs: {
-	DPSExtremeConfig: {
+	DPSExtremeServerConfig: {
 		DisplayName: DPSExtreme Config
 
 		DebugLogging: {
