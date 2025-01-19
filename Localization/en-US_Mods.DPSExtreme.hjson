@@ -15,3 +15,18 @@ OnlyAvailableInMultiplayer: Team DPS only available in Multiplayer game.
 ToggleTeamDPSCommandDescription: Toggle Team DPS display
 Invasion: Invasion
 Event: Event
+
+Configs: {
+	DPSExtremeConfig: {
+		DisplayName: DPSExtreme Config
+
+		DebugLogging: {
+			Label: Log Debug Messages
+			Tooltip:
+				'''
+				If enabled, debug messages will be shown.
+				This can be helpful in identifying issues with the mod.
+				'''
+		}
+	}
+}

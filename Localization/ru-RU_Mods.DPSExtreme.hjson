@@ -15,3 +15,18 @@ OnlyAvailableInMultiplayer: Статистика DPS доступна тольк
 ToggleTeamDPSCommandDescription: Переключить отображение командного DPS
 // Invasion: Invasion
 // Event: Event
+
+Configs: {
+	DPSExtremeConfig: {
+		// DisplayName: DPSExtreme Config
+
+		DebugLogging: {
+			// Label: Log Debug Messages
+			/* Tooltip:
+				'''
+				If enabled, debug messages will be shown.
+				This can be helpful in identifying issues with the mod.
+				''' */
+		}
+	}
+}
