@@ -4,8 +4,6 @@ using ReLogic.Content;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
-using Terraria.Graphics;
-using Terraria.ModLoader;
 using Terraria.UI;
 
 namespace DPSExtreme.UIElements

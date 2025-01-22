@@ -2,7 +2,6 @@ using DPSExtreme.Combat;
 using DPSExtreme.Combat.Stats;
 using DPSExtreme.UIElements;
 using DPSExtreme.UIElements.Displays;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;

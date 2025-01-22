@@ -3,7 +3,7 @@
 [h1]DPS Extreme![/h1]
 Ever wondered who dealt the most damage to a boss? Ever felt the need to track your Damage Per Second in relation to your friends? Have you ever wanted sweet, sweet looking meters to show off how much your character dominates bosses? Well, you are in luck, as DPSExtreme is now available for use. 
 
-DPSExtreme provides a Team DPS and Boss Damage meter for use in multiplayer. (In single player, it does nothing.) While fighting bosses, you can see live stats on how much damage you are dealing compared to your teammates.
+DPSExtreme provides a Team DPS and Boss Damage meter for use in multiplayer and singleplayer. While fighting bosses, you can see live stats on how much damage you are dealing compared to your teammates.
 
 Compete with your friends to see who can deal the most damage to bosses as you fight them. For added fun, try challenging bosses with the same weapon and see who can get the most damage in.
 

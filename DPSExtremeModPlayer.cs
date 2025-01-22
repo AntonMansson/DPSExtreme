@@ -1,13 +1,10 @@
 using DPSExtreme.Combat.Stats;
 using DPSExtreme.Config;
-using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.Chat;
 using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 using static DPSExtreme.Combat.DPSExtremeCombat;
 

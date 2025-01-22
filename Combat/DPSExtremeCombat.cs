@@ -1,11 +1,8 @@
 ﻿using DPSExtreme.Combat.Stats;
 using DPSExtreme.UIElements.Displays;
-using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using Terraria;
-using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
 
