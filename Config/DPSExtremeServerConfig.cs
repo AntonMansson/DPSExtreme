@@ -53,6 +53,10 @@ namespace DPSExtreme.Config
 		[DefaultValue(false)]
 		public bool IgnoreMinionBuffs;
 
+		[Header("Debug")]
+		[DefaultValue(false)]
+		public bool ShowDebugMessages;
+
 		public override void OnChanged() {
 			if (DPSExtremeUI.instance != null)
 				DPSExtremeUI.instance.OnServerConfigLoad();

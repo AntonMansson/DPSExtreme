@@ -91,7 +91,7 @@ namespace DPSExtreme
 				int owner = dpsProjectile.whoIsMyParent;
 
 				if (owner == -1) {
-					ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral($"No owner found for projectile of type: {projectile.type} and local index {aHurtInfo.DamageSource.SourceProjectileLocalIndex}"), Color.Orange);
+					DPSExtreme.instance.DebugMessage($"No owner found for projectile of type: {projectile.type} and local index {aHurtInfo.DamageSource.SourceProjectileLocalIndex}");
 					return;
 				}
 
@@ -103,7 +103,7 @@ namespace DPSExtreme
 					NPC parentNPC = Main.npc[owner];
 
 					if (!parentNPC.active) {
-						Main.NewText("owner was not npc");
+						DPSExtreme.instance.DebugMessage("Projectile owner npc is not active");
 						return;
 					}
 

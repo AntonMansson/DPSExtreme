@@ -199,14 +199,7 @@ namespace DPSExtreme.Combat
 			if (sb.Length > 2)
 				sb.Length -= 2; // removes last ,
 
-			Color messageColor = Color.Orange;
-
-			if (Main.netMode == NetmodeID.Server) {
-				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(sb.ToString()), messageColor);
-			}
-			else if (Main.netMode == NetmodeID.SinglePlayer) {
-				Main.NewText(sb.ToString(), messageColor);
-			}
+			DPSExtreme.instance.DebugMessage(sb.ToString());
 		}
 
 		internal string GetTitle() {

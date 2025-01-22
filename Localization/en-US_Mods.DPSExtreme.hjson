@@ -60,6 +60,7 @@ Configs: {
 			GeneralConfigHeader: General
 			CombatConfigHeader: Combat
 			BuffUptimesHeader: Buff Uptimes
+			Debug: Debug
 		}
 
 		RefreshRate: {
@@ -109,6 +110,11 @@ Configs: {
 
 		IgnoreMinionBuffs: {
 			Label: Ignore Minion Buffs
+			Tooltip: ""
+		}
+
+		ShowDebugMessages: {
+			Label: Show Debug Messages
 			Tooltip: ""
 		}
 	}

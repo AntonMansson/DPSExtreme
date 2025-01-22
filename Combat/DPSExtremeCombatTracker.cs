@@ -67,12 +67,12 @@ namespace DPSExtreme.Combat
 			DPSExtremeModPlayer.ourConnectedPlayers.Add(aPlayer);
 
 			if (myActiveCombat == null) {
-				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("OnPlayerJoined - No Combat"), Color.Orange);
+				DPSExtreme.instance.DebugMessage("OnPlayerJoined - No Combat");
 				myJoiningPlayers.Clear();
 				return;
 			}
 
-			ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(String.Format("OnPlayerJoined - {0}", aPlayer)), Color.Orange);
+			DPSExtreme.instance.DebugMessage(String.Format("OnPlayerJoined - Player: {0}", aPlayer));
 
 			ProtocolPushStartCombat push = new ProtocolPushStartCombat();
 			push.myCombatType = myActiveCombat.myHighestCombatType;
@@ -259,11 +259,7 @@ namespace DPSExtreme.Combat
 				return;
 			}
 
-			if (Main.netMode == NetmodeID.SinglePlayer || Main.netMode == NetmodeID.MultiplayerClient)
-				Main.NewText(String.Format("Started combat of type: {0}", aCombatType.ToString()));
-			else if (Main.netMode == NetmodeID.Server)
-				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Server started combat"), Color.Orange);
-
+			DPSExtreme.instance.DebugMessage(String.Format("Started combat of type: {0}", aCombatType.ToString()));
 			myActiveCombat = new DPSExtremeCombat(aCombatType, aBossOrInvasionOrEventType);
 
 			DPSExtremeUI.instance?.OnCombatStarted(myActiveCombat);
@@ -286,10 +282,7 @@ namespace DPSExtreme.Combat
 			if ((int)myActiveCombat.myHighestCombatType <= oldHighestCombat)
 				return;
 
-			if (Main.netMode == NetmodeID.SinglePlayer || Main.netMode == NetmodeID.MultiplayerClient)
-				Main.NewText(String.Format("Upgraded combat from {0} to {1}", ((CombatType)oldHighestCombat).ToString(), aCombatType.ToString()));
-			else if (Main.netMode == NetmodeID.Server)
-				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(String.Format("Server upgraded combat from {0} to {1}", ((CombatType)oldHighestCombat).ToString(), aCombatType.ToString())), Color.Orange);
+			DPSExtreme.instance.DebugMessage(String.Format("Upgraded combat from {0} to {1}", ((CombatType)oldHighestCombat).ToString(), aCombatType.ToString()));
 
 			myActiveCombat.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
 
@@ -325,10 +318,7 @@ namespace DPSExtreme.Combat
 			if (myActiveCombat.myCombatTypeFlags > CombatType.Generic)
 				return;
 
-			if (Main.netMode == NetmodeID.SinglePlayer)
-				Main.NewText(String.Format("Ended combat"));
-			else if (Main.netMode == NetmodeID.Server)
-				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Server ended combat"), Color.Orange);
+			DPSExtreme.instance.DebugMessage("Ended combat");
 
 			int historyCount = 0;
 			for (int i = 0; i < ourHistorySize; i++) {

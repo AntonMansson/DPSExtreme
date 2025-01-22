@@ -77,8 +77,7 @@ namespace DPSExtreme
 			}
 
 			if (protocol == null) {
-				Main.NewText("DPSExtreme: null protocol for message type: " + delimiter.ToString());
-				DPSExtreme.instance.Logger.Warn("DPSExtreme: null protocol for message type: " + delimiter.ToString());
+				DPSExtreme.instance.DebugMessage("null protocol for message type: " + delimiter.ToString());
 			}
 			else {
 				HandleProtocol(delimiter, protocol);

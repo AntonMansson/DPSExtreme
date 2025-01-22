@@ -92,7 +92,7 @@ namespace DPSExtreme.Combat.Stats
 						break;
 					default:
 						_myDamageCauserAbility = -1;
-						Main.NewText("Invalid source");
+						DPSExtreme.instance.DebugMessage("Invalid source");
 						break;
 				}
 			}
@@ -218,8 +218,7 @@ namespace DPSExtreme.Combat.Stats
 			int npcType = consolidatedType > 0 ? consolidatedType : realDamagedNPC.type;
 
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
-				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding damage without active combat");
-				Main.NewText("DPSExtreme: Adding damage without active combat");
+				DPSExtreme.instance.DebugMessage("Adding damage without active combat");
 				return;
 			}
 
@@ -265,8 +264,7 @@ namespace DPSExtreme.Combat.Stats
 				return;
 
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
-				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding damage taken without active combat");
-				Main.NewText("DPSExtreme: Adding damage taken without active combat");
+				DPSExtreme.instance.DebugMessage("Adding damage taken without active combat");
 				return;
 			}
 
@@ -281,8 +279,7 @@ namespace DPSExtreme.Combat.Stats
 
 		internal void AddDeath(Player aKilledPlayer) {
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
-				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding death without active combat");
-				Main.NewText("DPSExtreme: Adding death without active combat");
+				DPSExtreme.instance.DebugMessage("Adding death without active combat");
 				return;
 			}
 
@@ -292,8 +289,7 @@ namespace DPSExtreme.Combat.Stats
 
 		internal void AddKill(NPC aKilledNPC, int aKiller) {
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
-				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding kill without active combat");
-				Main.NewText("DPSExtreme: Adding kill without active combat");
+				DPSExtreme.instance.DebugMessage("Adding kill without active combat");
 				return;
 			}
 
@@ -307,8 +303,7 @@ namespace DPSExtreme.Combat.Stats
 
 		internal void AddConsumedMana(Player aPlayer, Item aUsedItem, int aManaAmount) {
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
-				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding mana used without active combat");
-				Main.NewText("DPSExtreme: Adding mana used without active combat");
+				DPSExtreme.instance.DebugMessage("Adding mana used without active combat");
 				return;
 			}
 
@@ -318,8 +313,7 @@ namespace DPSExtreme.Combat.Stats
 
 		internal void AddBuffUptime(Player aPlayer, int aBuffType) {
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
-				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding buff uptime without active combat");
-				Main.NewText("DPSExtreme: Adding buff uptime without active combat");
+				DPSExtreme.instance.DebugMessage("Adding buff uptime without active combat");
 				return;
 			}
 
@@ -329,8 +323,7 @@ namespace DPSExtreme.Combat.Stats
 
 		internal void AddDebuffUptime(Player aPlayer, int aDebuffType) {
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
-				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding debuff uptime without active combat");
-				Main.NewText("DPSExtreme: Adding debuff uptime without active combat");
+				DPSExtreme.instance.DebugMessage("Adding debuff uptime without active combat");
 				return;
 			}
 

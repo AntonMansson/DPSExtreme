@@ -6,7 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
+using Terraria.Chat;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 
@@ -234,6 +236,18 @@ namespace DPSExtreme
 
 		internal void InvokeOnSimpleBossStats(Dictionary<byte, int> stats) {
 			OnSimpleBossStats?.Invoke(stats);
+		}
+
+		internal void DebugMessage(string aMessage) {
+			if (!DPSExtremeServerConfig.Instance.ShowDebugMessages)
+				return;
+
+			Logger.Info("DPSExtreme: " + aMessage);
+
+			if (Main.netMode == NetmodeID.SinglePlayer || Main.netMode == NetmodeID.MultiplayerClient)
+				Main.NewText("DPSExtreme: " + aMessage);
+			else if (Main.netMode == NetmodeID.Server)
+				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("DPSExtreme: " + aMessage), Color.Orange);
 		}
 	}
 
