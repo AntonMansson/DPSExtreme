@@ -6,23 +6,19 @@ namespace DPSExtreme.UIElements.Displays
 	internal class UISelectDisplayModeDisplay : UISelectionDisplay
 	{
 		internal UISelectDisplayModeDisplay()
-			: base(ListDisplayMode.DisplayModeSelect, GetEntryName)
-		{
+			: base(ListDisplayMode.DisplayModeSelect, GetEntryName) {
 
 		}
 
-		internal static string GetEntryName(int aIndex)
-		{
+		internal static string GetEntryName(int aIndex) {
 			ListDisplayMode displayMode = (ListDisplayMode)aIndex;
 			return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey(displayMode.ToString()));
 		}
 
-		protected override void PopulateEntries()
-		{
+		protected override void PopulateEntries() {
 			int entryIndex = 0;
 
-			for (int i = (int)ListDisplayMode.StatDisplaysStart + 1; i < (int)ListDisplayMode.StatDisplaysEnd; i++)
-			{
+			for (int i = (int)ListDisplayMode.StatDisplaysStart + 1; i < (int)ListDisplayMode.StatDisplaysEnd; i++) {
 				UISelectionDisplayEntry entry = CreateEntry(entryIndex) as UISelectionDisplayEntry;
 				entry.myColor = DPSExtremeUI.chatColor[Math.Abs(i) % DPSExtremeUI.chatColor.Length];
 				entry.myNameText = myNameCallback != null ? myNameCallback(i) : "No name callback";
@@ -33,8 +29,7 @@ namespace DPSExtreme.UIElements.Displays
 			Recalculate();
 		}
 
-		protected override void OnSelect(int aSelectedIndex)
-		{
+		protected override void OnSelect(int aSelectedIndex) {
 			DPSExtremeUI.instance.myDisplayMode = (ListDisplayMode)aSelectedIndex;
 		}
 	}

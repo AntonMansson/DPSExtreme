@@ -10,19 +10,15 @@ namespace DPSExtreme.UIElements.Displays
 	{
 		internal int myIndex = -1;
 
-		internal UISelectionDisplayEntry()
-		{
+		internal UISelectionDisplayEntry() {
 			OnRightClick += OnRightClickDisplay;
 		}
 
-		protected override int GetEntryWidth()
-		{
-			if (DPSExtremeUI.instance.myDisplayMode == ListDisplayMode.CombatHistory)
-			{
+		protected override int GetEntryWidth() {
+			if (DPSExtremeUI.instance.myDisplayMode == ListDisplayMode.CombatHistory) {
 				int longestCombatInTicks = 0;
 
-				for (int i = 0; i < DPSExtremeCombatTracker.ourHistorySize; i++)
-				{
+				for (int i = 0; i < DPSExtremeCombatTracker.ourHistorySize; i++) {
 					var combat = DPSExtreme.instance.combatTracker.GetCombatHistory(i);
 
 					if (combat == null)
@@ -44,13 +40,11 @@ namespace DPSExtreme.UIElements.Displays
 			return (int)GetOuterDimensions().Width;
 		}
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
-		{
+		protected override void DrawSelf(SpriteBatch spriteBatch) {
 			DrawSelfBase(spriteBatch);
 		}
 
-		protected void OnRightClickDisplay(UIMouseEvent evt, UIElement listeningElement)
-		{
+		protected void OnRightClickDisplay(UIMouseEvent evt, UIElement listeningElement) {
 			DPSExtremeUI.instance.myDisplayMode = DPSExtremeUI.instance.myPreviousDisplayMode;
 		}
 	}

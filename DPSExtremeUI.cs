@@ -1,16 +1,18 @@
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.UI;
-using Terraria.GameContent.UI.Elements;
-using Microsoft.Xna.Framework.Graphics;
-using DPSExtreme.UIElements;
-using ReLogic.Content;
-using Terraria.Localization;
-using Terraria.ID;
-using Terraria.ModLoader.UI;
 using DPSExtreme.Combat;
 using DPSExtreme.Combat.Stats;
+using DPSExtreme.UIElements;
 using DPSExtreme.UIElements.Displays;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
+using System.Collections.Generic;
+using Terraria;
+using Terraria.GameContent.UI.Elements;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader.UI;
+using Terraria.UI;
 
 namespace DPSExtreme
 {
@@ -21,17 +23,14 @@ namespace DPSExtreme
 		internal bool myShowAllCombatTotals = false; //overrides myDisplayedCombat and displays totals for all combats in history
 
 		private DPSExtremeCombat _myDisplayedCombat;
-		internal DPSExtremeCombat myDisplayedCombat
-		{
-			get
-			{
+		internal DPSExtremeCombat myDisplayedCombat {
+			get {
 				if (myShowAllCombatTotals)
 					return DPSExtreme.instance.combatTracker.myTotalCombat;
 
 				return _myDisplayedCombat;
 			}
-			set
-			{
+			set {
 				_myDisplayedCombat = value;
 
 				SetupDisplays();
@@ -63,11 +62,9 @@ namespace DPSExtreme
 		internal ListDisplayMode myPreviousDisplayMode = ListDisplayMode.DamageDone;
 
 		private ListDisplayMode _myDisplayMode;
-		internal ListDisplayMode myDisplayMode
-		{
+		internal ListDisplayMode myDisplayMode {
 			get { return _myDisplayMode; }
-			set
-			{
+			set {
 				myRootPanel.RemoveChild(myCurrentDisplay);
 
 				myPreviousDisplayMode = _myDisplayMode;
@@ -79,12 +76,9 @@ namespace DPSExtreme
 			}
 		}
 
-		internal UIDisplay myCurrentDisplay
-		{
-			get
-			{
-				switch (myDisplayMode)
-				{
+		internal UIDisplay myCurrentDisplay {
+			get {
+				switch (myDisplayMode) {
 					case ListDisplayMode.NeedAccessory:
 						return myNeedDPSAccDisplay;
 					case ListDisplayMode.DisplayModeSelect:
@@ -123,18 +117,14 @@ namespace DPSExtreme
 		internal int myHoveredParticipant = -1;
 
 		private bool showTeamDPSPanel;
-		public bool ShowTeamDPSPanel
-		{
+		public bool ShowTeamDPSPanel {
 			get { return showTeamDPSPanel; }
-			set
-			{
-				if (value)
-				{
+			set {
+				if (value) {
 					Append(myStatInfoPopup);
 					Append(myRootPanel);
 				}
-				else
-				{
+				else {
 					RemoveChild(myStatInfoPopup);
 					RemoveChild(myRootPanel);
 				}
@@ -167,14 +157,12 @@ namespace DPSExtreme
 			Color.LightYellow
 		};
 
-		public DPSExtremeUI(UserInterface ui) : base(ui)
-		{
+		public DPSExtremeUI(UserInterface ui) : base(ui) {
 			instance = this;
 		}
 
 		internal Asset<Texture2D> playerBackGroundTexture;
-		public override void OnInitialize()
-		{
+		public override void OnInitialize() {
 			OnClientConfigLoad();
 
 			playerBackGroundTexture = Main.Assets.Request<Texture2D>("Images/UI/PlayerBackground");
@@ -212,8 +200,7 @@ namespace DPSExtreme
 
 
 			var chooseDisplayModeButton = new UIHoverImageButton(DPSExtreme.instance.Assets.Request<Texture2D>("DisplayModeButton", AssetRequestMode.ImmediateLoad), Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("ClickToChangeDisplay")));
-			chooseDisplayModeButton.OnLeftClick += (a, b) =>
-			{
+			chooseDisplayModeButton.OnLeftClick += (a, b) => {
 				if (myDisplayMode != ListDisplayMode.DisplayModeSelect)
 					myDisplayMode = ListDisplayMode.DisplayModeSelect;
 				else
@@ -225,8 +212,7 @@ namespace DPSExtreme
 			myRootPanel.Append(chooseDisplayModeButton);
 
 			var combatHistoryButton = new UIHoverImageButton(DPSExtreme.instance.Assets.Request<Texture2D>("HistoryButton", AssetRequestMode.ImmediateLoad), Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("ShowCombatHistory")));
-			combatHistoryButton.OnLeftClick += (a, b) =>
-			{
+			combatHistoryButton.OnLeftClick += (a, b) => {
 				if (myDisplayMode != ListDisplayMode.CombatHistory)
 					myDisplayMode = ListDisplayMode.CombatHistory;
 				else
@@ -241,8 +227,7 @@ namespace DPSExtreme
 			myDisplayMode = ListDisplayMode.DamageDone;
 		}
 
-		internal void SetupDisplays()
-		{
+		internal void SetupDisplays() {
 			if (myDamageDoneDisplay != null) //Doesn't matter which one, just checking if it's first time we're setting up
 				myRootPanel.RemoveChild(myCurrentDisplay);
 
@@ -268,30 +253,25 @@ namespace DPSExtreme
 			myRootPanel.Append(myCurrentDisplay);
 		}
 
-		public void OnClientConfigLoad()
-		{
+		public void OnClientConfigLoad() {
 			updateNeeded = true;
 		}
 
-		public void OnServerConfigLoad()
-		{
+		public void OnServerConfigLoad() {
 			updateNeeded = true;
 		}
 
 		internal bool updateNeeded;
 
-		public override void Update(GameTime gameTime)
-		{
+		public override void Update(GameTime gameTime) {
 			base.Update(gameTime);
 
 			myRootPanel.Update();
 
-			if (!Main.LocalPlayer.accDreamCatcher && myDisplayMode != ListDisplayMode.NeedAccessory)
-			{
+			if (!Main.LocalPlayer.accDreamCatcher && myDisplayMode != ListDisplayMode.NeedAccessory) {
 				myDisplayMode = ListDisplayMode.NeedAccessory;
 			}
-			else if (Main.LocalPlayer.accDreamCatcher && myDisplayMode == ListDisplayMode.NeedAccessory)
-			{
+			else if (Main.LocalPlayer.accDreamCatcher && myDisplayMode == ListDisplayMode.NeedAccessory) {
 				myDisplayMode = myPreviousDisplayMode;
 				myPreviousDisplayMode = ListDisplayMode.DamageDone; //Just in case
 			}
@@ -308,13 +288,11 @@ namespace DPSExtreme
 			myRootPanel.Recalculate();
 		}
 
-		internal void RefreshLabel()
-		{
+		internal void RefreshLabel() {
 			string title = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey(myDisplayMode.ToString()));
 
 			if (myDisplayedCombat == null ||
-				myDisplayMode < ListDisplayMode.StatDisplaysStart)
-			{
+				myDisplayMode < ListDisplayMode.StatDisplaysStart) {
 				myLabel.SetText(title);
 				myLabel.Recalculate();
 				return;
@@ -332,8 +310,7 @@ namespace DPSExtreme
 			if (title.Length > 33)
 				title = title.Remove(33);
 
-			if (myCurrentDisplay.myLabelOverride == null && !myShowAllCombatTotals)
-			{
+			if (myCurrentDisplay.myLabelOverride == null && !myShowAllCombatTotals) {
 				if (title.Length > 27)
 					title = title.Remove(27);
 
@@ -344,47 +321,39 @@ namespace DPSExtreme
 			myLabel.Recalculate();
 		}
 
-		internal void OnEnterWorld()
-		{
+		internal void OnEnterWorld() {
 			myDisplayedCombat = null;
 		}
 
-		internal void OnCombatStarted(DPSExtremeCombat aCombat)
-		{
+		internal void OnCombatStarted(DPSExtremeCombat aCombat) {
 			myDisplayedCombat = aCombat; //TODO: Think about what should happen if you are currently viewing history. Setting to decide if we swap instantly or not?
 			RefreshLabel();
 		}
 
-		internal void OnCombatUpgraded(DPSExtremeCombat aCombat)
-		{
+		internal void OnCombatUpgraded(DPSExtremeCombat aCombat) {
 			RefreshLabel();
 		}
 
-		internal void OnCombatEnded()
-		{
+		internal void OnCombatEnded() {
 			//Should we change combat view here?
 			//RefreshLabel();
 			updateNeeded = true;
 		}
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
-		{
+		protected override void DrawSelf(SpriteBatch spriteBatch) {
 			//base.DrawSelf(spriteBatch);
 
 			bool IsPlayer = myHoveredParticipant >= 0 && myHoveredParticipant < (int)InfoListIndices.SupportedPlayerCount;
 			bool isNPC = myHoveredParticipant == (int)InfoListIndices.NPCs;
 			bool enableHoveredDisplay = false;
-			if (enableHoveredDisplay && (IsPlayer || isNPC))
-			{
+			if (enableHoveredDisplay && (IsPlayer || isNPC)) {
 				Rectangle hitbox = myRootPanel.GetOuterDimensions().ToRectangle();
 				Rectangle r2 = new Rectangle(hitbox.X + (hitbox.Width / 2) - (58 / 2), hitbox.Y - 58, 58, 58);
 				spriteBatch.Draw(playerBackGroundTexture.Value, r2.TopLeft(), Color.White);
 
-				if (isNPC)
-				{
+				if (isNPC) {
 					NPC drawNPC = null;
-					foreach (NPC npc in Main.ActiveNPCs)
-					{
+					foreach (NPC npc in Main.ActiveNPCs) {
 						if (!npc.townNPC)
 							continue;
 
@@ -392,8 +361,7 @@ namespace DPSExtreme
 						break;
 					}
 
-					if (drawNPC != null)
-					{
+					if (drawNPC != null) {
 						drawNPC.IsABestiaryIconDummy = true;
 						var position = drawNPC.position;
 						drawNPC.position = r2.Center.ToVector2() + new Vector2(-10, -21);
@@ -403,16 +371,14 @@ namespace DPSExtreme
 						//drawNPC.IsABestiaryIconDummy = false;
 					}
 				}
-				else
-				{
+				else {
 					Main.PlayerRenderer.DrawPlayer(Main.Camera, Main.player[myHoveredParticipant], Main.screenPosition + r2.Center.ToVector2() + new Vector2(-10, -21), 0, Vector2.Zero);
 				}
 			}
 
 			myHoveredParticipant = -1;
 
-			if (myLabel.IsMouseHovering)
-			{
+			if (myLabel.IsMouseHovering) {
 				string hoverText = Language.GetText(DPSExtreme.instance.GetLocalizationKey("ClickToChangeDisplay")).Value;
 
 				float mouseTextPulse = Main.mouseTextColor / 255f;
@@ -420,19 +386,65 @@ namespace DPSExtreme
 			}
 		}
 
-		private void Label_OnLeftClick(UIMouseEvent evt, UIElement listeningElement)
-		{
+		private void Label_OnLeftClick(UIMouseEvent evt, UIElement listeningElement) {
 			if (myRootPanel.dragging)
 				return;
+
+			List<int> breakdownAccessors = new();
+			List<UICombatInfoDisplay.DisplayContainerType> containerTypes = new();
+
+			UICombatInfoDisplay combatDisplay = myCurrentDisplay as UICombatInfoDisplay;
+			while (combatDisplay != null && combatDisplay.myBreakdownAccessor != -1) {
+				containerTypes.Add(combatDisplay.myContainerType);
+				breakdownAccessors.Add(combatDisplay.myBreakdownAccessor);
+
+				combatDisplay = combatDisplay.myBreakdownDisplay;
+			}
 
 			myDisplayMode = (ListDisplayMode)(((int)myDisplayMode + 1) % (int)ListDisplayMode.StatDisplaysEnd);
 
 			if (myDisplayMode <= ListDisplayMode.StatDisplaysStart)
 				myDisplayMode = ListDisplayMode.StatDisplaysStart + 1;
+
+			myCurrentDisplay?.Update();
+
+			if (breakdownAccessors.Count != 0) {
+				int breakdownIndex = 0;
+				UICombatInfoDisplay newCombatDisplay = myCurrentDisplay as UICombatInfoDisplay;
+				while (newCombatDisplay.myBreakdownDisplay != null && newCombatDisplay.myContainerType == containerTypes[breakdownIndex]) {
+					if (newCombatDisplay._items.Count == 0)
+						break;
+
+					bool found = false;
+
+					foreach (UIElement entry in newCombatDisplay._items) {
+						UIStatDisplayEntry statentry = entry as UIStatDisplayEntry;
+
+						if (statentry == null) {
+							newCombatDisplay = newCombatDisplay.myBreakdownDisplay;
+							break;
+						}
+
+						if (statentry.myBaseKey != breakdownAccessors[breakdownIndex] &&
+							statentry.myParticipantIndex != breakdownAccessors[breakdownIndex])
+							continue;
+
+						found = true;
+						newCombatDisplay.EnterBreakdown(statentry);
+						breakdownIndex++;
+						updateNeeded = true;
+
+						newCombatDisplay = newCombatDisplay.myBreakdownDisplay;
+						break;
+					}
+
+					if (!found)
+						break;
+				}
+			}
 		}
 
-		private void Label_OnRightClick(UIMouseEvent evt, UIElement listeningElement)
-		{
+		private void Label_OnRightClick(UIMouseEvent evt, UIElement listeningElement) {
 			if (myDisplayMode < ListDisplayMode.StatDisplaysStart || myDisplayMode > ListDisplayMode.StatDisplaysEnd)
 				return;
 
@@ -445,4 +457,3 @@ namespace DPSExtreme
 		}
 	}
 }
-

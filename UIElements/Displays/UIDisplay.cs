@@ -42,8 +42,7 @@ namespace DPSExtreme.UIElements.Displays
 
 		internal StatFormat myFormat = StatFormat.RawNumber;
 
-		internal UIDisplay(ListDisplayMode aDisplayMode)
-		{
+		internal UIDisplay(ListDisplayMode aDisplayMode) {
 			myDisplayMode = aDisplayMode;
 
 			Width.Percent = 1f;
@@ -71,15 +70,14 @@ namespace DPSExtreme.UIElements.Displays
 			DPSExtremeUI.instance.myRootPanel.AddDragTarget((UIElement)loadModsField.GetValue(this)); // list._innerList
 		}
 
-		internal UIDisplayEntry CreateEntry(int aIndex)
-		{
-			if (aIndex >= Children.ElementAt(0).Children.Count())
-			{
+		internal UIDisplayEntry CreateEntry(int aIndex) {
+			if (aIndex >= Children.ElementAt(0).Children.Count()) {
 				UIDisplayEntry entry = myEntryCreator();
 				entry.myParentDisplay = this;
 				entry.OnLeftClick += myClickEntryCallback;
 				entry.myFormat = myFormat;
 				Add(entry);
+
 				return entry;
 			}
 
@@ -88,8 +86,7 @@ namespace DPSExtreme.UIElements.Displays
 
 		internal abstract void Update();
 
-		protected void OnScroll(UIMouseEvent evt, UIElement listeningElement)
-		{
+		protected void OnScroll(UIMouseEvent evt, UIElement listeningElement) {
 			DPSExtremeUI.instance.updateNeeded = true;
 		}
 	}

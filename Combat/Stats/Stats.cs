@@ -29,8 +29,7 @@ namespace DPSExtreme.Combat.Stats
 
 		internal DPSExtremeStatList<StatValue> myDamagePerSecond = new();
 
-		public void ToStream(BinaryWriter aWriter)
-		{
+		public void ToStream(BinaryWriter aWriter) {
 			myEnemyDamageTaken.ToStream(aWriter);
 			myDamageDone.ToStream(aWriter);
 			myMinionCounts.ToStream(aWriter);
@@ -43,8 +42,7 @@ namespace DPSExtreme.Combat.Stats
 			myDebuffUptimes.ToStream(aWriter);
 		}
 
-		public void FromStream(BinaryReader aReader)
-		{
+		public void FromStream(BinaryReader aReader) {
 			myEnemyDamageTaken.FromStream(aReader);
 			myDamageDone.FromStream(aReader);
 			myMinionCounts.FromStream(aReader);
@@ -57,10 +55,8 @@ namespace DPSExtreme.Combat.Stats
 			myDebuffUptimes.FromStream(aReader);
 		}
 
-		internal void ReassignStats(int aFrom, int aTo)
-		{
-			foreach ((int npcType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> damageInfo) in myEnemyDamageTaken)
-			{
+		internal void ReassignStats(int aFrom, int aTo) {
+			foreach ((int npcType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> damageInfo) in myEnemyDamageTaken) {
 				myEnemyDamageTaken[npcType][aTo] = myEnemyDamageTaken[npcType][aFrom];
 			}
 
@@ -79,8 +75,7 @@ namespace DPSExtreme.Combat.Stats
 			ClearStatsForPlayer(aFrom);
 		}
 
-		internal void ClearStatsForPlayer(int aPlayer)
-		{
+		internal void ClearStatsForPlayer(int aPlayer) {
 			myDamageDone[aPlayer].Clear();
 			myMinionDamageDone[aPlayer].Clear();
 
@@ -113,30 +108,25 @@ namespace DPSExtreme.Combat.Stats
 	{
 		internal int myValue = 0;
 
-		public StatValue()
-		{
+		public StatValue() {
 
 		}
 
-		public StatValue(int aValue)
-		{
+		public StatValue(int aValue) {
 			myValue = aValue;
 		}
 
 		public bool HasStats() { return myValue > 0; }
 
-		public virtual void GetMaxAndTotal(out int aMax, out int aTotal)
-		{
+		public virtual void GetMaxAndTotal(out int aMax, out int aTotal) {
 			aMax = myValue;
 			aTotal = myValue;
 		}
 
 		public virtual List<string> GetInfoBoxLines() { return new List<string>(); }
 
-		internal static string FormatStatNumber(int aValue, StatFormat aFormat)
-		{
-			if (aFormat == StatFormat.RawNumber)
-			{
+		internal static string FormatStatNumber(int aValue, StatFormat aFormat) {
+			if (aFormat == StatFormat.RawNumber) {
 				if (aValue >= 100000000)
 					return FormatStatNumber(aValue / 1000000, aFormat) + "M";
 
@@ -148,8 +138,7 @@ namespace DPSExtreme.Combat.Stats
 
 				return aValue.ToString("#,0");
 			}
-			else if (aFormat == StatFormat.Time)
-			{
+			else if (aFormat == StatFormat.Time) {
 				float seconds = (aValue / 60f) % 60;
 				int minutes = (aValue / 60) / 60;
 				if (minutes == 0)
@@ -161,13 +150,11 @@ namespace DPSExtreme.Combat.Stats
 			return "Invalid format";
 		}
 
-		public virtual void ToStream(BinaryWriter aWriter)
-		{
+		public virtual void ToStream(BinaryWriter aWriter) {
 			aWriter.Write7BitEncodedInt(myValue);
 		}
 
-		public virtual void FromStream(BinaryReader aReader)
-		{
+		public virtual void FromStream(BinaryReader aReader) {
 			myValue = aReader.Read7BitEncodedInt();
 		}
 
@@ -187,8 +174,7 @@ namespace DPSExtreme.Combat.Stats
 
 		public static TimeStatValue operator +(TimeStatValue a, int b) { return new TimeStatValue(a.myValue + b); }
 
-		public override void GetMaxAndTotal(out int aMax, out int aTotal)
-		{
+		public override void GetMaxAndTotal(out int aMax, out int aTotal) {
 			aMax = (int)DPSExtremeUI.instance.myDisplayedCombat.myDurationInTicks;
 			aTotal = myValue;
 		}
@@ -202,36 +188,34 @@ namespace DPSExtreme.Combat.Stats
 
 		public DamageStatValue() { }
 
-		public void AddDamage(int aDamage, bool aCrit)
-		{
+		public void AddDamage(int aDamage, bool aCrit) {
 			myHitCount += 1;
 			myCritCount += aCrit ? 1 : 0;
 			myValue += aDamage;
 			myMaxHit = Math.Max(myMaxHit, aDamage);
 		}
 
-		public override List<string> GetInfoBoxLines() 
-		{
+		public override List<string> GetInfoBoxLines() {
 			List<string> lines = new List<string>();
 			lines.Add(string.Format("Total Damage: {0}", myValue));
 			lines.Add(string.Format("Hits: {0}", myHitCount));
 			lines.Add(string.Format("Max hit: {0}", myMaxHit));
-			if (myHitCount > 0) lines.Add(string.Format("Average Damage: {0}", myValue / myHitCount));
-			if (myCritCount > 0) lines.Add(string.Format("Crits: {0} ({1:P0})", myCritCount, myCritCount / (float)myHitCount));
+			if (myHitCount > 0)
+				lines.Add(string.Format("Average Damage: {0}", myValue / myHitCount));
+			if (myCritCount > 0)
+				lines.Add(string.Format("Crits: {0} ({1:P0})", myCritCount, myCritCount / (float)myHitCount));
 
-			return lines; 
+			return lines;
 		}
 
-		public override void ToStream(BinaryWriter aWriter)
-		{
+		public override void ToStream(BinaryWriter aWriter) {
 			base.ToStream(aWriter);
 			aWriter.Write7BitEncodedInt(myHitCount);
 			aWriter.Write7BitEncodedInt(myCritCount);
 			aWriter.Write7BitEncodedInt(myMaxHit);
 		}
 
-		public override void FromStream(BinaryReader aReader)
-		{
+		public override void FromStream(BinaryReader aReader) {
 			base.FromStream(aReader);
 			myHitCount = aReader.Read7BitEncodedInt();
 			myCritCount = aReader.Read7BitEncodedInt();
@@ -246,8 +230,7 @@ namespace DPSExtreme.Combat.Stats
 
 		public MinionDamageStatValue() { }
 
-		public override void GetMaxAndTotal(out int aMax, out int aTotal)
-		{
+		public override void GetMaxAndTotal(out int aMax, out int aTotal) {
 			aMax = 0;
 			aTotal = 0;
 
@@ -260,7 +243,7 @@ namespace DPSExtreme.Combat.Stats
 			DPSExtremeCombat displayedCombat = DPSExtremeUI.instance.myDisplayedCombat;
 			DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
 
-			int ownedProjectilesOfType = 
+			int ownedProjectilesOfType =
 				displayedCombat == activeCombat ?
 				ownerPlayer.ownedProjectileCounts[minion.type] :
 				displayedCombat.myStats.myMinionCounts[ownerPlayer.whoAmI][minion.type];
@@ -275,15 +258,13 @@ namespace DPSExtreme.Combat.Stats
 			aTotal = (int)damagePerMinionSlot;
 		}
 
-		public override void ToStream(BinaryWriter aWriter)
-		{
+		public override void ToStream(BinaryWriter aWriter) {
 			base.ToStream(aWriter);
 			aWriter.Write7BitEncodedInt(myMinionType);
 			aWriter.Write7BitEncodedInt(myMinionOwner);
 		}
 
-		public override void FromStream(BinaryReader aReader)
-		{
+		public override void FromStream(BinaryReader aReader) {
 			base.FromStream(aReader);
 			myMinionType = aReader.Read7BitEncodedInt();
 			myMinionOwner = aReader.Read7BitEncodedInt();
@@ -296,45 +277,40 @@ namespace DPSExtreme.Combat.Stats
 
 		public DeathStatValue() { }
 
-		public void AddDeath(int aDeathTime)
-		{
+		public void AddDeath(int aDeathTime) {
 			myValue++;
 			myDeathTimesInTicks.Add(aDeathTime);
 		}
 
-		public override List<string> GetInfoBoxLines()
-		{
+		public override List<string> GetInfoBoxLines() {
 			List<string> lines = new List<string>();
 
-            for (int i = myDeathTimesInTicks.Count - 1; i >= 0; i--)
-            {
+			for (int i = myDeathTimesInTicks.Count - 1; i >= 0; i--) {
 				int deathTime = myDeathTimesInTicks[i];
 
 				float seconds = (deathTime / 60f) % 60;
 				int minutes = (deathTime / 60) / 60;
 
-                lines.Add(string.Format("{0}. {1:D2}:{2:D2}", i + 1, minutes, (int)seconds));
+				lines.Add(string.Format("{0}. {1:D2}:{2:D2}", i + 1, minutes, (int)seconds));
 			}
 
 			return lines;
 		}
 
-		public override void ToStream(BinaryWriter aWriter)
-		{
+		public override void ToStream(BinaryWriter aWriter) {
 			base.ToStream(aWriter);
 
 			aWriter.Write7BitEncodedInt(myDeathTimesInTicks.Count);
-            foreach (int deathTime in myDeathTimesInTicks)
+			foreach (int deathTime in myDeathTimesInTicks)
 				aWriter.Write7BitEncodedInt(deathTime);
 		}
 
-		public override void FromStream(BinaryReader aReader)
-		{
+		public override void FromStream(BinaryReader aReader) {
 			base.FromStream(aReader);
 
 			int count = aReader.Read7BitEncodedInt();
-            for (int i = 0; i < count; i++)
+			for (int i = 0; i < count; i++)
 				myDeathTimesInTicks.Add(aReader.Read7BitEncodedInt());
-        }
+		}
 	}
 }

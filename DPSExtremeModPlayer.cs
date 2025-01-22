@@ -1,28 +1,26 @@
-using Terraria;
-using Terraria.ID;
-using Terraria.ModLoader;
-using Terraria.GameInput;
-using System.Collections.Generic;
-using static DPSExtreme.Combat.DPSExtremeCombat;
 using DPSExtreme.Combat.Stats;
-using Terraria.Chat;
-using Terraria.Localization;
-using Microsoft.Xna.Framework;
-using Terraria.DataStructures;
 using DPSExtreme.Config;
+using Microsoft.Xna.Framework;
+using System.Collections.Generic;
+using Terraria;
+using Terraria.Chat;
+using Terraria.DataStructures;
+using Terraria.GameInput;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using static DPSExtreme.Combat.DPSExtremeCombat;
 
 namespace DPSExtreme
 {
 	internal class DPSExtremeModPlayer : ModPlayer
 	{
 		internal static List<int> ourConnectedPlayers = new List<int>();
-		public override void PlayerDisconnect()
-		{
+		public override void PlayerDisconnect() {
 			if (Main.netMode != NetmodeID.Server)
 				return;
 
-			foreach (int playerIndex in ourConnectedPlayers)
-			{
+			foreach (int playerIndex in ourConnectedPlayers) {
 				if (Main.player[playerIndex].active)
 					continue;
 
@@ -33,8 +31,7 @@ namespace DPSExtreme
 			}
 		}
 
-		public override void PostUpdate()
-		{
+		public override void PostUpdate() {
 			if (Main.GameUpdateCount % DPSExtreme.UPDATEDELAY != 0)
 				return;
 
@@ -59,63 +56,53 @@ namespace DPSExtreme
 			req.myDamageDoneBreakdown = stats.myDamageDone[Player.whoAmI];
 			req.myMinionDamageDoneBreakdown = stats.myMinionDamageDone[Player.whoAmI];
 
-            foreach ((int enemyType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> stat) in stats.myEnemyDamageTaken)
-            {
+			foreach ((int enemyType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> stat) in stats.myEnemyDamageTaken) {
 				req.myEnemyDamageTakenByMeBreakdown[enemyType] = stat[Player.whoAmI];
 			}
 
 			DPSExtreme.instance.packetHandler.SendProtocol(req);
 		}
 
-		public override void OnEnterWorld()
-		{
+		public override void OnEnterWorld() {
 			DPSExtreme.instance.combatTracker.OnEnterWorld();
 			DPSExtremeUI.instance.OnEnterWorld();
 		}
 
-		public override void OnHurt(Player.HurtInfo aHurtInfo)
-		{
+		public override void OnHurt(Player.HurtInfo aHurtInfo) {
 			if (Main.netMode == NetmodeID.MultiplayerClient)
 				return;
 
 			DamageSource damageSource = new DamageSource();
-			if (aHurtInfo.DamageSource.SourceOtherIndex != -1)
-			{
+			if (aHurtInfo.DamageSource.SourceOtherIndex != -1) {
 				damageSource.mySourceType = DamageSource.SourceType.Other;
 				damageSource.myDamageCauserId = (int)DamageSource.SourceType.Other;
 				damageSource.myDamageCauserAbility = aHurtInfo.DamageSource.SourceOtherIndex + 1; //+1 since we want the 0 index to be "Other", but fall damage is already assigned to 0
 			}
-			else if (aHurtInfo.DamageSource.SourceNPCIndex != -1)
-			{
+			else if (aHurtInfo.DamageSource.SourceNPCIndex != -1) {
 				damageSource.mySourceType = DamageSource.SourceType.NPC;
 				damageSource.myDamageCauserId = Main.npc[aHurtInfo.DamageSource.SourceNPCIndex].type;
 				damageSource.myDamageCauserAbility = ProjectileID.None;
 			}
-			else if (aHurtInfo.DamageSource.SourceProjectileType != -1)
-			{
+			else if (aHurtInfo.DamageSource.SourceProjectileType != -1) {
 				damageSource.mySourceType = DamageSource.SourceType.Projectile;
 
 				Projectile projectile = Main.projectile[aHurtInfo.DamageSource.SourceProjectileLocalIndex];
 				DPSExtremeModProjectile dpsProjectile = projectile.GetGlobalProjectile<DPSExtremeModProjectile>();
 				int owner = dpsProjectile.whoIsMyParent;
 
-				if (owner == -1)
-				{
+				if (owner == -1) {
 					ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral($"No owner found for projectile of type: {projectile.type} and local index {aHurtInfo.DamageSource.SourceProjectileLocalIndex}"), Color.Orange);
 					return;
 				}
 
-				if (owner == (int)InfoListIndices.Traps)
-				{
+				if (owner == (int)InfoListIndices.Traps) {
 					damageSource.myDamageCauserId = dpsProjectile.myParentItemType + (int)DamageSource.SourceType.Traps;
 					damageSource.myDamageCauserAbility = projectile.type;
 				}
-				else
-				{
+				else {
 					NPC parentNPC = Main.npc[owner];
 
-					if (!parentNPC.active)
-					{
+					if (!parentNPC.active) {
 						Main.NewText("owner was not npc");
 						return;
 					}
@@ -132,8 +119,7 @@ namespace DPSExtreme
 			DPSExtreme.instance.combatTracker.myStatsHandler.AddDamageTaken(Player, damageSource);
 		}
 
-		public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource)
-		{
+		public override void Kill(double damage, int hitDirection, bool pvp, PlayerDeathReason damageSource) {
 			if (Main.netMode == NetmodeID.MultiplayerClient)
 				return;
 
@@ -141,8 +127,7 @@ namespace DPSExtreme
 			DPSExtreme.instance.combatTracker.myStatsHandler.AddDeath(Player);
 		}
 
-		public override void OnConsumeMana(Item item, int manaConsumed)
-		{
+		public override void OnConsumeMana(Item item, int manaConsumed) {
 			if (Main.netMode == NetmodeID.MultiplayerClient)
 				return;
 
@@ -152,16 +137,14 @@ namespace DPSExtreme
 			DPSExtreme.instance.combatTracker.myStatsHandler.AddConsumedMana(Player, item, manaConsumed);
 		}
 
-		public override void PostUpdateBuffs()
-		{
+		public override void PostUpdateBuffs() {
 			if (Main.netMode == NetmodeID.MultiplayerClient)
 				return;
 
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
-			for (int i = 0; i < Player.MaxBuffs; i++)
-            {
+			for (int i = 0; i < Player.MaxBuffs; i++) {
 				if (Player.buffType[i] == 0)
 					continue;
 
@@ -175,8 +158,7 @@ namespace DPSExtreme
 				if (isMinion && DPSExtremeServerConfig.Instance.IgnoreMinionBuffs)
 					continue;
 
-				switch (Player.buffType[i])
-				{
+				switch (Player.buffType[i]) {
 					case BuffID.Werewolf:
 					case BuffID.Merfolk:
 					case BuffID.PaladinsShield:
@@ -219,16 +201,13 @@ namespace DPSExtreme
 					DPSExtreme.instance.combatTracker.myStatsHandler.AddDebuffUptime(Player, Player.buffType[i]);
 				else
 					DPSExtreme.instance.combatTracker.myStatsHandler.AddBuffUptime(Player, Player.buffType[i]);
-            }
+			}
 		}
 
-		public override void ProcessTriggers(TriggersSet triggersSet)
-		{
-			if (DPSExtreme.instance.ToggleTeamDPSHotKey.JustPressed)
-			{
+		public override void ProcessTriggers(TriggersSet triggersSet) {
+			if (DPSExtreme.instance.ToggleTeamDPSHotKey.JustPressed) {
 				DPSExtremeUI.instance.ShowTeamDPSPanel = !DPSExtremeUI.instance.ShowTeamDPSPanel;
 			}
 		}
 	}
 }
-

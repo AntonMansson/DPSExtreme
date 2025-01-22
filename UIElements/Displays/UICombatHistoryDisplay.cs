@@ -9,13 +9,11 @@ namespace DPSExtreme.UIElements.Displays
 	internal class UICombatHistoryDisplay : UISelectionDisplay
 	{
 		internal UICombatHistoryDisplay()
-			: base(ListDisplayMode.CombatHistory, GetEntryName)
-		{
+			: base(ListDisplayMode.CombatHistory, GetEntryName) {
 
 		}
 
-		internal static string GetEntryName(int aIndex)
-		{
+		internal static string GetEntryName(int aIndex) {
 			DPSExtremeCombat combat = DPSExtreme.instance.combatTracker.GetCombatHistory(aIndex);
 
 			if (combat == null)
@@ -24,22 +22,20 @@ namespace DPSExtreme.UIElements.Displays
 			return combat.GetTitle();
 		}
 
-		protected override void PopulateEntries()
-		{
+		protected override void PopulateEntries() {
 			int entryIndex = 0;
 
 			UISelectionDisplayEntry allCombatsEntry = CreateEntry(entryIndex) as UISelectionDisplayEntry;
 			allCombatsEntry.myColor = Color.Orange;
 			allCombatsEntry.myNameText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("AllCombats"));
 
-			allCombatsEntry.myRightText = String.Format("{0:D2}:{1:D2}", 
+			allCombatsEntry.myRightText = String.Format("{0:D2}:{1:D2}",
 				(int)Math.Floor(DPSExtreme.instance.combatTracker.myTotalCombat.myDuration.TotalMinutes), DPSExtreme.instance.combatTracker.myTotalCombat.myDuration.Seconds);
 
 			allCombatsEntry.myIndex = -2;
 			entryIndex++;
 
-			if (DPSExtreme.instance.combatTracker.myActiveCombat != null)
-			{
+			if (DPSExtreme.instance.combatTracker.myActiveCombat != null) {
 				UISelectionDisplayEntry entry = CreateEntry(entryIndex) as UISelectionDisplayEntry;
 				entry.myColor = Color.Yellow;
 				entry.myNameText = Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("CurrentCombat"));
@@ -48,8 +44,7 @@ namespace DPSExtreme.UIElements.Displays
 				entryIndex++;
 			}
 
-			for (int i = DPSExtremeCombatTracker.ourHistorySize - 1; i >= 0; i--)
-			{
+			for (int i = DPSExtremeCombatTracker.ourHistorySize - 1; i >= 0; i--) {
 				DPSExtremeCombat combat = DPSExtreme.instance.combatTracker.GetCombatHistory(i);
 
 				if (combat == null)
@@ -66,8 +61,7 @@ namespace DPSExtreme.UIElements.Displays
 			Recalculate();
 		}
 
-		protected override void OnSelect(int aSelectedIndex)
-		{
+		protected override void OnSelect(int aSelectedIndex) {
 			DPSExtremeUI.instance.myDisplayMode = DPSExtremeUI.instance.myPreviousDisplayMode;
 
 			DPSExtremeCombat combat = null;

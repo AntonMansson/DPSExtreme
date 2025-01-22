@@ -53,8 +53,7 @@ namespace DPSExtreme.Config
 		[DefaultValue(false)]
 		public bool IgnoreMinionBuffs;
 
-		public override void OnChanged()
-		{
+		public override void OnChanged() {
 			if (DPSExtremeUI.instance != null)
 				DPSExtremeUI.instance.OnServerConfigLoad();
 

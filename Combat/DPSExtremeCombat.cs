@@ -1,13 +1,13 @@
-﻿using System;
+﻿using DPSExtreme.Combat.Stats;
+using DPSExtreme.UIElements.Displays;
+using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.Chat;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria;
-using DPSExtreme.Combat.Stats;
-using DPSExtreme.UIElements.Displays;
 
 namespace DPSExtreme.Combat
 {
@@ -66,17 +66,14 @@ namespace DPSExtreme.Combat
 
 		internal CombatStats myStats = new CombatStats();
 
-		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType)
-		{
+		public DPSExtremeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType) {
 			myCombatTypeFlags = aCombatType;
 			myHighestCombatType = aCombatType;
 			myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
 		}
 
-		internal object GetInfoContainer(ListDisplayMode aDisplayMode)
-		{
-			switch (aDisplayMode)
-			{
+		internal object GetInfoContainer(ListDisplayMode aDisplayMode) {
+			switch (aDisplayMode) {
 				case ListDisplayMode.DamagePerSecond:
 					return myStats.myDamagePerSecond;
 				case ListDisplayMode.DamageDone:
@@ -102,11 +99,9 @@ namespace DPSExtreme.Combat
 			}
 		}
 
-		internal void OnPlayerLeft(int aPlayer)
-		{
+		internal void OnPlayerLeft(int aPlayer) {
 			//Move player's stats into designated part of the buffer for disconnected players
-			for (int i = (int)InfoListIndices.DisconnectedPlayersStart; i < (int)InfoListIndices.DisconnectedPlayersEnd; i++)
-			{
+			for (int i = (int)InfoListIndices.DisconnectedPlayersStart; i < (int)InfoListIndices.DisconnectedPlayersEnd; i++) {
 				if (myStats.myDamageDone[i].HasStats())
 					continue;
 
@@ -115,20 +110,17 @@ namespace DPSExtreme.Combat
 			}
 		}
 
-		internal void OnEnd()
-		{
+		internal void OnEnd() {
 			SendStats();
 			PrintStats();
 
-			for (int i = 0; i < 256; i++)
-			{
+			for (int i = 0; i < 256; i++) {
 				if (i >= (int)InfoListIndices.DisconnectedPlayersEnd)
 					break;
 
 				Player player = Main.player[i];
 
-				foreach ((int itemType, MinionDamageStatValue stat) in myStats.myMinionDamageDone[i])
-				{
+				foreach ((int itemType, MinionDamageStatValue stat) in myStats.myMinionDamageDone[i]) {
 					Item summonItem = ContentSamples.ItemsByType[itemType - (int)DamageSource.SourceType.Item];
 
 					if (summonItem == null)
@@ -141,10 +133,8 @@ namespace DPSExtreme.Combat
 			}
 		}
 
-		internal void SendStats()
-		{
-			try
-			{
+		internal void SendStats() {
+			try {
 				if (Main.netMode != NetmodeID.Server)
 					return;
 
@@ -175,40 +165,32 @@ namespace DPSExtreme.Combat
 				//}
 
 			}
-			catch (Exception)
-			{
+			catch (Exception) {
 				//ErrorLogger.Log("SendStats" + e.Message);
 			}
 		}
 
-		internal void PrintStats()
-		{
+		internal void PrintStats() {
 			StringBuilder sb = new StringBuilder();
 			//sb.Append(Language.GetText(DPSExtreme.instance.GetLocalizationKey("DamageStatsForNPC")).Format(Lang.GetNPCNameValue(npc.type)));
 			// Add DamageStatsForCombat line
 
-			for (int i = 0; i < 256; i++)
-			{
+			for (int i = 0; i < 256; i++) {
 				int max = 0;
 				int participantDamage = 0;
 				myStats.myDamageDone[i].GetMaxAndTotal(out max, out participantDamage);
 
-				if (participantDamage > 0)
-				{
-					if (i == (int)InfoListIndices.NPCs)
-					{
+				if (participantDamage > 0) {
+					if (i == (int)InfoListIndices.NPCs) {
 						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("TownNPC")), participantDamage));
 					}
-					else if (i == (int)InfoListIndices.Traps)
-					{
+					else if (i == (int)InfoListIndices.Traps) {
 						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Traps")), participantDamage));
 					}
-					else if (i == (int)InfoListIndices.DOTs)
-					{
+					else if (i == (int)InfoListIndices.DOTs) {
 						sb.Append(string.Format("{0}: {1}, ", Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("DamageOverTime")), participantDamage));
 					}
-					else
-					{
+					else {
 						sb.Append(string.Format("{0}: {1}, ", Main.player[i].name, participantDamage));
 					}
 				}
@@ -219,44 +201,35 @@ namespace DPSExtreme.Combat
 
 			Color messageColor = Color.Orange;
 
-			if (Main.netMode == NetmodeID.Server)
-			{
+			if (Main.netMode == NetmodeID.Server) {
 				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(sb.ToString()), messageColor);
 			}
-			else if (Main.netMode == NetmodeID.SinglePlayer)
-			{
+			else if (Main.netMode == NetmodeID.SinglePlayer) {
 				Main.NewText(sb.ToString(), messageColor);
 			}
 		}
 
-		internal string GetTitle()
-		{
-			switch (myHighestCombatType)
-			{
+		internal string GetTitle() {
+			switch (myHighestCombatType) {
 				case CombatType.BossFight:
-					if (myBossOrInvasionOrEventType > -1)
-					{
+					if (myBossOrInvasionOrEventType > -1) {
 						string bossName = Lang.GetNPCNameValue(myBossOrInvasionOrEventType);
 						return Language.GetText(bossName).Value;
 					}
-					else
-					{
+					else {
 						return Language.GetText(DPSExtreme.instance.GetLocalizationKey("NoBoss")).Value;
 					}
 				case CombatType.Invasion:
 					InvasionType invasionType;
 					if (myBossOrInvasionOrEventType >= (int)InvasionType.ModdedInvasionsStart &&
-						myBossOrInvasionOrEventType < (int)InvasionType.ModdedInvasionsEnd)
-					{
+						myBossOrInvasionOrEventType < (int)InvasionType.ModdedInvasionsEnd) {
 						invasionType = InvasionType.ModdedInvasionsStart;
 					}
-					else
-					{
+					else {
 						invasionType = (InvasionType)myBossOrInvasionOrEventType;
 					}
 
-					switch (invasionType)
-					{
+					switch (invasionType) {
 						case InvasionType.GoblinArmy:
 							return Language.GetTextValue("Bestiary_Invasions.Goblins");
 						case InvasionType.SnowLegion:
@@ -278,8 +251,7 @@ namespace DPSExtreme.Combat
 							return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Invasion"));
 					}
 				case CombatType.Event:
-					switch ((EventType)myBossOrInvasionOrEventType)
-					{
+					switch ((EventType)myBossOrInvasionOrEventType) {
 						case EventType.BloodMoon:
 							return Language.GetTextValue("Bestiary_Events.BloodMoon");
 						case EventType.Eclipse:

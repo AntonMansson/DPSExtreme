@@ -1,14 +1,13 @@
-using Terraria;
-using Terraria.ModLoader;
-using Terraria.ID;
 using DPSExtreme.Combat.Stats;
+using Terraria;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace DPSExtreme
 {
 	internal class DPSExtremeModWorld : ModSystem
 	{
-		public override void PostUpdateWorld()
-		{
+		public override void PostUpdateWorld() {
 			DPSExtreme.instance.combatTracker.UpdateCombatDuration();
 
 			if ((Main.GameUpdateCount % DPSExtreme.UPDATEDELAY) != 0)
@@ -23,8 +22,7 @@ namespace DPSExtreme
 			UpdateBroadcasts();
 		}
 
-		void UpdateBroadcasts()
-		{
+		void UpdateBroadcasts() {
 			if (Main.netMode != NetmodeID.SinglePlayer && Main.netMode != NetmodeID.Server)
 				return;
 
@@ -35,8 +33,7 @@ namespace DPSExtreme
 			DPSExtreme.instance.combatTracker.myActiveCombat.SendStats();
 		}
 
-		void UpdateDOTDPS()
-		{
+		void UpdateDOTDPS() {
 			if (Main.netMode != NetmodeID.SinglePlayer && Main.netMode != NetmodeID.Server)
 				return;
 
@@ -45,14 +42,12 @@ namespace DPSExtreme
 			//Best-effort DOT DPS approx.
 			int totalDotDPS = 0;
 
-			foreach (NPC npc in Main.ActiveNPCs)
-			{
+			foreach (NPC npc in Main.ActiveNPCs) {
 				int dotDPS = -1 * npc.lifeRegen / 2;
 				totalDotDPS += dotDPS;
 
 				//Since the dot hook doesn't seem to work in SP, add damage here to the best of our abilities
-				if (Main.netMode == NetmodeID.SinglePlayer)
-				{
+				if (Main.netMode == NetmodeID.SinglePlayer) {
 					float ratio = DPSExtreme.UPDATEDELAY / 60f;
 					//TODO: Handle remainder
 					int dealtDamage = (int)(dotDPS * ratio);
@@ -70,4 +65,3 @@ namespace DPSExtreme
 		}
 	}
 }
-

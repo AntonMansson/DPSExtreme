@@ -26,16 +26,14 @@ namespace DPSExtreme
 	{
 		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.StartCombatPush; }
 
-		public override void ToStream(BinaryWriter aWriter)
-		{
+		public override void ToStream(BinaryWriter aWriter) {
 			aWriter.Write((byte)GetDelimiter());
 
 			aWriter.Write((byte)myCombatType);
 			aWriter.Write(myBossOrInvasionOrEventType);
 		}
 
-		public override bool FromStream(BinaryReader aReader)
-		{
+		public override bool FromStream(BinaryReader aReader) {
 			myCombatType = (CombatType)aReader.ReadByte();
 			myBossOrInvasionOrEventType = aReader.ReadInt32();
 
@@ -50,16 +48,14 @@ namespace DPSExtreme
 	{
 		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.UpgradeCombatPush; }
 
-		public override void ToStream(BinaryWriter aWriter)
-		{
+		public override void ToStream(BinaryWriter aWriter) {
 			aWriter.Write((byte)GetDelimiter());
 
 			aWriter.Write((byte)myCombatType);
 			aWriter.Write(myBossOrInvasionOrEventType);
 		}
 
-		public override bool FromStream(BinaryReader aReader)
-		{
+		public override bool FromStream(BinaryReader aReader) {
 			myCombatType = (CombatType)aReader.ReadByte();
 			myBossOrInvasionOrEventType = aReader.ReadInt32();
 
@@ -74,15 +70,13 @@ namespace DPSExtreme
 	{
 		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.EndCombatPush; }
 
-		public override void ToStream(BinaryWriter aWriter)
-		{
+		public override void ToStream(BinaryWriter aWriter) {
 			aWriter.Write((byte)GetDelimiter());
 
 			aWriter.Write((byte)myCombatType);
 		}
 
-		public override bool FromStream(BinaryReader aReader)
-		{
+		public override bool FromStream(BinaryReader aReader) {
 			myCombatType = (CombatType)aReader.ReadByte();
 
 			return true;
@@ -95,8 +89,7 @@ namespace DPSExtreme
 	{
 		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.CurrentCombatTotalsPush; }
 
-		public override void ToStream(BinaryWriter aWriter)
-		{
+		public override void ToStream(BinaryWriter aWriter) {
 			aWriter.Write((byte)GetDelimiter());
 
 			aWriter.Write7BitEncodedInt(myActiveCombatDurationInTicks);
@@ -105,8 +98,7 @@ namespace DPSExtreme
 			myTotalStats.ToStream(aWriter);
 		}
 
-		public override bool FromStream(BinaryReader aReader)
-		{
+		public override bool FromStream(BinaryReader aReader) {
 			myActiveCombatDurationInTicks = aReader.Read7BitEncodedInt();
 			myStats.FromStream(aReader);
 			myTotalCombatDurationInTicks = aReader.Read7BitEncodedInt();
@@ -125,8 +117,7 @@ namespace DPSExtreme
 	{
 		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.ShareCurrentDPSReq; }
 
-		public override void ToStream(BinaryWriter aWriter)
-		{
+		public override void ToStream(BinaryWriter aWriter) {
 			aWriter.Write((byte)GetDelimiter());
 
 			aWriter.Write(myPlayer);
@@ -136,8 +127,7 @@ namespace DPSExtreme
 			myMinionDamageDoneBreakdown.ToStream(aWriter);
 		}
 
-		public override bool FromStream(BinaryReader aReader)
-		{
+		public override bool FromStream(BinaryReader aReader) {
 			myPlayer = aReader.ReadInt32();
 			myDPS = aReader.ReadInt32();
 			myDamageDoneBreakdown.FromStream(aReader);
@@ -158,15 +148,13 @@ namespace DPSExtreme
 	{
 		public override DPSExtremeMessageType GetDelimiter() { return DPSExtremeMessageType.CurrentDPSsPush; }
 
-		public override void ToStream(BinaryWriter aWriter)
-		{
+		public override void ToStream(BinaryWriter aWriter) {
 			aWriter.Write((byte)GetDelimiter());
 
 			myDamagePerSecond.ToStream(aWriter);
 		}
 
-		public override bool FromStream(BinaryReader aReader)
-		{
+		public override bool FromStream(BinaryReader aReader) {
 			myDamagePerSecond.FromStream(aReader);
 
 			return true;

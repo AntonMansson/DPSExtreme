@@ -28,21 +28,18 @@ namespace DPSExtreme.Combat
 
 		public List<int> myJoiningPlayers = new List<int>();
 
-		internal DPSExtremeCombat GetCombatHistory(int aIndex)
-		{
+		internal DPSExtremeCombat GetCombatHistory(int aIndex) {
 			if (aIndex < 0)
 				return null;
 
 			return myCombatHistory[(aIndex + myHistoryBufferZeroIndex) % ourHistorySize];
 		}
 
-		internal void Update()
-		{
+		internal void Update() {
 			if (Main.netMode != NetmodeID.SinglePlayer && Main.netMode != NetmodeID.Server)
 				return;
 
-			if (Main.netMode == NetmodeID.Server)
-			{
+			if (Main.netMode == NetmodeID.Server) {
 				foreach (int player in myJoiningPlayers)
 					OnPlayerJoined(player);
 
@@ -61,18 +58,15 @@ namespace DPSExtreme.Combat
 			UpdateGenericCombatTimeoutCheck();
 		}
 
-		internal void OnEnterWorld()
-		{
+		internal void OnEnterWorld() {
 			myActiveCombat = null;
 			myCombatHistory = new DPSExtremeCombat[ourHistorySize];
 		}
 
-		public void OnPlayerJoined(int aPlayer)
-		{
+		public void OnPlayerJoined(int aPlayer) {
 			DPSExtremeModPlayer.ourConnectedPlayers.Add(aPlayer);
 
-			if (myActiveCombat == null)
-			{
+			if (myActiveCombat == null) {
 				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("OnPlayerJoined - No Combat"), Color.Orange);
 				myJoiningPlayers.Clear();
 				return;
@@ -87,16 +81,14 @@ namespace DPSExtreme.Combat
 			DPSExtreme.instance.packetHandler.SendProtocol(push, aPlayer);
 		}
 
-		public void OnPlayerLeft(int aPlayer)
-		{
+		public void OnPlayerLeft(int aPlayer) {
 			if (myActiveCombat == null)
 				return;
 
 			myActiveCombat.OnPlayerLeft(aPlayer);
 		}
 
-		private int GetActiveEventType()
-		{
+		private int GetActiveEventType() {
 			if (Main.eclipse)
 				return (int)EventType.Eclipse;
 
@@ -109,8 +101,7 @@ namespace DPSExtreme.Combat
 			return 0;
 		}
 
-		internal void UpdateCombatDuration()
-		{
+		internal void UpdateCombatDuration() {
 			if (myActiveCombat == null)
 				return;
 
@@ -120,8 +111,7 @@ namespace DPSExtreme.Combat
 			myTotalCombat.myDurationInTicks++;
 		}
 
-		void UpdateEventCheckStart()
-		{
+		void UpdateEventCheckStart() {
 			int eventType = GetActiveEventType();
 			if (eventType == 0)
 				return;
@@ -134,8 +124,7 @@ namespace DPSExtreme.Combat
 			TriggerCombat(CombatType.Event, eventType);
 		}
 
-		void UpdateEventCheckEnd()
-		{
+		void UpdateEventCheckEnd() {
 			if (myActiveCombat == null)
 				return;
 
@@ -148,8 +137,7 @@ namespace DPSExtreme.Combat
 			SendEndCombat(CombatType.Event);
 		}
 
-		private int GetActiveInvasionType()
-		{
+		private int GetActiveInvasionType() {
 			if (Main.invasionType != InvasionID.None)
 				return Main.invasionType;
 
@@ -162,8 +150,7 @@ namespace DPSExtreme.Combat
 			return InvasionID.None;
 		}
 
-		void UpdateInvasionCheckStart()
-		{
+		void UpdateInvasionCheckStart() {
 			//TODO: Fix issue with combat not being started if invasion is active when world loads
 
 			if (GetActiveInvasionType() == InvasionID.None)
@@ -177,8 +164,7 @@ namespace DPSExtreme.Combat
 			TriggerCombat(CombatType.Invasion, GetActiveInvasionType());
 		}
 
-		void UpdateInvasionCheckEnd()
-		{
+		void UpdateInvasionCheckEnd() {
 			if (myActiveCombat == null)
 				return;
 
@@ -191,8 +177,7 @@ namespace DPSExtreme.Combat
 			SendEndCombat(CombatType.Invasion);
 		}
 
-		private void UpdateAllBossesDeadCheck()
-		{
+		private void UpdateAllBossesDeadCheck() {
 			if (myActiveCombat == null)
 				return;
 
@@ -201,8 +186,7 @@ namespace DPSExtreme.Combat
 
 			bool bossAlive = false;
 
-			foreach (NPC npc in Main.ActiveNPCs)
-			{
+			foreach (NPC npc in Main.ActiveNPCs) {
 				if (!npc.boss)
 					continue;
 
@@ -215,8 +199,7 @@ namespace DPSExtreme.Combat
 			SendEndCombat(CombatType.BossFight);
 		}
 
-		void UpdateGenericCombatTimeoutCheck()
-		{
+		void UpdateGenericCombatTimeoutCheck() {
 			if (myActiveCombat == null)
 				return;
 
@@ -230,19 +213,25 @@ namespace DPSExtreme.Combat
 		}
 
 		//Called when damage is dealt or bosses spawn etc
-		internal void TriggerCombat(CombatType aCombatType, int aBossOrInvasionOrEventType = -1)
-		{
-			switch (aCombatType)
-			{
-				case CombatType.Generic: if (!DPSExtremeServerConfig.Instance.TrackGenericCombat) { return; } break;
-				case CombatType.Event: if (!DPSExtremeServerConfig.Instance.TrackEvents) { return; } break;
-				case CombatType.Invasion: if (!DPSExtremeServerConfig.Instance.TrackInvasions) { return; } break;
-				case CombatType.BossFight: if (!DPSExtremeServerConfig.Instance.TrackBosses) { return; } break;
-				default: break;
+		internal void TriggerCombat(CombatType aCombatType, int aBossOrInvasionOrEventType = -1) {
+			switch (aCombatType) {
+				case CombatType.Generic:
+					if (!DPSExtremeServerConfig.Instance.TrackGenericCombat) { return; }
+					break;
+				case CombatType.Event:
+					if (!DPSExtremeServerConfig.Instance.TrackEvents) { return; }
+					break;
+				case CombatType.Invasion:
+					if (!DPSExtremeServerConfig.Instance.TrackInvasions) { return; }
+					break;
+				case CombatType.BossFight:
+					if (!DPSExtremeServerConfig.Instance.TrackBosses) { return; }
+					break;
+				default:
+					break;
 			}
 
-			if (myActiveCombat != null)
-			{
+			if (myActiveCombat != null) {
 				UpgradeCombat(aCombatType, aBossOrInvasionOrEventType);
 				myActiveCombat.myTicksSinceLastActivity = 0;
 				return;
@@ -252,8 +241,7 @@ namespace DPSExtreme.Combat
 			push.myCombatType = aCombatType;
 			push.myBossOrInvasionOrEventType = aBossOrInvasionOrEventType;
 
-			if (Main.netMode == NetmodeID.MultiplayerClient)
-			{
+			if (Main.netMode == NetmodeID.MultiplayerClient) {
 				DPSExtreme.instance.packetHandler.HandleStartCombatPush(push);
 				return;
 			}
@@ -265,10 +253,8 @@ namespace DPSExtreme.Combat
 		}
 
 		//Called from TriggerCombat or from server pushing combat status
-		internal void StartCombat(CombatType aCombatType, int aBossOrInvasionOrEventType = -1)
-		{
-			if (myActiveCombat != null)
-			{
+		internal void StartCombat(CombatType aCombatType, int aBossOrInvasionOrEventType = -1) {
+			if (myActiveCombat != null) {
 				UpgradeCombat(aCombatType, aBossOrInvasionOrEventType);
 				return;
 			}
@@ -284,12 +270,9 @@ namespace DPSExtreme.Combat
 		}
 
 		//Boss fight starts during an invastion etc
-		internal void UpgradeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType = -1)
-		{
-			if (DPSExtremeServerConfig.Instance.EndGenericCombatsWhenUpgraded)
-			{
-				if (aCombatType != CombatType.Generic && myActiveCombat.myHighestCombatType == CombatType.Generic)
-				{
+		internal void UpgradeCombat(CombatType aCombatType, int aBossOrInvasionOrEventType = -1) {
+			if (DPSExtremeServerConfig.Instance.EndGenericCombatsWhenUpgraded) {
+				if (aCombatType != CombatType.Generic && myActiveCombat.myHighestCombatType == CombatType.Generic) {
 					SendEndCombat(CombatType.Generic);
 					TriggerCombat(aCombatType, aBossOrInvasionOrEventType);
 					return;
@@ -312,8 +295,7 @@ namespace DPSExtreme.Combat
 
 			DPSExtremeUI.instance?.OnCombatUpgraded(myActiveCombat);
 
-			if (Main.netMode == NetmodeID.Server)
-			{
+			if (Main.netMode == NetmodeID.Server) {
 				ProtocolPushUpgradeCombat push = new ProtocolPushUpgradeCombat();
 				push.myCombatType = myActiveCombat.myHighestCombatType;
 				push.myBossOrInvasionOrEventType = myActiveCombat.myBossOrInvasionOrEventType;
@@ -322,8 +304,7 @@ namespace DPSExtreme.Combat
 			}
 		}
 
-		internal void SendEndCombat(CombatType aCombatType)
-		{
+		internal void SendEndCombat(CombatType aCombatType) {
 			ProtocolPushEndCombat push = new ProtocolPushEndCombat();
 			push.myCombatType = aCombatType;
 
@@ -334,8 +315,7 @@ namespace DPSExtreme.Combat
 			DPSExtreme.instance.packetHandler.SendProtocol(push);
 		}
 
-		internal void EndCombat(CombatType aCombatType)
-		{
+		internal void EndCombat(CombatType aCombatType) {
 			if (myActiveCombat == null)
 				return;
 
@@ -351,8 +331,7 @@ namespace DPSExtreme.Combat
 				ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Server ended combat"), Color.Orange);
 
 			int historyCount = 0;
-			for (int i = 0; i < ourHistorySize; i++)
-			{
+			for (int i = 0; i < ourHistorySize; i++) {
 				if (myCombatHistory[i] == null)
 					continue;
 

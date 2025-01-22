@@ -1,8 +1,8 @@
-﻿using Terraria;
-using System;
-using Microsoft.Xna.Framework.Graphics;
-using DPSExtreme.Combat.Stats;
+﻿using DPSExtreme.Combat.Stats;
 using DPSExtreme.Config;
+using Microsoft.Xna.Framework.Graphics;
+using System;
+using Terraria;
 using Terraria.ID;
 
 namespace DPSExtreme.UIElements.Displays
@@ -16,37 +16,30 @@ namespace DPSExtreme.UIElements.Displays
 		internal int myParticipantIndex = -1;
 		internal int myBaseKey = -1;
 
-		protected override int GetEntryWidth()
-		{
+		protected override int GetEntryWidth() {
 			return (int)(GetOuterDimensions().Width * (myValue / (float)myTotal));
 		}
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
-		{
+		protected override void DrawSelf(SpriteBatch spriteBatch) {
 			bool drawRightText = true;
 
 			if (myFormat == StatFormat.Time &&
-				(myParentDisplay as UICombatInfoDisplay).myBreakdownDisplay != null)
-			{
+				(myParentDisplay as UICombatInfoDisplay).myBreakdownDisplay != null) {
 				drawRightText = false;
 			}
 
-			if (drawRightText)
-			{
-				if (myParentDisplay.myDisplayMode == ListDisplayMode.MinionDamageDone)
-				{
+			if (drawRightText) {
+				if (myParentDisplay.myDisplayMode == ListDisplayMode.MinionDamageDone) {
 					Combat.DPSExtremeCombat displayedCombat = DPSExtremeUI.instance.myDisplayedCombat;
 					Combat.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
 
 					UICombatInfoDisplay parentDisplay = (myParentDisplay as UICombatInfoDisplay).myParentDisplay;
-					if (parentDisplay != null && parentDisplay.myBreakdownAccessor != -1)
-					{
+					if (parentDisplay != null && parentDisplay.myBreakdownAccessor != -1) {
 						Player player = Main.player[parentDisplay.myBreakdownAccessor];
 
 						Item summonItem = ContentSamples.ItemsByType[myBaseKey - (int)DamageSource.SourceType.Item];
 
-						if (summonItem != null)
-						{
+						if (summonItem != null) {
 							Projectile projectile = ContentSamples.ProjectilesByType[summonItem.shoot];
 
 							int ownedProjectilesOfType = displayedCombat ==
@@ -61,12 +54,10 @@ namespace DPSExtreme.UIElements.Displays
 						}
 					}
 				}
-				else
-				{
+				else {
 					myRightText = StatValue.FormatStatNumber(myValue, myFormat);
 
-					if (DPSExtremeClientConfig.Instance.ShowPercentages && myTotal > 0)
-					{
+					if (DPSExtremeClientConfig.Instance.ShowPercentages && myTotal > 0) {
 						if (myValue == myTotal - 1) //ugly fix for off-by-one showing 99%
 							myValue = myTotal;
 
@@ -78,25 +69,21 @@ namespace DPSExtreme.UIElements.Displays
 
 			DrawSelfBase(spriteBatch);
 
-			if (ContainsPoint(Main.MouseScreen) && myParticipantIndex >= 0)
-			{
+			if (ContainsPoint(Main.MouseScreen) && myParticipantIndex >= 0) {
 				DPSExtremeUI.instance.myHoveredParticipant = myParticipantIndex;
 				Main.hoverItemName = "";
 			}
 		}
 
-		internal void SetValues(StatValue aValue, int aMax, int aTotal)
-		{
+		internal void SetValues(StatValue aValue, int aMax, int aTotal) {
 			myValue = aValue;
 			myMax = aMax;
 			myTotal = aTotal;
 		}
 
-		public override int CompareTo(object obj)
-		{
+		public override int CompareTo(object obj) {
 			UIStatDisplayEntry other = obj as UIStatDisplayEntry;
 			return -myValue.CompareTo(other.myValue);
 		}
 	}
 }
-

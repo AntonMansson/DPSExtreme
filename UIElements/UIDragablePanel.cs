@@ -27,20 +27,17 @@ namespace DPSExtreme.UIElements
 		private List<UIElement> additionalDragTargets;
 
 		// TODO, move panel back in if offscreen? prevent drag off screen?
-		public UIDragablePanel(bool dragable = true, bool resizeableX = false, bool resizeableY = false)
-		{
+		public UIDragablePanel(bool dragable = true, bool resizeableX = false, bool resizeableY = false) {
 			this.dragable = dragable;
 			this.resizeableX = resizeableX;
 			this.resizeableY = resizeableY;
-			if (dragTexture == null)
-			{
+			if (dragTexture == null) {
 				dragTexture = Main.Assets.Request<Texture2D>("Images/UI/PanelBorder");
 			}
 			additionalDragTargets = new List<UIElement>();
 		}
 
-		public void AddDragTarget(UIElement element)
-		{
+		public void AddDragTarget(UIElement element) {
 			additionalDragTargets.Add(element);
 		}
 
@@ -56,30 +53,24 @@ namespace DPSExtreme.UIElements
 		//	this.maxY = max;
 		//}
 
-		public override void LeftMouseDown(UIMouseEvent evt)
-		{
+		public override void LeftMouseDown(UIMouseEvent evt) {
 			DragStart(evt);
 			base.LeftMouseDown(evt);
 		}
 
-		public override void LeftMouseUp(UIMouseEvent evt)
-		{
+		public override void LeftMouseUp(UIMouseEvent evt) {
 			DragEnd(evt);
 			base.LeftMouseUp(evt);
 		}
 
-		private void DragStart(UIMouseEvent evt)
-		{
+		private void DragStart(UIMouseEvent evt) {
 			CalculatedStyle innerDimensions = GetInnerDimensions();
-			if (evt.Target == this || additionalDragTargets.Contains(evt.Target))
-			{
-				if (resizeable && new Rectangle((int)(innerDimensions.X + innerDimensions.Width - 12), (int)(innerDimensions.Y + innerDimensions.Height - 12), 12 + 6, 12 + 6).Contains(evt.MousePosition.ToPoint()))
-				{
+			if (evt.Target == this || additionalDragTargets.Contains(evt.Target)) {
+				if (resizeable && new Rectangle((int)(innerDimensions.X + innerDimensions.Width - 12), (int)(innerDimensions.Y + innerDimensions.Height - 12), 12 + 6, 12 + 6).Contains(evt.MousePosition.ToPoint())) {
 					offset = new Vector2(evt.MousePosition.X - innerDimensions.X - innerDimensions.Width - 6, evt.MousePosition.Y - innerDimensions.Y - innerDimensions.Height - 6);
 					resizeing = true;
 				}
-				else if (dragable)
-				{
+				else if (dragable) {
 					offset = new Vector2(evt.MousePosition.X - Left.Pixels, evt.MousePosition.Y - Top.Pixels);
 					dragStarted = true;
 					dragStartPosition = evt.MousePosition;
@@ -87,43 +78,35 @@ namespace DPSExtreme.UIElements
 			}
 		}
 
-		private void DragEnd(UIMouseEvent evt)
-		{
-			if (evt.Target == this || additionalDragTargets.Contains(evt.Target))
-			{
+		private void DragEnd(UIMouseEvent evt) {
+			if (evt.Target == this || additionalDragTargets.Contains(evt.Target)) {
 				dragStarted = false;
 				dragging = false;
 				resizeing = false;
 			}
 		}
 
-		internal void Update()
-		{
+		internal void Update() {
 			if (dragStarted &&
-				!dragging && 
-				(Main.MouseScreen - dragStartPosition).LengthSquared() > (10 * 10))
-			{
+				!dragging &&
+				(Main.MouseScreen - dragStartPosition).LengthSquared() > (10 * 10)) {
 				dragging = true;
 			}
 
-			if (dragging)
-			{
+			if (dragging) {
 				Left.Set(Main.MouseScreen.X - offset.X, 0f);
 				Top.Set(Main.MouseScreen.Y - offset.Y, 0f);
 				Recalculate();
 			}
 
-			if (resizeing)
-			{
+			if (resizeing) {
 				CalculatedStyle dimensions = base.GetOuterDimensions();
 
-				if (resizeableX)
-				{
+				if (resizeableX) {
 					//Width.Pixels = Utils.Clamp(Main.MouseScreen.X - dimensions.X - offset.X, minX, maxX);
 					Width.Pixels = Main.MouseScreen.X - dimensions.X - offset.X;
 				}
-				if (resizeableY)
-				{
+				if (resizeableY) {
 					//Height.Pixels = Utils.Clamp(Main.MouseScreen.Y - dimensions.Y - offset.Y, minY, maxY);
 					Height.Pixels = Main.MouseScreen.Y - dimensions.Y - offset.Y;
 				}
@@ -131,24 +114,20 @@ namespace DPSExtreme.UIElements
 			}
 		}
 
-		protected override void DrawSelf(SpriteBatch spriteBatch)
-		{
-			if (ContainsPoint(Main.MouseScreen))
-			{
+		protected override void DrawSelf(SpriteBatch spriteBatch) {
+			if (ContainsPoint(Main.MouseScreen)) {
 				Main.LocalPlayer.mouseInterface = true;
 				Main.LocalPlayer.cursorItemIconEnabled = false;
 				Main.ItemIconCacheUpdate(0);
 			}
-			
+
 			base.DrawSelf(spriteBatch);
-			if (resizeable)
-			{
+			if (resizeable) {
 				DrawDragAnchor(spriteBatch, dragTexture.Value, this.BorderColor);
 			}
 		}
 
-		private void DrawDragAnchor(SpriteBatch spriteBatch, Texture2D texture, Color color)
-		{
+		private void DrawDragAnchor(SpriteBatch spriteBatch, Texture2D texture, Color color) {
 			CalculatedStyle dimensions = GetDimensions();
 
 			//	Rectangle hitbox = GetInnerDimensions().ToRectangle();

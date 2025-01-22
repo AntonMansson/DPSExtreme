@@ -16,8 +16,7 @@ namespace DPSExtreme.Config
 		[DefaultValue(false)]
 		public bool SnapAdditionalInfoBoxToMouse;
 
-		public override void OnChanged() 
-		{
+		public override void OnChanged() {
 			if (DPSExtremeUI.instance != null)
 				DPSExtremeUI.instance.OnClientConfigLoad();
 		}

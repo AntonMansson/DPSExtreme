@@ -1,27 +1,25 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DPSExtreme.Combat.Stats;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using ReLogic.Graphics;
+using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader.UI.Elements;
 using Terraria.UI;
-using System.Collections.Generic;
-using DPSExtreme.Combat.Stats;
-using ReLogic.Content;
-using System;
 
 namespace DPSExtreme.UIElements.Displays
 {
 	internal class UIDisplayEntry : UIElement
 	{
-		float ourTextScale
-		{
-			get 
-			{
+		float ourTextScale {
+			get {
 				float textHeight = FontAssets.MouseText.Value.MeasureString(myNameText).Y;
 				float unscaledEntryHeight = textHeight + PaddingTop + PaddingBottom;
 
-				return ourEntryHeight / unscaledEntryHeight; 
+				return ourEntryHeight / unscaledEntryHeight;
 			}
 		}
 		internal const int ourEntryHeight = 22;
@@ -37,8 +35,7 @@ namespace DPSExtreme.UIElements.Displays
 
 		internal Color myColor;
 
-		public UIDisplayEntry()
-		{
+		public UIDisplayEntry() {
 			Width.Percent = 1f;
 			Height.Pixels = ourEntryHeight;
 			MinHeight.Pixels = ourEntryHeight;
@@ -46,13 +43,11 @@ namespace DPSExtreme.UIElements.Displays
 			Recalculate();
 		}
 
-		protected virtual int GetEntryWidth()
-		{
+		protected virtual int GetEntryWidth() {
 			return (int)GetOuterDimensions().Width;
 		}
 
-		protected void DrawSelfBase(SpriteBatch spriteBatch)
-		{
+		protected void DrawSelfBase(SpriteBatch spriteBatch) {
 			Rectangle hitbox = GetOuterDimensions().ToRectangle();
 			hitbox.Width = GetEntryWidth();
 
@@ -66,10 +61,8 @@ namespace DPSExtreme.UIElements.Displays
 
 			int entryIndex = -1;
 			int index = 0;
-			for (int i = 0; i < sortedList.Count; i++)
-			{
-				if (sortedList[i] != this)
-				{
+			for (int i = 0; i < sortedList.Count; i++) {
+				if (sortedList[i] != this) {
 					index++;
 					continue;
 				}

@@ -23,44 +23,36 @@ namespace DPSExtreme
 	{
 		internal T[] myValues;
 
-		public DPSExtremeStatList()
-		{
+		public DPSExtremeStatList() {
 			myValues = new T[Size];
 
-			for (int i = 0; i < Size; i++)
-			{
+			for (int i = 0; i < Size; i++) {
 				myValues[i] = new T();
 			}
 		}
 
-		public ref T this[int i]
-		{
+		public ref T this[int i] {
 			get { return ref myValues[i]; }
 		}
 
 		public const int Size = 256;
 
-		public void Clear()
-		{
-			for (int i = 0; i < Size; i++)
-			{
+		public void Clear() {
+			for (int i = 0; i < Size; i++) {
 				myValues[i] = default;
 			}
 		}
 
-		public void GetMaxAndTotal(out int aMax, out int aTotal)
-		{
+		public void GetMaxAndTotal(out int aMax, out int aTotal) {
 			aMax = 0;
 			aTotal = 0;
 
 			int subMax = 0;
 			int subTotal = 0;
 
-			for (int i = 0; i < Size; i++)
-			{
+			for (int i = 0; i < Size; i++) {
 				IStatContainer stat = myValues[i];
-				if (stat.HasStats())
-				{
+				if (stat.HasStats()) {
 					stat.GetMaxAndTotal(out subMax, out subTotal);
 
 					aMax = Math.Max(aMax, subMax);
@@ -71,10 +63,8 @@ namespace DPSExtreme
 
 		public virtual List<string> GetInfoBoxLines() { return new List<string>(); }
 
-		public bool HasStats()
-		{
-			for (int i = 0; i < Size; i++)
-			{
+		public bool HasStats() {
+			for (int i = 0; i < Size; i++) {
 				if (myValues[i].HasStats())
 					return true;
 			}
@@ -82,15 +72,13 @@ namespace DPSExtreme
 			return false;
 		}
 
-		public void ToStream(BinaryWriter aWriter)
-		{
+		public void ToStream(BinaryWriter aWriter) {
 			long startPos = aWriter.BaseStream.Position;
 
 			aWriter.Write((byte)123); //placeholder for count
 
 			byte count = 0;
-			for (int i = 0; i < Size; i++)
-			{
+			for (int i = 0; i < Size; i++) {
 				if (!myValues[i].HasStats())
 					continue;
 
@@ -106,12 +94,10 @@ namespace DPSExtreme
 			aWriter.BaseStream.Seek(endPos, SeekOrigin.Begin);
 		}
 
-		public void FromStream(BinaryReader aReader)
-		{
+		public void FromStream(BinaryReader aReader) {
 			int count = aReader.ReadByte();
 
-			for (int i = 0; i < count; i++)
-			{
+			for (int i = 0; i < count; i++) {
 				byte index = aReader.ReadByte();
 				myValues[index].FromStream(aReader);
 			}

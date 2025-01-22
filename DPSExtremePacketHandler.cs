@@ -1,120 +1,103 @@
+using DPSExtreme.Combat;
+using DPSExtreme.Combat.Stats;
 using System;
 using System.IO;
-using Terraria.ID;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
-using DPSExtreme.Combat;
 using static DPSExtreme.Combat.DPSExtremeCombat;
-using DPSExtreme.Combat.Stats;
 
 namespace DPSExtreme
 {
 	internal class DPSExtremePacketHandler
 	{
 		//Allows us to unify SP & MP code flows into a single function call
-		public void SendProtocol(DPSExtremeProtocol aProtocol, int aTargetClient = -1)
-		{
-			if (Main.netMode == NetmodeID.SinglePlayer)
-			{
+		public void SendProtocol(DPSExtremeProtocol aProtocol, int aTargetClient = -1) {
+			if (Main.netMode == NetmodeID.SinglePlayer) {
 				HandleProtocol(aProtocol.GetDelimiter(), aProtocol);
 			}
-			else
-			{
+			else {
 				ModPacket netMessage = DPSExtreme.instance.GetPacket();
 				aProtocol.ToStream(netMessage);
 				netMessage.Send(aTargetClient);
 			}
 		}
 
-		public bool HandlePacket(BinaryReader reader, int whoAmI)
-		{
+		public bool HandlePacket(BinaryReader reader, int whoAmI) {
 			DPSExtremeMessageType delimiter = (DPSExtremeMessageType)reader.ReadByte();
 
 			DPSExtremeProtocol protocol = null;
 
-			switch (delimiter)
-			{
-				case DPSExtremeMessageType.StartCombatPush:
-				{
-					protocol = new ProtocolPushStartCombat();
-					if (!protocol.FromStream(reader))
-						return false;
+			switch (delimiter) {
+				case DPSExtremeMessageType.StartCombatPush: {
+						protocol = new ProtocolPushStartCombat();
+						if (!protocol.FromStream(reader))
+							return false;
 
-					break;
-				}
-				case DPSExtremeMessageType.UpgradeCombatPush:
-				{
-					protocol = new ProtocolPushUpgradeCombat();
-					if (!protocol.FromStream(reader))
-						return false;
+						break;
+					}
+				case DPSExtremeMessageType.UpgradeCombatPush: {
+						protocol = new ProtocolPushUpgradeCombat();
+						if (!protocol.FromStream(reader))
+							return false;
 
-					break;
-				}
-				case DPSExtremeMessageType.EndCombatPush:
-				{
-					protocol = new ProtocolPushEndCombat();
-					if (!protocol.FromStream(reader))
-						return false;
+						break;
+					}
+				case DPSExtremeMessageType.EndCombatPush: {
+						protocol = new ProtocolPushEndCombat();
+						if (!protocol.FromStream(reader))
+							return false;
 
-					break;
-				}
-				case DPSExtremeMessageType.ShareCurrentDPSReq:
-				{
-					protocol = new ProtocolReqShareCurrentDPS();
-					if (!protocol.FromStream(reader))
-						return false;
+						break;
+					}
+				case DPSExtremeMessageType.ShareCurrentDPSReq: {
+						protocol = new ProtocolReqShareCurrentDPS();
+						if (!protocol.FromStream(reader))
+							return false;
 
-					break;
-				}
-				case DPSExtremeMessageType.CurrentDPSsPush:
-				{
-					protocol = new ProtocolPushClientDPSs();
-					if (!protocol.FromStream(reader))
-						return false;
+						break;
+					}
+				case DPSExtremeMessageType.CurrentDPSsPush: {
+						protocol = new ProtocolPushClientDPSs();
+						if (!protocol.FromStream(reader))
+							return false;
 
-					break;
-				}
-				case DPSExtremeMessageType.CurrentCombatTotalsPush:
-				{
-					protocol = new ProtocolPushCombatStats();
-					if (!protocol.FromStream(reader))
-						return false;
+						break;
+					}
+				case DPSExtremeMessageType.CurrentCombatTotalsPush: {
+						protocol = new ProtocolPushCombatStats();
+						if (!protocol.FromStream(reader))
+							return false;
 
-					break;
-				}
+						break;
+					}
 				default:
 					DPSExtreme.instance.Logger.Warn("DPSExtreme: Unknown Message type: " + delimiter);
 					break;
 			}
 
-			if (protocol == null)
-			{
+			if (protocol == null) {
 				Main.NewText("DPSExtreme: null protocol for message type: " + delimiter.ToString());
 				DPSExtreme.instance.Logger.Warn("DPSExtreme: null protocol for message type: " + delimiter.ToString());
 			}
-			else
-			{
+			else {
 				HandleProtocol(delimiter, protocol);
 			}
 
 			return true;
 		}
 
-		public bool HijackGetData(ref byte messageType, ref BinaryReader reader, int playerNumber)
-		{
-			try
-			{
+		public bool HijackGetData(ref byte messageType, ref BinaryReader reader, int playerNumber) {
+			try {
 				if (Main.netMode != NetmodeID.Server)
 					return false;
 
-				if (messageType == MessageID.PlayerSpawn)
-				{
+				if (messageType == MessageID.PlayerSpawn) {
 					if (Netplay.Clients[playerNumber].State == 3) //Only handle it when player is joining. Not on respawns etc
 						DPSExtreme.instance.combatTracker.myJoiningPlayers.Add(playerNumber);
 				}
 
-				if (messageType == MessageID.DamageNPC)
-				{
+				if (messageType == MessageID.DamageNPC) {
 					int npcIndex = reader.ReadInt16();
 					int damage = reader.Read7BitEncodedInt();
 					if (damage < 0)
@@ -123,8 +106,7 @@ namespace DPSExtreme
 
 					//System.Console.WriteLine("HijackGetData StrikeNPC: " + npcIndex + " " + damage + " " + playerNumber);
 					NPC damagedNPC = Main.npc[npcIndex];
-					if (damagedNPC.realLife >= 0)
-					{
+					if (damagedNPC.realLife >= 0) {
 						damagedNPC = Main.npc[damagedNPC.realLife];
 					}
 
@@ -140,17 +122,14 @@ namespace DPSExtreme
 					// TODO: Verify real life adjustment
 				}
 			}
-			catch (Exception)
-			{
+			catch (Exception) {
 				//ErrorLogger.Log("HijackGetData StrikeNPC " + e.Message);
 			}
 			return false;
 		}
 
-		private void HandleProtocol(DPSExtremeMessageType aDelimiter, DPSExtremeProtocol aProtocol)
-		{
-			switch (aDelimiter)
-			{
+		private void HandleProtocol(DPSExtremeMessageType aDelimiter, DPSExtremeProtocol aProtocol) {
+			switch (aDelimiter) {
 				case DPSExtremeMessageType.StartCombatPush:
 					HandleStartCombatPush(aProtocol as ProtocolPushStartCombat);
 					break;
@@ -175,23 +154,19 @@ namespace DPSExtreme
 			}
 		}
 
-		public void HandleStartCombatPush(ProtocolPushStartCombat aPush)
-		{
+		public void HandleStartCombatPush(ProtocolPushStartCombat aPush) {
 			DPSExtreme.instance.combatTracker.StartCombat(aPush.myCombatType, aPush.myBossOrInvasionOrEventType);
 		}
 
-		public void HandleUpgradeCombatPush(ProtocolPushUpgradeCombat aPush)
-		{
+		public void HandleUpgradeCombatPush(ProtocolPushUpgradeCombat aPush) {
 			DPSExtreme.instance.combatTracker.UpgradeCombat(aPush.myCombatType, aPush.myBossOrInvasionOrEventType);
 		}
 
-		public void HandleEndCombatPush(ProtocolPushEndCombat aPush)
-		{
+		public void HandleEndCombatPush(ProtocolPushEndCombat aPush) {
 			DPSExtreme.instance.combatTracker.EndCombat(aPush.myCombatType);
 		}
 
-		public void HandleInformServerDPSReq(ProtocolReqShareCurrentDPS aReq)
-		{
+		public void HandleInformServerDPSReq(ProtocolReqShareCurrentDPS aReq) {
 			DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
 			if (activeCombat == null)
 				return;
@@ -200,14 +175,12 @@ namespace DPSExtreme
 			activeCombat.myStats.myDamageDone[aReq.myPlayer] = aReq.myDamageDoneBreakdown;
 			activeCombat.myStats.myMinionDamageDone[aReq.myPlayer] = aReq.myMinionDamageDoneBreakdown;
 
-			foreach ((int enemyType, DPSExtremeStatDictionary<int, DamageStatValue> stat) in aReq.myEnemyDamageTakenByMeBreakdown)
-			{
+			foreach ((int enemyType, DPSExtremeStatDictionary<int, DamageStatValue> stat) in aReq.myEnemyDamageTakenByMeBreakdown) {
 				activeCombat.myStats.myEnemyDamageTaken[enemyType][aReq.myPlayer] = stat;
 			}
 		}
 
-		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush)
-		{
+		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush) {
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
@@ -216,8 +189,7 @@ namespace DPSExtreme
 			DPSExtremeUI.instance.updateNeeded = true;
 		}
 
-		public void HandleCombatStatsPush(ProtocolPushCombatStats aPush)
-		{
+		public void HandleCombatStatsPush(ProtocolPushCombatStats aPush) {
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
@@ -232,9 +204,8 @@ namespace DPSExtreme
 				//Sync remote player damage, but don't overwrite local
 				activeCombat.myStats.myDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalDamage;
 				activeCombat.myStats.myMinionDamageDone[Main.LocalPlayer.whoAmI] = myPrevLocalMinionDamage;
-				
-				foreach ((int enemyType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> stat) in myPrevLocalEnemyDamageTaken)
-				{
+
+				foreach ((int enemyType, DPSExtremeStatList<DPSExtremeStatDictionary<int, DamageStatValue>> stat) in myPrevLocalEnemyDamageTaken) {
 					activeCombat.myStats.myEnemyDamageTaken[enemyType][Main.LocalPlayer.whoAmI] = stat[Main.LocalPlayer.whoAmI];
 				}
 			}

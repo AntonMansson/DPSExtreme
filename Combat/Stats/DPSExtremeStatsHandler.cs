@@ -1,9 +1,9 @@
-﻿using System;
-using Terraria.ID;
+﻿using DPSExtreme.Config;
+using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.Localization;
 using Terraria.Map;
-using DPSExtreme.Config;
 
 namespace DPSExtreme.Combat.Stats
 {
@@ -36,11 +36,9 @@ namespace DPSExtreme.Combat.Stats
 		}
 
 		private SourceType _mySourceType = SourceType.Unknown;
-		internal SourceType mySourceType
-		{
+		internal SourceType mySourceType {
 			get => _mySourceType;
-			set
-			{
+			set {
 				_myDamageCauserAbility -= (int)_mySourceType; //Remove old source type addition
 				_mySourceType = value;
 				myDamageCauserAbility = _myDamageCauserAbility; //Add new one
@@ -55,10 +53,8 @@ namespace DPSExtreme.Combat.Stats
 		private int _myDamageCauserAbility = -1;
 		internal int myDamageCauserAbility //Projectile/Item id etc
 		{
-			get
-			{
-				switch (mySourceType)
-				{
+			get {
+				switch (mySourceType) {
 					case SourceType.NPC:
 					case SourceType.Projectile:
 					case SourceType.Item:
@@ -71,10 +67,8 @@ namespace DPSExtreme.Combat.Stats
 						return -1;
 				}
 			}
-			set
-			{
-				switch (mySourceType)
-				{
+			set {
+				switch (mySourceType) {
 					case SourceType.NPC:
 						_myDamageCauserAbility = value + (int)SourceType.Projectile; //Projectile is intended. Bit hacky for "Melee"
 						break;
@@ -104,13 +98,11 @@ namespace DPSExtreme.Combat.Stats
 			}
 		}
 
-		public DamageSource(SourceType aSourceType)
-		{
+		public DamageSource(SourceType aSourceType) {
 			mySourceType = aSourceType;
 		}
 
-		public static string GetAbilityName(int aAbilityId)
-		{
+		public static string GetAbilityName(int aAbilityId) {
 			if (IsInSourceTypeRange(SourceType.NPC, aAbilityId))
 				return Lang.GetNPCNameValue(aAbilityId);
 
@@ -135,14 +127,12 @@ namespace DPSExtreme.Combat.Stats
 			if (IsInSourceTypeRange(SourceType.Buffs, aAbilityId))
 				return Lang.GetBuffName(aAbilityId - (int)SourceType.Buffs);
 
-			if (IsInSourceTypeRange(SourceType.Other, aAbilityId))
-			{
+			if (IsInSourceTypeRange(SourceType.Other, aAbilityId)) {
 				if (aAbilityId == (int)SourceType.Other)
 					return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("Other"));
 
 				int otherType = aAbilityId - (int)SourceType.Other - 1;
-				switch (otherType)
-				{
+				switch (otherType) {
 					//Loc
 					case 0:
 						return Language.GetTextValue(DPSExtreme.instance.GetLocalizationKey("FallDamage"));
@@ -189,8 +179,7 @@ namespace DPSExtreme.Combat.Stats
 			return $"Accessor {aAbilityId} not in any range";
 		}
 
-		public static bool IsInSourceTypeRange(SourceType aSourceType, int aAbilityId)
-		{
+		public static bool IsInSourceTypeRange(SourceType aSourceType, int aAbilityId) {
 			object? parseResult;
 			bool parseSuccess = Enum.TryParse(typeof(SourceType), aSourceType.ToString() + "End", true, out parseResult);
 
@@ -202,8 +191,7 @@ namespace DPSExtreme.Combat.Stats
 
 	internal class DPSExtremeStatsHandler
 	{
-		internal void AddDealtDamage(NPC aDamagedNPC, DamageSource aDamageSource)
-		{
+		internal void AddDealtDamage(NPC aDamagedNPC, DamageSource aDamageSource) {
 			if (DPSExtremeServerConfig.Instance.IgnoreCritters)
 				if (aDamagedNPC.CountsAsACritter)
 					return;
@@ -229,8 +217,7 @@ namespace DPSExtreme.Combat.Stats
 			int consolidatedType = NPCID.FromLegacyName(Lang.GetNPCNameValue(realDamagedNPC.type));
 			int npcType = consolidatedType > 0 ? consolidatedType : realDamagedNPC.type;
 
-			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-			{
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
 				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding damage without active combat");
 				Main.NewText("DPSExtreme: Adding damage without active combat");
 				return;
@@ -248,14 +235,11 @@ namespace DPSExtreme.Combat.Stats
 			DamageStatValue enemyDamageTakenTotalStat = DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myEnemyDamageTaken[npcType][aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
 			enemyDamageTakenTotalStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
 
-			if (aDamageSource.mySourceType == DamageSource.SourceType.Item)
-			{
+			if (aDamageSource.mySourceType == DamageSource.SourceType.Item) {
 				var proectileItemSource = ContentSamples.ItemsByType[aDamageSource.myDamageCauserAbility - (int)DamageSource.SourceType.Item];
-				if (proectileItemSource != null)
-				{
+				if (proectileItemSource != null) {
 					int projectileTypeId = proectileItemSource.shoot;
-					if (ContentSamples.ProjectilesByType[projectileTypeId].minion)
-					{
+					if (ContentSamples.ProjectilesByType[projectileTypeId].minion) {
 						MinionDamageStatValue minionDamageDealtStat = DPSExtreme.instance.combatTracker.myActiveCombat.myStats.myMinionDamageDone[aDamageSource.myDamageCauserId][aDamageSource.myDamageCauserAbility];
 						minionDamageDealtStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
 						minionDamageDealtStat.myMinionType = projectileTypeId;
@@ -276,13 +260,11 @@ namespace DPSExtreme.Combat.Stats
 			damageDoneTotalStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
 		}
 
-		internal void AddDamageTaken(Player aDamagedPlayer, DamageSource aDamageSource)
-		{
+		internal void AddDamageTaken(Player aDamagedPlayer, DamageSource aDamageSource) {
 			if (aDamagedPlayer.statLife <= 0)
 				return;
 
-			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-			{
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
 				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding damage taken without active combat");
 				Main.NewText("DPSExtreme: Adding damage taken without active combat");
 				return;
@@ -297,10 +279,8 @@ namespace DPSExtreme.Combat.Stats
 			totalStat.AddDamage(clampedDamageAmount, aDamageSource.myIsCrit);
 		}
 
-		internal void AddDeath(Player aKilledPlayer)
-		{
-			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-			{
+		internal void AddDeath(Player aKilledPlayer) {
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
 				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding death without active combat");
 				Main.NewText("DPSExtreme: Adding death without active combat");
 				return;
@@ -310,10 +290,8 @@ namespace DPSExtreme.Combat.Stats
 			DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myDeaths[aKilledPlayer.whoAmI].AddDeath(DPSExtreme.instance.combatTracker.myTotalCombat.myDurationInTicks);
 		}
 
-		internal void AddKill(NPC aKilledNPC, int aKiller)
-		{
-			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-			{
+		internal void AddKill(NPC aKilledNPC, int aKiller) {
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
 				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding kill without active combat");
 				Main.NewText("DPSExtreme: Adding kill without active combat");
 				return;
@@ -327,10 +305,8 @@ namespace DPSExtreme.Combat.Stats
 			DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myKills[aKiller][aKilledNPC.type] += 1;
 		}
 
-		internal void AddConsumedMana(Player aPlayer, Item aUsedItem, int aManaAmount)
-		{
-			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-			{
+		internal void AddConsumedMana(Player aPlayer, Item aUsedItem, int aManaAmount) {
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
 				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding mana used without active combat");
 				Main.NewText("DPSExtreme: Adding mana used without active combat");
 				return;
@@ -340,10 +316,8 @@ namespace DPSExtreme.Combat.Stats
 			DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myManaUsed[aPlayer.whoAmI][aUsedItem.type + (int)DamageSource.SourceType.Item] += aManaAmount;
 		}
 
-		internal void AddBuffUptime(Player aPlayer, int aBuffType)
-		{
-			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-			{
+		internal void AddBuffUptime(Player aPlayer, int aBuffType) {
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
 				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding buff uptime without active combat");
 				Main.NewText("DPSExtreme: Adding buff uptime without active combat");
 				return;
@@ -353,10 +327,8 @@ namespace DPSExtreme.Combat.Stats
 			DPSExtreme.instance.combatTracker.myTotalCombat.myStats.myBuffUptimes[aPlayer.whoAmI][aBuffType + (int)DamageSource.SourceType.Buffs] += 1;
 		}
 
-		internal void AddDebuffUptime(Player aPlayer, int aDebuffType)
-		{
-			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-			{
+		internal void AddDebuffUptime(Player aPlayer, int aDebuffType) {
+			if (DPSExtreme.instance.combatTracker.myActiveCombat == null) {
 				DPSExtreme.instance.Logger.Warn("DPSExtreme: Adding debuff uptime without active combat");
 				Main.NewText("DPSExtreme: Adding debuff uptime without active combat");
 				return;

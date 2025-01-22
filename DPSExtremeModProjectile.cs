@@ -12,31 +12,25 @@ namespace DPSExtreme
 		public int whoIsMyParent = -1;
 		public int myParentItemType = -1;
 
-		public override void OnSpawn(Projectile projectile, IEntitySource source)
-		{
-			if (source is EntitySource_Parent parentSource)
-			{
-				if (parentSource.Entity is NPC parentNPC)
-				{
+		public override void OnSpawn(Projectile projectile, IEntitySource source) {
+			if (source is EntitySource_Parent parentSource) {
+				if (parentSource.Entity is NPC parentNPC) {
 					if (projectile.friendly)
 						whoIsMyParent = (int)InfoListIndices.NPCs;
 					else
 						whoIsMyParent = parentNPC.whoAmI;
 				}
-				else if (parentSource.Entity is Player parentplayer)
-				{
+				else if (parentSource.Entity is Player parentplayer) {
 					if (parentSource is EntitySource_ItemUse itemSource)
 						myParentItemType = itemSource.Item.type;
 				}
-				else if (parentSource.Entity is Projectile parentProj)
-				{
+				else if (parentSource.Entity is Projectile parentProj) {
 					myParentItemType = parentProj.GetGlobalProjectile<DPSExtremeModProjectile>().myParentItemType;
 					whoIsMyParent = parentProj.whoAmI;
 				}
 			}
 
-			if (source is EntitySource_Wiring wiring)
-			{
+			if (source is EntitySource_Wiring wiring) {
 				whoIsMyParent = (int)InfoListIndices.Traps;
 				int row = Main.tile[wiring.TileCoords].TileFrameY / 18;
 				if (row == 0)

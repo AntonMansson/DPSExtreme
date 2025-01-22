@@ -10,22 +10,16 @@ namespace DPSExtreme.UIElements.Displays
 	{
 		internal override DisplayContainerType myContainerType => DisplayContainerType.Dictionary;
 
-		internal DPSExtremeStatDictionary<int, T> myInfoLookup
-		{
-			get
-			{
-				try
-				{
-					if (myParentDisplay != null)
-					{
-						if (myParentDisplay.myContainerType == DisplayContainerType.List)
-						{
+		internal DPSExtremeStatDictionary<int, T> myInfoLookup {
+			get {
+				try {
+					if (myParentDisplay != null) {
+						if (myParentDisplay.myContainerType == DisplayContainerType.List) {
 							UIListDisplay<DPSExtremeStatDictionary<int, T>> parent = myParentDisplay as UIListDisplay<DPSExtremeStatDictionary<int, T>>;
 							if (parent != null)
 								return parent.myInfoList[myParentDisplay.myBreakdownAccessor];
 						}
-						else if (myParentDisplay.myContainerType == DisplayContainerType.Dictionary)
-						{
+						else if (myParentDisplay.myContainerType == DisplayContainerType.Dictionary) {
 							UIStatDictionaryDisplay<DPSExtremeStatDictionary<int, T>> parent = myParentDisplay as UIStatDictionaryDisplay<DPSExtremeStatDictionary<int, T>>;
 							if (parent != null)
 								return parent.myInfoLookup[myParentDisplay.myBreakdownAccessor];
@@ -34,22 +28,19 @@ namespace DPSExtreme.UIElements.Displays
 
 					return DPSExtremeUI.instance.myDisplayedCombat?.GetInfoContainer(myDisplayMode) as DPSExtremeStatDictionary<int, T>;
 				}
-				catch (Exception)
-				{
+				catch (Exception) {
 
 					throw;
 				}
 			}
 		}
 
-		public UIStatDictionaryDisplay(ListDisplayMode aDisplayMode) 
-			: base(aDisplayMode, typeof(T)) 
-		{ 
+		public UIStatDictionaryDisplay(ListDisplayMode aDisplayMode)
+			: base(aDisplayMode, typeof(T)) {
 			myNameCallback = DamageSource.GetAbilityName;
 		}
 
-		internal override void Update()
-		{
+		internal override void Update() {
 			if (myInfoLookup == null)
 				return;
 
@@ -59,10 +50,8 @@ namespace DPSExtreme.UIElements.Displays
 			Recalculate();
 		}
 
-		internal override void RecalculateTotals()
-		{
-			if (myIsInBreakdown)
-			{
+		internal override void RecalculateTotals() {
+			if (myIsInBreakdown) {
 				myBreakdownDisplay.RecalculateTotals();
 				return;
 			}
@@ -70,8 +59,7 @@ namespace DPSExtreme.UIElements.Displays
 			myHighestValue = 0;
 			myTotal = 0;
 
-			foreach ((int npcType, T damageInfo) in myInfoLookup)
-			{
+			foreach ((int npcType, T damageInfo) in myInfoLookup) {
 				int listMax = 0;
 				int listTotal = 0;
 
@@ -84,36 +72,29 @@ namespace DPSExtreme.UIElements.Displays
 				myTotal = DPSExtremeUI.instance.myDisplayedCombat.myDurationInTicks;
 		}
 
-		internal override void UpdateValues()
-		{
-			if (myIsInBreakdown)
-			{
+		internal override void UpdateValues() {
+			if (myIsInBreakdown) {
 				myBreakdownDisplay.UpdateValues();
 				return;
 			}
 
-			if (!myInfoLookup.HasStats())
-			{
+			if (!myInfoLookup.HasStats()) {
 				Clear();
 				return;
 			}
-			
+
 			int entryIndex = 0;
 
-			foreach ((int baseKey, T damageInfo) in myInfoLookup)
-			{
+			foreach ((int baseKey, T damageInfo) in myInfoLookup) {
 				int listMax = 0;
 				int listTotal = 0;
 
 				damageInfo.GetMaxAndTotal(out listMax, out listTotal);
-				
-				if (listTotal > 0)
-				{
+
+				if (listTotal > 0) {
 					//Filter out critter entries if config is set
-					if (DPSExtremeServerConfig.Instance.IgnoreCritters)
-					{
-						if (baseKey <= (int)DamageSource.SourceType.NPCEnd)
-						{
+					if (DPSExtremeServerConfig.Instance.IgnoreCritters) {
+						if (baseKey <= (int)DamageSource.SourceType.NPCEnd) {
 							if (ContentSamples.NpcsByNetId[baseKey].CountsAsACritter)
 								continue;
 						}
@@ -124,8 +105,7 @@ namespace DPSExtreme.UIElements.Displays
 					{
 						name = myParentDisplay.myNameCallback.Invoke(myParentDisplay.myBreakdownAccessor);
 					}
-					else if (myNameCallback != null)
-					{
+					else if (myNameCallback != null) {
 						name = myNameCallback.Invoke(baseKey);
 					}
 
@@ -144,6 +124,6 @@ namespace DPSExtreme.UIElements.Displays
 
 			//In case no new entries were added but they need to be re-sorted
 			UpdateOrder();
-        }
+		}
 	}
 }

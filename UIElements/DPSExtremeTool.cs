@@ -2,9 +2,7 @@
 {
 	internal class DPSExtremeTool : Tool
 	{
-		public DPSExtremeTool() : base(typeof(DPSExtremeUI))
-		{
+		public DPSExtremeTool() : base(typeof(DPSExtremeUI)) {
 		}
 	}
 }
-
