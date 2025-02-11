@@ -1,9 +1,11 @@
+using DPSExtreme.Combat;
+using DPSExtreme.Combat.Stats;
 using System;
 using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static DPSExtreme.CombatTracking.DPSExtremeCombat;
+using static DPSExtreme.Combat.DPSExtremeCombat;
 
 namespace DPSExtreme
 {
@@ -55,13 +57,6 @@ namespace DPSExtreme
 
 						break;
 					}
-				case DPSExtremeMessageType.CurrentDPSsPush: {
-						protocol = new ProtocolPushClientDPSs();
-						if (!protocol.FromStream(reader))
-							return false;
-
-						break;
-					}
 				case DPSExtremeMessageType.CurrentCombatTotalsPush: {
 						protocol = new ProtocolPushCombatStats();
 						if (!protocol.FromStream(reader))
@@ -75,11 +70,11 @@ namespace DPSExtreme
 			}
 
 			if (protocol == null) {
-				Main.NewText("DPSExtreme: null protocol for message type: " + delimiter.ToString());
-				DPSExtreme.instance.Logger.Warn("DPSExtreme: null protocol for message type: " + delimiter.ToString());
+				DPSExtreme.instance.DebugMessage("null protocol for message type: " + delimiter.ToString());
 			}
-			else
+			else {
 				HandleProtocol(delimiter, protocol);
+			}
 
 			return true;
 		}
@@ -107,8 +102,13 @@ namespace DPSExtreme
 						damagedNPC = Main.npc[damagedNPC.realLife];
 					}
 
+					DamageSource damageSource = new DamageSource(DamageSource.SourceType.DOT);
+					damageSource.myDamageAmount = damage;
+					damageSource.myDamageCauserId = playerNumber;
+					damageSource.myDamageCauserAbility = -1; //Unknown what item/projectile it is. Clients will pass this info themselves
+
 					DPSExtreme.instance.combatTracker.TriggerCombat(CombatType.Generic);
-					DPSExtreme.instance.combatTracker.myActiveCombat.AddDealtDamage(damagedNPC, playerNumber, damage);
+					DPSExtreme.instance.combatTracker.myStatsHandler.AddDealtDamage(damagedNPC, damageSource);
 
 					// TODO: Reimplement DPS with ring buffer for accurate?  !!! or send 0?
 					// TODO: Verify real life adjustment
@@ -134,9 +134,6 @@ namespace DPSExtreme
 				case DPSExtremeMessageType.ShareCurrentDPSReq:
 					HandleInformServerDPSReq(aProtocol as ProtocolReqShareCurrentDPS);
 					break;
-				case DPSExtremeMessageType.CurrentDPSsPush:
-					HandleClientDPSsPush(aProtocol as ProtocolPushClientDPSs);
-					break;
 				case DPSExtremeMessageType.CurrentCombatTotalsPush:
 					HandleCombatStatsPush(aProtocol as ProtocolPushCombatStats);
 					break;
@@ -159,52 +156,30 @@ namespace DPSExtreme
 		}
 
 		public void HandleInformServerDPSReq(ProtocolReqShareCurrentDPS aReq) {
-			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
+			DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
+			if (activeCombat == null)
 				return;
 
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList[aReq.myPlayer].myDamage = aReq.myDPS;
-		}
+			activeCombat.myStats.myDamagePerSecond[aReq.myPlayer] = aReq.myDPS;
+			activeCombat.myStats.myDamageDone[aReq.myPlayer] = aReq.myDamageDoneBreakdown;
+			activeCombat.myStats.myMinionDamageDone[aReq.myPlayer] = aReq.myMinionDamageDoneBreakdown;
 
-		public void HandleClientDPSsPush(ProtocolPushClientDPSs aPush) {
-			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
-				return;
-
-			DPSExtreme.instance.combatTracker.myActiveCombat.myDPSList = aPush.myDPSList;
-
-			DPSExtremeUI.instance.updateNeeded = true;
+			foreach ((int enemyType, DPSExtremeStatDictionary<int, DamageStatValue> stat) in aReq.myEnemyDamageTakenByMeBreakdown) {
+				activeCombat.myStats.myEnemyDamageTaken[enemyType][aReq.myPlayer] = stat;
+			}
 		}
 
 		public void HandleCombatStatsPush(ProtocolPushCombatStats aPush) {
 			if (DPSExtreme.instance.combatTracker.myActiveCombat == null)
 				return;
 
-			CombatTracking.DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
-
-			activeCombat.myDamageDealtPerNPCType = aPush.myDamageDealtPerNPCType;
-			activeCombat.myTotalDamageDealtList = aPush.myTotalDamageDealtList;
-
-			//Best-effort DOT DPS approx.
-			//TODO: Fix issue with dots appearing before player dpss
-			int totalDotDPS = 0;
-
-			foreach (NPC npc in Main.ActiveNPCs) {
-				int dotDPS = -1 * npc.lifeRegen / 2;
-				totalDotDPS += dotDPS;
-
-				//Since the dot hook doesn't seem to work in SP, add damage here to the best of our abilities
-				if (Main.netMode == NetmodeID.SinglePlayer) {
-					if (totalDotDPS > 0 && activeCombat.myTotalDamageDealtList[(int)InfoListIndices.DOTs].myDamage < 0) //Make sure we don't start at -1
-						activeCombat.myTotalDamageDealtList[(int)InfoListIndices.DOTs].myDamage = 0;
-
-					float ratio = DPSExtreme.UPDATEDELAY / 60f;
-					//TODO: Handle remainder
-					int dealtDamage = (int)(dotDPS * ratio);
-					activeCombat.AddDealtDamage(npc, (int)InfoListIndices.DOTs, dealtDamage);
-				}
-			}
-
-			if (totalDotDPS > 0)
-				activeCombat.myDPSList[(int)InfoListIndices.DOTs].myDamage = totalDotDPS;
+			DPSExtremeCombat activeCombat = DPSExtreme.instance.combatTracker.myActiveCombat;
+			activeCombat.myDurationInTicks = aPush.myActiveCombatDurationInTicks;
+			activeCombat.HandleServerSync(aPush.myStats);
+				
+			DPSExtremeCombat totalCombat = DPSExtreme.instance.combatTracker.myTotalCombat;
+			totalCombat.myDurationInTicks = aPush.myTotalCombatDurationInTicks;
+			totalCombat.HandleServerSync(aPush.myTotalStats);
 
 			DPSExtremeUI.instance.updateNeeded = true;
 
